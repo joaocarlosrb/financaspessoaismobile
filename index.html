@@ -75,13 +75,15 @@
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 20px;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+            box-shadow: 0 6px 18px -2px rgba(15, 23, 42, 0.10), 0 3px 8px -2px rgba(15, 23, 42, 0.06);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.2s ease;
         }
 
         .dark .app-card {
             background-color: #111827;
             border-color: #1f2937;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 8px 22px -2px rgba(0, 0, 0, 0.55), 0 4px 10px -2px rgba(0, 0, 0, 0.4);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.2s ease;
         }
 
         .theme-gradient {
@@ -120,11 +122,16 @@
             align-items: center;
             justify-content: center;
             padding: 16px;
-            transition: opacity 0.18s ease;
+            animation: fadeInBackdrop 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
         .modal-backdrop.hidden {
             display: none !important;
+        }
+
+        .modal-backdrop.closing {
+            pointer-events: none;
+            animation: fadeOutBackdrop 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
         .modal-sheet {
@@ -137,14 +144,28 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            animation: popInModal 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+            animation: popInModal 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
             box-shadow: 0 20px 45px rgba(15, 23, 42, 0.28);
+        }
+
+        .modal-backdrop.closing .modal-sheet {
+            animation: popOutModal 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
         .dark .modal-sheet {
             background-color: #111827;
             border: 1.5px solid #334155;
             box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+        }
+
+        @keyframes fadeInBackdrop {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOutBackdrop {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
 
         @keyframes popInModal {
@@ -155,6 +176,17 @@
             to {
                 transform: scale(1) translateY(0);
                 opacity: 1;
+            }
+        }
+
+        @keyframes popOutModal {
+            from {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: scale(0.95) translateY(10px);
+                opacity: 0;
             }
         }
 
@@ -222,8 +254,8 @@
                 <button type="button" onclick="togglePrivacy()" aria-label="Ocultar valores" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300">
                     <i id="privacyIcon" class="fa-regular fa-eye text-sm"></i>
                 </button>
-                <button type="button" onclick="toggleDarkMode()" aria-label="Alternar tema" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-amber-500">
-                    <i id="darkModeIcon" class="fa-solid fa-moon text-sm"></i>
+                <button type="button" onclick="syncSaveToCloud()" aria-label="Salvar na nuvem" title="Salvar no Google Drive" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-blue-600 dark:text-blue-400 active:scale-95 transition-transform">
+                    <i class="fa-solid fa-floppy-disk text-sm"></i>
                 </button>
             </div>
         </div>
@@ -428,7 +460,7 @@
                     </div>
                 </div>
 
-                <div class="w-full h-2.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                <div class="w-full h-4 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
                     <div id="dashCardBar" class="h-full bg-purple-600 rounded-full" style="width: 0%"></div>
                 </div>
 
@@ -828,6 +860,23 @@
 
         <!-- ==================== ABA 9: CONFIGURAÇÕES & NUVEM ==================== -->
         <div id="tab-settings" class="hidden space-y-4">
+            <!-- Aparência (Modo Claro / Escuro) -->
+            <div class="app-card p-4 sm:p-5 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-base shrink-0">
+                        <i id="darkModeIcon" class="fa-solid fa-moon"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-extrabold">Aparência do Aplicativo</h3>
+                        <p id="darkModeSubtitle" class="text-xs text-slate-500 dark:text-slate-400">Modo Claro ativado</p>
+                    </div>
+                </div>
+                <button type="button" onclick="toggleDarkMode()" id="btnToggleDarkSettings" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-bold flex items-center gap-2 shrink-0">
+                    <i id="darkModeBtnIcon" class="fa-solid fa-moon text-amber-500"></i>
+                    <span id="darkModeBtnLabel">Modo Escuro</span>
+                </button>
+            </div>
+
             <!-- Paleta de Cores -->
             <div class="app-card p-4 sm:p-5 space-y-3">
                 <h3 class="text-base font-extrabold">Paleta de Cores do Aplicativo</h3>
@@ -908,6 +957,102 @@
         </div>
     </nav>
 
+    <!-- ==================== MODAL: DETALHES DA TRANSAÇÃO ==================== -->
+    <div id="modalTxDetails" onclick="if(event.target===this) closeModal('modalTxDetails')" class="modal-backdrop hidden z-[80]">
+        <div class="modal-sheet">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div class="min-w-0 pr-2">
+                    <h3 id="detTxTitle" class="text-base font-extrabold truncate">Detalhes do Lançamento</h3>
+                    <p id="detTxSubtitle" class="text-xs text-white/80 truncate"></p>
+                </div>
+                <button type="button" onclick="closeModal('modalTxDetails')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-4 space-y-3.5 overflow-y-auto flex-1">
+                <!-- Valor e Situação -->
+                <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 flex items-center justify-between gap-2">
+                    <div>
+                        <span class="text-xs font-bold text-slate-500 dark:text-slate-400 block">Valor Total</span>
+                        <strong id="detTxAmount" class="text-xl sm:text-2xl font-black mt-0.5 block">R$ 0,00</strong>
+                    </div>
+                    <span id="detTxStatusBadge" class="px-3 py-1.5 rounded-xl text-xs font-extrabold">Pendente</span>
+                </div>
+
+                <!-- Botão deslizante Pagar (estilo Situação de Vencimentos) -->
+                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold text-slate-600 dark:text-slate-300">Pagamento / Efetivação</span>
+                        <span id="detTxPayHint" class="text-[11px] font-bold text-slate-400">Deslize ou toque para quitar</span>
+                    </div>
+                    <div id="detTxPaySwitch" class="grid grid-cols-2 p-1 rounded-xl bg-slate-200/80 dark:bg-slate-900 text-xs font-extrabold select-none">
+                        <button type="button" id="btnDetPayOpen" onclick="setDetailTxPaid(false)" class="py-2.5 rounded-lg transition-all flex items-center justify-center gap-1.5">
+                            <i class="fa-regular fa-clock"></i>Em Aberto
+                        </button>
+                        <button type="button" id="btnDetPayPaid" onclick="setDetailTxPaid(true)" class="py-2.5 rounded-lg transition-all flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-circle-check"></i>Pagar / Quitado
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grade de Informações -->
+                <div class="grid grid-cols-2 gap-2.5 text-xs sm:text-sm">
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60">
+                        <span class="text-[11px] font-bold text-slate-400 block">Situação</span>
+                        <strong id="detTxSituation" class="font-extrabold mt-0.5 block">Pendente</strong>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60">
+                        <span class="text-[11px] font-bold text-slate-400 block">Forma de Pagamento</span>
+                        <strong id="detTxMethod" class="font-extrabold mt-0.5 block">Conta</strong>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60">
+                        <span class="text-[11px] font-bold text-slate-400 block">Data de Lançamento</span>
+                        <strong id="detTxOpDate" class="font-extrabold mt-0.5 block">-</strong>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60">
+                        <span class="text-[11px] font-bold text-slate-400 block">Data de Vencimento</span>
+                        <strong id="detTxDueDate" class="font-extrabold mt-0.5 block">-</strong>
+                    </div>
+                </div>
+
+                <!-- Dias para o vencimento / em atraso -->
+                <div id="detTxDaysBox" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 flex items-center justify-between text-xs sm:text-sm">
+                    <span class="font-bold text-slate-500 dark:text-slate-400">Prazo / Vencimento:</span>
+                    <strong id="detTxDaysText" class="font-extrabold">-</strong>
+                </div>
+
+                <!-- Categoria e Subcategoria -->
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-1 text-xs sm:text-sm">
+                    <span class="text-[11px] font-bold text-slate-400 block">Categoria & Subcategoria</span>
+                    <strong id="detTxCategory" class="font-extrabold block">-</strong>
+                </div>
+
+                <!-- Recorrência e Observações -->
+                <div id="detTxExtraBox" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-1.5 text-xs">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400 font-bold">Modalidade:</span>
+                        <strong id="detTxModality" class="font-extrabold">Única</strong>
+                    </div>
+                    <div id="detTxNotesRow" class="hidden pt-1.5 border-t border-slate-200/70 dark:border-slate-700">
+                        <span class="text-slate-400 font-bold block mb-0.5">Observações:</span>
+                        <p id="detTxNotes" class="text-slate-600 dark:text-slate-300 font-medium"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 flex gap-2 shrink-0">
+                <button type="button" id="btnDetTxEdit" class="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm font-bold">
+                    <i class="fa-solid fa-pen-to-square mr-1.5"></i>Editar
+                </button>
+                <button type="button" id="btnDetTxDelete" class="px-4 py-2.5 rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-400 text-xs sm:text-sm font-bold">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+                <button type="button" onclick="closeModal('modalTxDetails')" class="px-4 py-2.5 rounded-xl theme-btn text-xs sm:text-sm font-bold">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== MODAL: MENU MAIS FERRAMENTAS ==================== -->
     <div id="modalMoreMenu" onclick="if(event.target===this) closeModal('modalMoreMenu')" class="modal-backdrop hidden">
         <div class="modal-sheet">
@@ -982,7 +1127,7 @@
     </div>
 
     <!-- ==================== MODAL: NOVA / EDITAR TRANSAÇÃO ==================== -->
-    <div id="modalTransaction" onclick="if(event.target===this) closeModal('modalTransaction')" class="modal-backdrop hidden">
+    <div id="modalTransaction" onclick="if(event.target===this) closeModal('modalTransaction')" class="modal-backdrop hidden z-[90]">
         <div class="modal-sheet">
             <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
                 <h3 id="txModalTitle" class="text-base font-extrabold">Nova Transação</h3>
@@ -1129,7 +1274,7 @@
     </div>
 
     <!-- ==================== MODAL: ESCOPO DE EDIÇÃO/EXCLUSÃO SÉRIE ==================== -->
-    <div id="modalSeriesScope" onclick="if(event.target===this) closeModal('modalSeriesScope')" class="modal-backdrop hidden">
+    <div id="modalSeriesScope" onclick="if(event.target===this) closeModal('modalSeriesScope')" class="modal-backdrop hidden z-[95]">
         <div class="modal-sheet">
             <div class="p-4 border-b border-slate-100 dark:border-slate-800">
                 <h3 id="seriesScopeTitle" class="text-base font-extrabold">Lançamento Recorrente</h3>
@@ -1149,8 +1294,125 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL: HISTÓRICO DE FATURAS DO CARTÃO ==================== -->
+    <div id="modalCardHistory" onclick="if(event.target===this) closeModal('modalCardHistory')" class="modal-backdrop hidden">
+        <div class="modal-sheet">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div>
+                    <h3 id="histCardTitle" class="text-base font-extrabold">Histórico de Faturas</h3>
+                    <p id="histCardSub" class="text-xs text-white/80">Consolidado mensal por ano</p>
+                </div>
+                <button type="button" onclick="closeModal('modalCardHistory')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-3.5 bg-slate-50 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 shrink-0">
+                <span class="text-xs font-extrabold text-slate-600 dark:text-slate-300">Ano de Referência:</span>
+                <select id="histCardYearSelect" onchange="renderCardHistoryBody()" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-extrabold">
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                    <option value="2030">2030</option>
+                    <option value="2031">2031</option>
+                    <option value="2032">2032</option>
+                    <option value="2033">2033</option>
+                    <option value="2034">2034</option>
+                    <option value="2035">2035</option>
+                </select>
+            </div>
+
+            <div class="px-4 py-2.5 bg-purple-50 dark:bg-purple-950/30 flex items-center justify-between text-xs border-b border-purple-100 dark:border-purple-900/50 shrink-0">
+                <span class="font-bold text-purple-800 dark:text-purple-300">Total no Ano:</span>
+                <strong id="histCardYearTotal" class="text-sm font-black text-purple-700 dark:text-purple-300">R$ 0,00</strong>
+            </div>
+
+            <div id="histCardMonthsList" class="p-4 space-y-2 overflow-y-auto flex-1"></div>
+
+            <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 shrink-0">
+                <button type="button" onclick="closeModal('modalCardHistory')" class="w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-sm font-bold">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: VISÃO GERAL DO CARTÃO (ÚLTIMAS TRANSAÇÕES + EXTRATO / EXPORTAR / IA) ==================== -->
+    <div id="modalCardOverview" onclick="if(event.target===this) closeModal('modalCardOverview')" class="modal-backdrop hidden">
+        <div class="modal-sheet">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div class="min-w-0 pr-2">
+                    <h3 id="ovCardTitle" class="text-base font-extrabold truncate">Cartão de Crédito</h3>
+                    <p id="ovCardSub" class="text-xs text-white/80 truncate"></p>
+                </div>
+                <button type="button" onclick="closeModal('modalCardOverview')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-4 space-y-3.5 overflow-y-auto flex-1">
+                <!-- 3 Cards de Ação: Extrato, Exportar e IA -->
+                <div class="grid grid-cols-3 gap-2">
+                    <button type="button" id="btnOvCardExtract" class="p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200/80 dark:border-purple-800/70 flex flex-col items-center text-center gap-1.5 active:scale-95 transition-transform">
+                        <span class="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center text-sm shadow-sm">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                        </span>
+                        <strong class="text-xs font-extrabold text-purple-900 dark:text-purple-200">Extrato</strong>
+                        <span class="text-[10px] text-purple-600 dark:text-purple-400 leading-tight">Ver Fatura</span>
+                    </button>
+
+                    <button type="button" id="btnOvCardExport" class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/70 flex flex-col items-center text-center gap-1.5 active:scale-95 transition-transform">
+                        <span class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm shadow-sm">
+                            <i class="fa-solid fa-file-excel"></i>
+                        </span>
+                        <strong class="text-xs font-extrabold text-emerald-900 dark:text-emerald-200">Exportar</strong>
+                        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 leading-tight">Planilha Excel</span>
+                    </button>
+
+                    <button type="button" id="btnOvCardAi" class="p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-800/70 flex flex-col items-center text-center gap-1.5 active:scale-95 transition-transform">
+                        <span class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-sm shadow-sm">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </span>
+                        <strong class="text-xs font-extrabold text-indigo-900 dark:text-indigo-200">Análise IA</strong>
+                        <span class="text-[10px] text-indigo-600 dark:text-indigo-400 leading-tight">Dicas & Futuro</span>
+                    </button>
+                </div>
+
+                <!-- Painel Dinâmico de Análise IA do Cartão (oculto até clicar no card IA) -->
+                <div id="ovCardAiPanel" class="hidden p-3.5 rounded-2xl bg-indigo-950 text-white space-y-2.5 border border-indigo-700/60 shadow-md">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold text-indigo-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-robot"></i>Diagnóstico Inteligente do Cartão
+                        </span>
+                        <button type="button" onclick="document.getElementById('ovCardAiPanel').classList.add('hidden')" class="text-xs text-white/60 hover:text-white">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div id="ovCardAiContent" class="space-y-2 text-xs leading-relaxed text-indigo-100"></div>
+                </div>
+
+                <!-- Últimas Transações do Cartão -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-extrabold uppercase text-slate-400">Últimas Transações no Cartão</h4>
+                        <span id="ovCardTxCount" class="text-[11px] font-bold text-slate-400">0 itens</span>
+                    </div>
+                    <div id="ovCardRecentList" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 flex gap-2 shrink-0">
+                <button type="button" id="btnOvCardNewTx" class="flex-1 py-2.5 rounded-xl theme-btn text-xs sm:text-sm font-bold">
+                    <i class="fa-solid fa-plus mr-1.5"></i>Nova Compra
+                </button>
+                <button type="button" onclick="closeModal('modalCardOverview')" class="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs sm:text-sm font-bold">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== MODAL: DETALHES DA FATURA DO CARTÃO ==================== -->
-    <div id="modalCardInvoice" onclick="if(event.target===this) closeModal('modalCardInvoice')" class="modal-backdrop hidden">
+    <div id="modalCardInvoice" onclick="if(event.target===this) closeModal('modalCardInvoice')" class="modal-backdrop hidden z-[70]">
         <div class="modal-sheet">
             <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
                 <div>
@@ -1229,6 +1491,64 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL: TRANSAÇÕES DA CATEGORIA ==================== -->
+    <div id="modalCategoryTransactions" onclick="if(event.target===this) closeModal('modalCategoryTransactions')" class="modal-backdrop hidden">
+        <div class="modal-sheet">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                    <span id="catTxModalIconBox" class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-sm shrink-0">
+                        <i id="catTxModalIcon" class="fa-solid fa-tag"></i>
+                    </span>
+                    <div class="min-w-0">
+                        <h3 id="catTxModalTitle" class="text-base font-extrabold truncate">Categoria</h3>
+                        <p id="catTxModalSub" class="text-xs text-white/80 truncate">Lançamentos do período</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeModal('modalCategoryTransactions')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="px-4 py-3 bg-slate-50 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs sm:text-sm shrink-0">
+                <span class="font-bold text-slate-500">Total na Categoria:</span>
+                <strong id="catTxModalTotal" class="text-base font-black">R$ 0,00</strong>
+            </div>
+
+            <div id="catTxModalList" class="p-4 space-y-2.5 overflow-y-auto flex-1"></div>
+
+            <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 flex gap-2 shrink-0">
+                <button type="button" id="btnCatTxAddNew" class="flex-1 py-2.5 rounded-xl theme-btn text-xs sm:text-sm font-bold">
+                    <i class="fa-solid fa-plus mr-1.5"></i>Novo Lançamento
+                </button>
+                <button type="button" onclick="closeModal('modalCategoryTransactions')" class="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs sm:text-sm font-bold">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: CONFIRMAÇÃO DE EXCLUSÃO ==================== -->
+    <div id="modalConfirmDelete" onclick="if(event.target===this) closeModal('modalConfirmDelete')" class="modal-backdrop hidden z-[100]">
+        <div class="modal-sheet max-w-sm">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
+                <span class="w-10 h-10 rounded-xl bg-rose-500/15 text-rose-600 flex items-center justify-center text-base shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </span>
+                <div>
+                    <h3 id="confirmDelTitle" class="text-base font-extrabold">Confirmar Exclusão</h3>
+                    <p class="text-xs text-slate-400">Esta ação não poderá ser desfeita</p>
+                </div>
+            </div>
+            <div class="p-4 space-y-4">
+                <p id="confirmDelMessage" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed"></p>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeModal('modalConfirmDelete')" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs sm:text-sm font-bold">Cancelar</button>
+                    <button type="button" id="btnConfirmDelProceed" class="flex-1 py-2.5 rounded-xl bg-rose-600 text-white text-xs sm:text-sm font-bold shadow-sm">
+                        <i class="fa-solid fa-trash-can mr-1.5"></i>Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== MODAL: GERENCIAR CATEGORIAS ==================== -->
     <div id="modalCategoryManager" onclick="if(event.target===this) closeModal('modalCategoryManager')" class="modal-backdrop hidden">
         <div class="modal-sheet">
@@ -1240,8 +1560,10 @@
             </div>
             <div class="p-4 space-y-4 overflow-y-auto flex-1">
                 <!-- Nova / Editar Categoria -->
-                <form onsubmit="handleSaveCategory(event)" class="space-y-2.5 pb-4 border-b border-slate-200 dark:border-slate-800">
+                <form onsubmit="handleSaveCategory(event)" class="space-y-3 pb-4 border-b border-slate-200 dark:border-slate-800">
                     <input type="hidden" id="editCatId">
+                    <input type="hidden" id="catColorInput" value="#10b981">
+                    <input type="hidden" id="catIconInput" value="fa-tag">
                     <h4 class="text-xs font-extrabold uppercase text-slate-400">Categoria Principal</h4>
                     <div class="grid grid-cols-2 gap-2">
                         <input type="text" id="catNameInput" required placeholder="Nome da Categoria" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
@@ -1251,21 +1573,43 @@
                             <option value="investment">Investimento</option>
                         </select>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <input type="number" step="0.01" min="0" id="catBudgetInput" placeholder="Meta Mensal (R$)" class="flex-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                        <input type="color" id="catColorInput" value="#10b981" class="w-11 h-10 rounded-xl cursor-pointer">
-                        <button type="submit" class="px-4 py-2.5 rounded-xl theme-btn text-sm font-bold">Salvar</button>
+                    <div>
+                        <input type="number" step="0.01" min="0" id="catBudgetInput" placeholder="Meta Mensal (R$)" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                     </div>
+
+                    <!-- Seletor de 40 Cores Pré-definidas -->
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-500">Cor da Categoria (40 opções)</label>
+                        <div id="catColorsPaletteGrid" class="grid grid-cols-10 gap-1.5 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700"></div>
+                    </div>
+
+                    <!-- Seletor de 100 Ícones de Orçamento Pessoal -->
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-slate-500">Ícone da Categoria (100 opções)</label>
+                            <span id="catSelectedIconPreview" class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs" style="background:#10b981">
+                                <i class="fa-solid fa-tag"></i>
+                            </span>
+                        </div>
+                        <div id="catIconsPaletteGrid" class="grid grid-cols-10 gap-1.5 max-h-36 overflow-y-auto p-2 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700"></div>
+                    </div>
+
+                    <button type="submit" class="w-full py-2.5 rounded-xl theme-btn text-sm font-bold">Salvar Categoria</button>
                 </form>
 
-                <!-- Nova Subcategoria -->
+                <!-- Nova / Editar Subcategoria -->
                 <form onsubmit="handleSaveSubcategory(event)" class="space-y-2 pb-4 border-b border-slate-200 dark:border-slate-800">
-                    <h4 class="text-xs font-extrabold uppercase text-slate-400">Nova Subcategoria</h4>
+                    <input type="hidden" id="editSubCatId">
+                    <input type="hidden" id="editSubId">
+                    <div class="flex items-center justify-between">
+                        <h4 id="subFormHeading" class="text-xs font-extrabold uppercase text-slate-400">Nova Subcategoria</h4>
+                        <button type="button" id="btnCancelSubEdit" onclick="resetSubcategoryForm()" class="hidden text-xs font-bold text-rose-500">Cancelar edição</button>
+                    </div>
                     <div class="grid grid-cols-2 gap-2">
                         <select id="subParentCatSelect" required class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"></select>
                         <input type="text" id="subNameInput" required placeholder="Nome da Subcategoria" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                     </div>
-                    <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-800 dark:bg-slate-700 text-white text-sm font-bold">Adicionar Subcategoria</button>
+                    <button type="submit" id="btnSaveSubSubmit" class="w-full py-2.5 rounded-xl bg-slate-800 dark:bg-slate-700 text-white text-sm font-bold">Adicionar Subcategoria</button>
                 </form>
 
                 <div id="catManagerList" class="space-y-2.5"></div>
@@ -1512,6 +1856,27 @@ function doGet(e) {
             { id: 'bank_c6', name: 'C6 Bank', icon: 'fa-c', bg: '#242424', color: '#ffffff' }
         ];
 
+        const CATEGORY_COLORS_40 = [
+            '#ef4444', '#dc2626', '#f97316', '#ea580c', '#f59e0b', '#d97706', '#eab308', '#ca8a04',
+            '#84cc16', '#65a30d', '#22c55e', '#16a34a', '#10b981', '#059669', '#14b8a6', '#0d9488',
+            '#06b6d4', '#0891b2', '#0ea5e9', '#0284c7', '#3b82f6', '#2563eb', '#6366f1', '#4f46e5',
+            '#8b5cf6', '#7c3aed', '#a855f7', '#9333ea', '#d946ef', '#c026d3', '#ec4899', '#db2777',
+            '#f43f5e', '#e11d48', '#78716c', '#57534e', '#64748b', '#475569', '#0f766e', '#1e293b'
+        ];
+
+        const CATEGORY_ICONS_100 = [
+            'fa-house', 'fa-building', 'fa-key', 'fa-couch', 'fa-bed', 'fa-bath', 'fa-kitchen-set', 'fa-faucet-drip', 'fa-bolt', 'fa-fire-flame-simple',
+            'fa-wifi', 'fa-tv', 'fa-mobile-screen', 'fa-laptop', 'fa-computer', 'fa-print', 'fa-plug', 'fa-lightbulb', 'fa-screwdriver-wrench', 'fa-hammer',
+            'fa-paint-roller', 'fa-broom', 'fa-soap', 'fa-shirt', 'fa-socks', 'fa-glasses', 'fa-bag-shopping', 'fa-cart-shopping', 'fa-basket-shopping', 'fa-store',
+            'fa-utensils', 'fa-burger', 'fa-pizza-slice', 'fa-mug-hot', 'fa-beer-mug-empty', 'fa-wine-glass', 'fa-cake-candles', 'fa-ice-cream', 'fa-apple-whole', 'fa-carrot',
+            'fa-car', 'fa-car-side', 'fa-gas-pump', 'fa-oil-can', 'fa-motorcycle', 'fa-bicycle', 'fa-bus', 'fa-train-subway', 'fa-taxi', 'fa-plane',
+            'fa-road', 'fa-parking', 'fa-wrench', 'fa-heart-pulse', 'fa-stethoscope', 'fa-pills', 'fa-syringe', 'fa-hospital', 'fa-tooth', 'fa-eye',
+            'fa-brain', 'fa-dumbbell', 'fa-person-running', 'fa-spa', 'fa-scissors', 'fa-graduation-cap', 'fa-book', 'fa-book-open', 'fa-pencil', 'fa-school',
+            'fa-baby', 'fa-baby-carriage', 'fa-child', 'fa-dog', 'fa-cat', 'fa-paw', 'fa-gamepad', 'fa-film', 'fa-music', 'fa-headphones',
+            'fa-camera', 'fa-ticket', 'fa-umbrella-beach', 'fa-campground', 'fa-gift', 'fa-hand-holding-dollar', 'fa-sack-dollar', 'fa-money-bill-wave', 'fa-coins', 'fa-wallet',
+            'fa-credit-card', 'fa-piggy-bank', 'fa-chart-line', 'fa-vault', 'fa-landmark', 'fa-file-invoice-dollar', 'fa-receipt', 'fa-percent', 'fa-scale-balanced', 'fa-tag'
+        ];
+
         const DEFAULT_CATEGORIES = [
             { id: 'cat_salario', name: 'Salário & Rendas', icon: 'fa-hand-holding-dollar', color: '#10b981', budget: 0, type: 'income', hidden: false, subcategories: [{ id: 'sub_sal_fixo', name: 'Salário Fixo', hidden: false }, { id: 'sub_extras', name: 'Extras / Freelance', hidden: false }] },
             { id: 'cat_investimentos', name: 'Investimentos', icon: 'fa-piggy-bank', color: '#6366f1', budget: 1500, type: 'investment', hidden: false, subcategories: [{ id: 'sub_rf', name: 'Renda Fixa / CDB', hidden: false }, { id: 'sub_acoes', name: 'Ações & FIIs', hidden: false }] },
@@ -1575,12 +1940,22 @@ function doGet(e) {
 
         function openModal(id) {
             const el = document.getElementById(id);
-            if (el) el.classList.remove('hidden');
+            if (!el) return;
+            clearTimeout(el._closeTimer);
+            el.classList.remove('closing');
+            el.classList.remove('hidden');
         }
 
         function closeModal(id) {
             const el = document.getElementById(id);
-            if (el) el.classList.add('hidden');
+            if (!el || el.classList.contains('hidden')) return;
+            if (el.classList.contains('closing')) return;
+            el.classList.add('closing');
+            clearTimeout(el._closeTimer);
+            el._closeTimer = setTimeout(() => {
+                el.classList.add('hidden');
+                el.classList.remove('closing');
+            }, 190);
         }
 
         function getStorageKey(base, pid = null) {
@@ -1725,7 +2100,14 @@ function doGet(e) {
 
         function applyDarkMode() {
             document.documentElement.classList.toggle('dark', appState.darkMode);
-            document.getElementById('darkModeIcon').className = appState.darkMode ? 'fa-solid fa-sun text-sm' : 'fa-solid fa-moon text-sm';
+            const icon = document.getElementById('darkModeIcon');
+            if (icon) icon.className = appState.darkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            const btnIcon = document.getElementById('darkModeBtnIcon');
+            if (btnIcon) btnIcon.className = appState.darkMode ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon text-amber-500';
+            const btnLabel = document.getElementById('darkModeBtnLabel');
+            if (btnLabel) btnLabel.textContent = appState.darkMode ? 'Modo Claro' : 'Modo Escuro';
+            const subLabel = document.getElementById('darkModeSubtitle');
+            if (subLabel) subLabel.textContent = appState.darkMode ? 'Modo Escuro ativado' : 'Modo Claro ativado';
         }
 
         function applyColorTheme(themeId) {
@@ -2310,7 +2692,11 @@ function doGet(e) {
                 if (fRec === 'variable' && (t.isFixed || (Number(t.totalInstallments) || 1) > 1)) return false;
 
                 return true;
-            }).sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || ''));
+            }).sort((a, b) => {
+                // Em aberto primeiro (ordenados por vencimento), depois quitados no final (também em ordem de vencimento)
+                if (!!a.paid !== !!b.paid) return a.paid ? 1 : -1;
+                return (a.dueDate || '').localeCompare(b.dueDate || '');
+            });
 
             document.getElementById('txCountLabel').textContent = `${list.length} lançamento(s)`;
 
@@ -2339,7 +2725,7 @@ function doGet(e) {
                 const methodTxt = t.paymentMethod === 'card' ? (cardObj ? cardObj.name : 'Cartão') : (t.paymentMethod === 'wallet' ? 'Carteira' : 'Conta');
 
                 return `
-                    <div class="app-card p-4 space-y-2.5 ${t.paid ? 'opacity-80' : ''}">
+                    <div onclick="openTxDetailsModal('${t.id}')" class="app-card p-4 space-y-2.5 cursor-pointer active:scale-[0.99] ${t.paid ? 'opacity-45 bg-white/60 dark:bg-slate-900/50' : ''}">
                         <div class="flex items-start justify-between gap-2.5">
                             <div class="flex items-center gap-3 min-w-0">
                                 <span class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm shrink-0" style="background:${cat ? cat.color : '#64748b'}">
@@ -2365,7 +2751,7 @@ function doGet(e) {
                                 ${(Number(t.totalInstallments) || 1) > 1 ? `<span class="px-2.5 py-1 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold">${t.currentInstallment}/${t.totalInstallments}</span>` : ''}
                             </div>
 
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2" onclick="event.stopPropagation()">
                                 <button type="button" onclick="toggleTxPaid('${t.id}')" class="px-3 py-1 rounded-lg font-bold ${t.paid ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300' : 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300'}">
                                     ${t.paid ? 'Quitado' : 'Aberto'}
                                 </button>
@@ -2380,6 +2766,146 @@ function doGet(e) {
                     </div>
                 `;
             }).join('');
+        }
+
+        let activeDetailTxId = null;
+
+        function openTxDetailsModal(id) {
+            const tx = appState.transactions.find(t => t.id === id);
+            if (!tx) return;
+            activeDetailTxId = id;
+
+            const cat = appState.categories.find(c => c.id === tx.categoryId);
+            const sub = cat && cat.subcategories ? cat.subcategories.find(s => s.id === tx.subcategoryId) : null;
+            const isPos = tx.type === 'income' || isWithdrawal(tx) || tx.isRefund;
+            const cardObj = tx.paymentMethod === 'card' ? appState.creditCards.find(c => c.id === tx.cardId) : null;
+            const methodTxt = tx.paymentMethod === 'card' ? `Cartão (${cardObj ? cardObj.name : 'Cartão'})` : (tx.paymentMethod === 'wallet' ? 'Carteira (Dinheiro)' : 'Conta Corrente');
+
+            document.getElementById('detTxTitle').textContent = tx.description || 'Lançamento';
+            document.getElementById('detTxSubtitle').textContent = tx.type === 'income' ? 'Receita / Entrada' : (tx.type === 'investment' ? 'Investimento' : (tx.type === 'transfer' ? 'Transferência' : 'Despesa / Saída'));
+
+            const amtEl = document.getElementById('detTxAmount');
+            amtEl.textContent = `${isPos ? '+ ' : '- '}${fmtBRL(tx.amount)}`;
+            amtEl.className = `text-xl sm:text-2xl font-black mt-0.5 block ${isPos ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
+
+            const badgeEl = document.getElementById('detTxStatusBadge');
+            const sitEl = document.getElementById('detTxSituation');
+            if (tx.paid) {
+                badgeEl.textContent = 'Efetivada';
+                badgeEl.className = 'px-3 py-1.5 rounded-xl text-xs font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300';
+                sitEl.textContent = 'Efetivada (Paga)';
+                sitEl.className = 'font-extrabold mt-0.5 block text-emerald-600 dark:text-emerald-400';
+            } else {
+                badgeEl.textContent = 'Pendente';
+                badgeEl.className = 'px-3 py-1.5 rounded-xl text-xs font-extrabold bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300';
+                sitEl.textContent = 'Pendente (Em Aberto)';
+                sitEl.className = 'font-extrabold mt-0.5 block text-amber-600 dark:text-amber-400';
+            }
+
+            // Estilo do botão deslizante Pagar (estilo Situação de Vencimentos)
+            const btnOpen = document.getElementById('btnDetPayOpen');
+            const btnPaid = document.getElementById('btnDetPayPaid');
+            const hintEl = document.getElementById('detTxPayHint');
+            if (tx.paid) {
+                btnOpen.className = 'py-2.5 rounded-lg text-slate-500 transition-all flex items-center justify-center gap-1.5';
+                btnPaid.className = 'py-2.5 rounded-lg bg-emerald-600 text-white shadow-sm transition-all flex items-center justify-center gap-1.5';
+                hintEl.textContent = 'Conta quitada (toque à esquerda para reabrir)';
+            } else {
+                btnOpen.className = 'py-2.5 rounded-lg bg-white dark:bg-slate-700 text-amber-600 dark:text-amber-300 shadow-sm transition-all flex items-center justify-center gap-1.5';
+                btnPaid.className = 'py-2.5 rounded-lg text-slate-500 transition-all flex items-center justify-center gap-1.5';
+                hintEl.textContent = 'Conta em aberto (toque à direita para quitar)';
+            }
+
+            document.getElementById('detTxMethod').textContent = methodTxt;
+            const opFmt = (tx.operationDate || tx.dueDate) ? (tx.operationDate || tx.dueDate).split('-').reverse().join('/') : '-';
+            const dueFmt = tx.dueDate ? tx.dueDate.split('-').reverse().join('/') : '-';
+            document.getElementById('detTxOpDate').textContent = opFmt;
+            document.getElementById('detTxDueDate').textContent = dueFmt;
+
+            // Cálculo de dias para vencimento ou atraso
+            const daysEl = document.getElementById('detTxDaysText');
+            if (tx.dueDate && tx.dueDate.includes('-')) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const [y, m, d] = tx.dueDate.split('-').map(Number);
+                const dueDt = new Date(y, m - 1, d);
+                const diffDays = Math.round((dueDt - today) / 86400000);
+
+                if (tx.paid) {
+                    daysEl.textContent = 'Quitada no prazo / concluída';
+                    daysEl.className = 'font-extrabold text-emerald-600 dark:text-emerald-400';
+                } else if (diffDays < 0) {
+                    const atraso = Math.abs(diffDays);
+                    daysEl.textContent = `${atraso} ${atraso === 1 ? 'dia' : 'dias'} em atraso`;
+                    daysEl.className = 'font-extrabold text-rose-600 dark:text-rose-400';
+                } else if (diffDays === 0) {
+                    daysEl.textContent = 'Vence hoje!';
+                    daysEl.className = 'font-extrabold text-amber-600 dark:text-amber-400';
+                } else {
+                    daysEl.textContent = `Faltam ${diffDays} ${diffDays === 1 ? 'dia' : 'dias'}`;
+                    daysEl.className = 'font-extrabold text-slate-700 dark:text-slate-200';
+                }
+            } else {
+                daysEl.textContent = '-';
+                daysEl.className = 'font-extrabold';
+            }
+
+            document.getElementById('detTxCategory').textContent = `${cat ? cat.name : 'Geral'}${sub ? '  ›  ' + sub.name : ''}`;
+
+            let modTxt = 'Única';
+            if (tx.isFixed) modTxt = 'Fixa Mensal';
+            else if ((Number(tx.totalInstallments) || 1) > 1) modTxt = `Parcelada (${tx.currentInstallment}/${tx.totalInstallments})`;
+            document.getElementById('detTxModality').textContent = modTxt;
+
+            const notesRow = document.getElementById('detTxNotesRow');
+            if (tx.notes && tx.notes.trim()) {
+                notesRow.classList.remove('hidden');
+                document.getElementById('detTxNotes').textContent = tx.notes;
+            } else {
+                notesRow.classList.add('hidden');
+            }
+
+            document.getElementById('btnDetTxEdit').onclick = () => {
+                closeModal('modalTxDetails');
+                openEditTxModal(tx.id);
+            };
+            document.getElementById('btnDetTxDelete').onclick = () => {
+                closeModal('modalTxDetails');
+                deleteTxPrompt(tx.id);
+            };
+
+            openModal('modalTxDetails');
+        }
+
+        function syncOpenStackedModals() {
+            const catModal = document.getElementById('modalCategoryTransactions');
+            if (catModal && !catModal.classList.contains('hidden') && activeCategoryModalId) {
+                openCategoryTransactionsModal(activeCategoryModalId);
+            }
+            const invModal = document.getElementById('modalCardInvoice');
+            if (invModal && !invModal.classList.contains('hidden') && activeInvoiceContext) {
+                openCardInvoiceModal(activeInvoiceContext.cardId, activeInvoiceContext.year, activeInvoiceContext.month);
+            }
+            const histModal = document.getElementById('modalCardHistory');
+            if (histModal && !histModal.classList.contains('hidden') && activeHistoryCardId) {
+                renderCardHistoryBody();
+            }
+            const dayModal = document.getElementById('modalDayDetails');
+            if (dayModal && !dayModal.classList.contains('hidden') && activeDayModalInfo) {
+                openDayModal(activeDayModalInfo.day, activeDayModalInfo.dIso);
+            }
+        }
+
+        function setDetailTxPaid(paidState) {
+            if (!activeDetailTxId) return;
+            const tx = appState.transactions.find(t => t.id === activeDetailTxId);
+            if (!tx || !!tx.paid === !!paidState) return;
+            tx.paid = !!paidState;
+            saveState();
+            refreshAll();
+            syncOpenStackedModals();
+            openTxDetailsModal(activeDetailTxId);
+            toast(tx.paid ? 'Conta quitada!' : 'Conta marcada como em aberto!');
         }
 
         function toggleTxPaid(id) {
@@ -2422,11 +2948,14 @@ function doGet(e) {
             onRecurrenceChange();
 
             const now = new Date();
+            const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             const y = appState.selectedYear;
             const m = appState.selectedMonth !== 'ALL' ? Number(appState.selectedMonth) : now.getMonth();
-            const dStr = customDate || `${y}-${String(m + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-            document.getElementById('txOpDateInput').value = dStr;
-            document.getElementById('txDueDateInput').value = dStr;
+            const maxDay = new Date(y, m + 1, 0).getDate();
+            const defaultPeriodIso = `${y}-${String(m + 1).padStart(2, '0')}-${String(Math.min(now.getDate(), maxDay)).padStart(2, '0')}`;
+
+            document.getElementById('txOpDateInput').value = customDate ? todayIso : defaultPeriodIso;
+            document.getElementById('txDueDateInput').value = customDate || defaultPeriodIso;
 
             populateCardSelect();
             setFormTxType(type);
@@ -2722,16 +3251,35 @@ function doGet(e) {
                 const pct = limit > 0 ? Math.min(100, (comm / limit) * 100) : 0;
 
                 return `
-                    <div class="app-card p-3 sm:p-4 flex flex-col justify-between space-y-2.5">
+                    <div onclick="openCardOverviewModal('${c.id}')" class="app-card p-3 sm:p-4 flex flex-col justify-between space-y-2.5 relative cursor-pointer active:scale-[0.99]">
                         <div class="space-y-1.5">
-                            <div class="flex items-center justify-between gap-1.5">
+                            <div class="flex items-center justify-between gap-1">
                                 <div class="flex items-center gap-1.5 min-w-0">
                                     <span class="w-3 h-3 rounded-full shrink-0" style="background:${c.color}"></span>
                                     <h3 class="text-sm sm:text-base font-extrabold truncate">${c.name}</h3>
                                 </div>
-                                <span class="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shrink-0 ${cPend > 0 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'}">
-                                    ${cPend > 0 ? 'Aberto' : 'Pago'}
-                                </span>
+                                <div onclick="event.stopPropagation()" class="flex items-center gap-0.5 shrink-0 relative">
+                                    <button type="button" onclick="openNewTxForCard('${c.id}')" aria-label="Nova despesa neste cartão" title="Nova despesa neste cartão" class="w-7 h-7 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center theme-text">
+                                        <i class="fa-solid fa-plus text-xs"></i>
+                                    </button>
+                                    <button type="button" onclick="toggleCardOptionsMenu('${c.id}', event)" aria-label="Mais opções do cartão" class="w-7 h-7 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-300">
+                                        <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+                                    </button>
+                                    <div id="cardMenu_${c.id}" class="card-options-menu hidden absolute right-0 top-8 z-30 w-44 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl py-1.5 text-xs font-bold">
+                                        <button type="button" onclick="closeAllCardMenus(); openCardInvoiceModal('${c.id}')" class="w-full px-3.5 py-2.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 text-slate-700 dark:text-slate-200">
+                                            <i class="fa-solid fa-file-invoice-dollar text-purple-600 w-4"></i>
+                                            <span>Fatura (${cTxs.length})</span>
+                                        </button>
+                                        <button type="button" onclick="closeAllCardMenus(); openCardHistoryModal('${c.id}')" class="w-full px-3.5 py-2.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                                            <i class="fa-solid fa-clock-rotate-left w-4"></i>
+                                            <span>Histórico de Faturas</span>
+                                        </button>
+                                        <button type="button" onclick="closeAllCardMenus(); reopenCardInvoice('${c.id}')" ${cPaid === 0 ? 'disabled' : ''} class="w-full px-3.5 py-2.5 text-left flex items-center gap-2 ${cPaid > 0 ? 'hover:bg-slate-100 dark:hover:bg-slate-700 text-amber-600 dark:text-amber-400' : 'opacity-40 cursor-not-allowed text-slate-400'}">
+                                            <i class="fa-solid fa-lock-open w-4"></i>
+                                            <span>Abrir Fatura</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                             <p class="text-[11px] sm:text-xs text-slate-400">Fecha dia ${c.closingDay} • Vence ${c.dueDay}</p>
                         </div>
@@ -2741,22 +3289,33 @@ function doGet(e) {
                                 <span class="text-[11px] font-bold text-slate-500 block">Fatura Atual</span>
                                 <strong class="text-base sm:text-lg font-black text-purple-700 dark:text-purple-300 block truncate">${fmtBRL(cInv)}</strong>
                             </div>
-                            <div class="pt-1 border-t border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-[11px] sm:text-xs">
-                                <span class="text-slate-500 font-semibold">Disp.:</span>
-                                <strong class="font-extrabold text-emerald-600 truncate">${fmtBRL(avail)}</strong>
+                            <div class="pt-1 border-t border-slate-200/70 dark:border-slate-700 space-y-1 text-[11px] sm:text-xs">
+                                <div class="flex items-center justify-between gap-1">
+                                    <span class="text-slate-500 font-semibold">Limite:</span>
+                                    <strong class="font-extrabold text-slate-700 dark:text-slate-200 truncate">${fmtBRL(limit)}</strong>
+                                </div>
+                                <div class="flex items-center justify-between gap-1">
+                                    <span class="text-slate-500 font-semibold">Disp.:</span>
+                                    <strong class="font-extrabold text-emerald-600 truncate">${fmtBRL(avail)}</strong>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-                            <div class="h-full rounded-full" style="width:${pct}%; background:${c.color}"></div>
+                        <div class="space-y-1">
+                            <div class="w-full h-3 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                                <div class="h-full rounded-full" style="width:${pct}%; background:${c.color}"></div>
+                            </div>
+                            <div class="flex justify-end">
+                                <span class="text-[10px] font-bold text-slate-400">${Math.round(pct)}% usado</span>
+                            </div>
                         </div>
 
-                        <div class="flex flex-col sm:flex-row gap-1.5 pt-0.5">
-                            <button type="button" onclick="openCardInvoiceModal('${c.id}')" class="flex-1 py-2 px-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-center">
-                                Fatura (${cTxs.length})
-                            </button>
-                            <button type="button" onclick="payCardInvoice('${c.id}')" ${cPend === 0 ? 'disabled' : ''} class="flex-1 py-2 px-2 rounded-xl ${cPend > 0 ? 'bg-emerald-600 text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-400'} text-xs font-bold text-center">
-                                Quitar
+                        <div onclick="event.stopPropagation()" class="pt-0.5 flex items-center justify-between gap-1.5">
+                            <span class="px-2 py-1 rounded-full text-[10px] sm:text-xs font-bold shrink-0 ${cPend > 0 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'}">
+                                ${cPend > 0 ? 'Aberto' : 'Pago'}
+                            </span>
+                            <button type="button" onclick="payCardInvoice('${c.id}')" ${cPend === 0 ? 'disabled' : ''} class="flex-1 py-1.5 px-2 rounded-xl ${cPend > 0 ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-200 dark:bg-slate-800 text-slate-400'} text-[10px] sm:text-xs font-bold text-center leading-tight">
+                                ${cPend > 0 ? 'Registrar Pagamento' : 'Quitada'}
                             </button>
                         </div>
                     </div>
@@ -2764,10 +3323,296 @@ function doGet(e) {
             }).join('');
         }
 
-        function openCardInvoiceModal(cardId) {
+        function openNewTxForCard(cardId) {
+            openNewTxModal('expense');
+            setFormPayMethod('card');
+            const sel = document.getElementById('txCardSelect');
+            if (sel && cardId) {
+                sel.value = cardId;
+                onTxCardChange();
+            }
+        }
+
+        let activeHistoryCardId = null;
+
+        function openCardHistoryModal(cardId) {
             const card = appState.creditCards.find(c => c.id === cardId);
             if (!card) return;
-            const txs = getPeriodTxs().filter(t => t.paymentMethod === 'card' && (t.cardId || appState.creditCards[0]?.id) === cardId);
+            activeHistoryCardId = cardId;
+            document.getElementById('histCardTitle').textContent = `Histórico • ${card.name}`;
+            document.getElementById('histCardSub').textContent = `Fecha dia ${card.closingDay} • Vence dia ${card.dueDay}`;
+            document.getElementById('histCardYearSelect').value = String(appState.selectedYear);
+            renderCardHistoryBody();
+            openModal('modalCardHistory');
+        }
+
+        function renderCardHistoryBody() {
+            if (!activeHistoryCardId) return;
+            const year = Number(document.getElementById('histCardYearSelect').value);
+            const cardTxs = appState.transactions.filter(t =>
+                t.paymentMethod === 'card' &&
+                (t.cardId || appState.creditCards[0]?.id) === activeHistoryCardId &&
+                Number(t.year) === year
+            );
+
+            let yearTotal = 0;
+            const listHtml = MONTHS.map((mName, mIdx) => {
+                const mTxs = cardTxs.filter(t => Number(t.month) === mIdx);
+                let exp = 0, ref = 0, pend = 0;
+                mTxs.forEach(t => {
+                    const amt = Number(t.amount) || 0;
+                    if (t.type === 'expense') {
+                        exp += amt;
+                        if (!t.paid) pend += amt;
+                    } else if (t.isRefund) {
+                        ref += amt;
+                    }
+                });
+                const net = Math.max(0, exp - ref);
+                yearTotal += net;
+
+                const statusBadge = net === 0
+                    ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/70 dark:bg-slate-700 text-slate-500">Sem fatura</span>'
+                    : (pend > 0
+                        ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">Aberta</span>'
+                        : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Quitada</span>');
+
+                return `
+                    <button type="button" onclick="jumpToCardMonthInvoice('${activeHistoryCardId}', ${year}, ${mIdx})" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between text-left transition-colors">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xs font-extrabold">
+                                ${mName.slice(0, 3)}
+                            </span>
+                            <div>
+                                <strong class="block text-xs sm:text-sm font-extrabold">${mName}</strong>
+                                <span class="text-[11px] text-slate-400">${mTxs.length} lançamento(s)</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            ${statusBadge}
+                            <strong class="text-xs sm:text-sm font-black ${net > 0 ? 'text-purple-700 dark:text-purple-300' : 'text-slate-400'}">${fmtBRL(net)}</strong>
+                        </div>
+                    </button>
+                `;
+            }).join('');
+
+            document.getElementById('histCardYearTotal').textContent = fmtBRL(yearTotal);
+            document.getElementById('histCardMonthsList').innerHTML = listHtml;
+        }
+
+        function jumpToCardMonthInvoice(cardId, year, month) {
+            openCardInvoiceModal(cardId, year, month);
+        }
+
+        function openCardOverviewModal(cardId) {
+            const card = appState.creditCards.find(c => c.id === cardId);
+            if (!card) return;
+
+            const commMap = calcCardCommittedLimits();
+            const limit = Number(card.limit) || 0;
+            const comm = commMap[card.id] || 0;
+            const avail = Math.max(0, limit - comm);
+
+            document.getElementById('ovCardTitle').textContent = card.name;
+            document.getElementById('ovCardSub').textContent = `Limite: ${fmtBRL(limit)} • Disponível: ${fmtBRL(avail)}`;
+            document.getElementById('ovCardAiPanel').classList.add('hidden');
+
+            document.getElementById('btnOvCardExtract').onclick = () => {
+                closeModal('modalCardOverview');
+                openCardInvoiceModal(cardId);
+            };
+            document.getElementById('btnOvCardExport').onclick = () => exportCardExcel(cardId);
+            document.getElementById('btnOvCardAi').onclick = () => toggleCardAiAnalysis(cardId);
+            document.getElementById('btnOvCardNewTx').onclick = () => {
+                closeModal('modalCardOverview');
+                openNewTxForCard(cardId);
+            };
+
+            const allCardTxs = appState.transactions
+                .filter(t => t.paymentMethod === 'card' && (t.cardId || appState.creditCards[0]?.id) === cardId)
+                .sort((a, b) => (b.operationDate || b.dueDate || '').localeCompare(a.operationDate || a.dueDate || ''));
+
+            const recent = allCardTxs.slice(0, 12);
+            document.getElementById('ovCardTxCount').textContent = `${allCardTxs.length} total`;
+
+            const listEl = document.getElementById('ovCardRecentList');
+            if (recent.length === 0) {
+                listEl.innerHTML = '<div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 text-center text-xs text-slate-400">Nenhuma transação registrada neste cartão.</div>';
+            } else {
+                listEl.innerHTML = recent.map(t => {
+                    const cat = appState.categories.find(c => c.id === t.categoryId);
+                    const dtFmt = (t.operationDate || t.dueDate) ? (t.operationDate || t.dueDate).split('-').reverse().join('/') : '-';
+                    return `
+                        <div onclick="closeModal('modalCardOverview'); openTxDetailsModal('${t.id}')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 flex items-center justify-between gap-2 cursor-pointer">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <span class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs shrink-0" style="background:${cat ? cat.color : '#8b5cf6'}">
+                                    <i class="fa-solid ${cat ? (cat.icon || 'fa-credit-card') : 'fa-credit-card'}"></i>
+                                </span>
+                                <div class="min-w-0">
+                                    <strong class="block text-xs sm:text-sm font-extrabold truncate">${t.description}</strong>
+                                    <span class="text-[11px] text-slate-400">${dtFmt} • ${cat ? cat.name : 'Geral'}${(Number(t.totalInstallments) || 1) > 1 ? ` (${t.currentInstallment}/${t.totalInstallments})` : ''}</span>
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <strong class="block text-xs sm:text-sm font-black ${t.isRefund ? 'text-emerald-600' : 'text-purple-700 dark:text-purple-300'}">
+                                    ${t.isRefund ? '+ ' : ''}${fmtBRL(t.amount)}
+                                </strong>
+                                <span class="text-[10px] font-bold ${t.paid ? 'text-emerald-600' : 'text-amber-600'}">${t.paid ? 'Quitado' : 'Aberto'}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            openModal('modalCardOverview');
+        }
+
+        function exportCardExcel(cardId) {
+            if (typeof XLSX === 'undefined') {
+                toast('Biblioteca Excel indisponível offline.');
+                return;
+            }
+            const card = appState.creditCards.find(c => c.id === cardId);
+            const cardName = card ? card.name : 'Cartao';
+            const cardTxs = appState.transactions
+                .filter(t => t.paymentMethod === 'card' && (t.cardId || appState.creditCards[0]?.id) === cardId)
+                .sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || ''));
+
+            if (cardTxs.length === 0) {
+                toast('Não há transações neste cartão para exportar.');
+                return;
+            }
+
+            const rows = cardTxs.map(t => {
+                const cat = appState.categories.find(c => c.id === t.categoryId);
+                const sub = cat && cat.subcategories ? cat.subcategories.find(s => s.id === t.subcategoryId) : null;
+                return {
+                    'Cartão': cardName,
+                    'Descrição': t.description,
+                    'Categoria': cat ? cat.name : 'Geral',
+                    'Subcategoria': sub ? sub.name : '',
+                    'Data Compra': t.operationDate || t.dueDate,
+                    'Vencimento Fatura': t.dueDate,
+                    'Parcela': (Number(t.totalInstallments) || 1) > 1 ? `${t.currentInstallment}/${t.totalInstallments}` : 'À vista',
+                    'Tipo': t.isRefund ? 'Estorno/Crédito' : 'Compra',
+                    'Valor (R$)': Number(t.amount) || 0,
+                    'Status': t.paid ? 'Quitado' : 'Em Aberto'
+                };
+            });
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(rows);
+            XLSX.utils.book_append_sheet(wb, ws, cardName.slice(0, 30));
+            XLSX.writeFile(wb, `Transacoes-${cardName.replace(/\s+/g, '_')}-${new Date().toISOString().slice(0, 10)}.xlsx`);
+            toast(`Excel do cartão ${cardName} exportado!`);
+        }
+
+        function toggleCardAiAnalysis(cardId) {
+            const panel = document.getElementById('ovCardAiPanel');
+            if (!panel.classList.contains('hidden')) {
+                panel.classList.add('hidden');
+                return;
+            }
+
+            const card = appState.creditCards.find(c => c.id === cardId);
+            if (!card) return;
+
+            const periodTxs = getPeriodTxs().filter(t => t.paymentMethod === 'card' && (t.cardId || appState.creditCards[0]?.id) === cardId);
+            let currentInv = 0, fixedAmt = 0, instAmt = 0, varAmt = 0;
+            const catSpend = {};
+
+            periodTxs.forEach(t => {
+                const amt = Number(t.amount) || 0;
+                if (t.type === 'expense') {
+                    currentInv += amt;
+                    catSpend[t.categoryId] = (catSpend[t.categoryId] || 0) + amt;
+                    if (t.isFixed) fixedAmt += amt;
+                    else if ((Number(t.totalInstallments) || 1) > 1) instAmt += amt;
+                    else varAmt += amt;
+                } else if (t.isRefund) {
+                    currentInv -= amt;
+                }
+            });
+            currentInv = Math.max(0, currentInv);
+
+            // Categoria campeã de gastos no cartão
+            let topCatName = 'Nenhuma', topCatVal = 0;
+            Object.entries(catSpend).forEach(([cid, val]) => {
+                if (val > topCatVal) {
+                    topCatVal = val;
+                    const cObj = appState.categories.find(x => x.id === cid);
+                    topCatName = cObj ? cObj.name : 'Geral';
+                }
+            });
+
+            // Faturas futuras comprometidas (meses posteriores ao período atual)
+            const yRef = Number(appState.selectedYear);
+            const mRef = appState.selectedMonth !== 'ALL' ? Number(appState.selectedMonth) : new Date().getMonth();
+            let futureTotal = 0, futureCount = 0;
+            appState.transactions.forEach(t => {
+                if (t.paymentMethod !== 'card' || (t.cardId || appState.creditCards[0]?.id) !== cardId) return;
+                if (t.type !== 'expense' || t.paid) return;
+                const ty = Number(t.year), tm = Number(t.month);
+                if (ty > yRef || (ty === yRef && tm > mRef)) {
+                    futureTotal += Number(t.amount) || 0;
+                    futureCount++;
+                }
+            });
+
+            const limit = Number(card.limit) || 0;
+            const commMap = calcCardCommittedLimits();
+            const comm = commMap[card.id] || 0;
+            const usagePct = limit > 0 ? Math.round((comm / limit) * 100) : 0;
+
+            const tips = [];
+            if (usagePct >= 70) {
+                tips.push(`⚠️ Uso elevado de limite (${usagePct}% comprometido). Evite novas parcelas até amortizar faturas.`);
+            } else if (usagePct > 0) {
+                tips.push(`✅ Limite saudável (${usagePct}% comprometido). Mantenha o uso abaixo de 30%-40% para preservar seu score.`);
+            }
+            if (instAmt > currentInv * 0.5 && currentInv > 0) {
+                tips.push(`📌 ${Math.round((instAmt / currentInv) * 100)}% desta fatura vem de compras parceladas (${fmtBRL(instAmt)}). Priorize compras à vista com desconto.`);
+            }
+            if (topCatVal > 0) {
+                const topShare = currentInv > 0 ? Math.round((topCatVal / currentInv) * 100) : 0;
+                tips.push(`🏷️ Maior concentração em **${topCatName}** (${fmtBRL(topCatVal)} • ${topShare}% da fatura).`);
+            }
+            tips.push(`📅 Melhor dia de compra: a partir do dia **${card.closingDay}** (fechamento) para ganhar até 40 dias de prazo.`);
+
+            document.getElementById('ovCardAiContent').innerHTML = `
+                <div class="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-white/10">
+                    <div>
+                        <span class="text-[10px] text-indigo-300 block">Fatura Analisada</span>
+                        <strong class="text-sm font-black text-white">${fmtBRL(currentInv)}</strong>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-indigo-300 block">Faturas Futuras</span>
+                        <strong class="text-sm font-black text-amber-300">${fmtBRL(futureTotal)} (${futureCount})</strong>
+                    </div>
+                </div>
+                <div class="space-y-1.5 pt-1">
+                    ${tips.map(tip => `<p>${tip.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')}</p>`).join('')}
+                </div>
+            `;
+
+            panel.classList.remove('hidden');
+        }
+
+        let activeInvoiceContext = null;
+
+        function openCardInvoiceModal(cardId, customYear = null, customMonth = null) {
+            const card = appState.creditCards.find(c => c.id === cardId);
+            if (!card) return;
+            activeInvoiceContext = { cardId, year: customYear, month: customMonth };
+
+            const targetYear = customYear !== null ? Number(customYear) : Number(appState.selectedYear);
+            const targetMonth = customMonth !== null ? String(customMonth) : String(appState.selectedMonth);
+
+            const txs = appState.transactions.filter(t => {
+                const matchY = Number(t.year) === targetYear;
+                const matchM = targetMonth === 'ALL' || String(t.month) === targetMonth;
+                return matchY && matchM && t.paymentMethod === 'card' && (t.cardId || appState.creditCards[0]?.id) === cardId;
+            });
 
             let exp = 0, ref = 0, paid = 0, pend = 0;
             txs.forEach(t => {
@@ -2776,27 +3621,39 @@ function doGet(e) {
                 else if (t.isRefund) ref += amt;
             });
 
-            document.getElementById('invModalTitle').textContent = `Fatura • ${card.name}`;
+            const periodLabel = targetMonth === 'ALL' ? `Ano ${targetYear}` : `${MONTHS[Number(targetMonth)]}/${targetYear}`;
+            document.getElementById('invModalTitle').textContent = `Fatura • ${card.name} (${periodLabel})`;
             document.getElementById('invModalSubtitle').textContent = `${txs.length} lançamento(s) • Vencimento dia ${card.dueDay}`;
             document.getElementById('invModalTotal').textContent = fmtBRL(Math.max(0, exp - ref));
             document.getElementById('invModalPaid').textContent = fmtBRL(paid);
             document.getElementById('invModalPending').textContent = fmtBRL(pend);
 
             const btnPay = document.getElementById('btnPayWholeInvoice');
-            btnPay.onclick = () => { payCardInvoice(cardId); openCardInvoiceModal(cardId); };
+            btnPay.onclick = () => {
+                let cnt = 0;
+                txs.forEach(t => {
+                    if (t.type === 'expense' && !t.paid) { t.paid = true; cnt++; }
+                });
+                if (cnt > 0) {
+                    saveState();
+                    refreshAll();
+                    toast(`${cnt} lançamento(s) da fatura quitados!`);
+                }
+                openCardInvoiceModal(cardId, customYear, customMonth);
+            };
 
             const listEl = document.getElementById('invModalItemsList');
             listEl.innerHTML = txs.length === 0
                 ? '<p class="text-center text-sm text-slate-400 py-6">Nenhum lançamento nesta fatura.</p>'
                 : txs.map(t => `
-                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 flex items-center justify-between gap-2 text-xs sm:text-sm">
+                    <div onclick="openTxDetailsModal('${t.id}')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 flex items-center justify-between gap-2 text-xs sm:text-sm cursor-pointer active:scale-[0.99] ${t.paid ? 'opacity-65' : ''}">
                         <div class="min-w-0">
                             <strong class="block font-bold truncate">${t.description}</strong>
                             <span class="text-xs text-slate-400">${t.dueDate ? t.dueDate.split('-').reverse().join('/') : ''}</span>
                         </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <strong class="${t.isRefund ? 'text-emerald-600' : ''}">${t.isRefund ? '+ ' : ''}${fmtBRL(t.amount)}</strong>
-                            <button type="button" onclick="toggleTxPaid('${t.id}'); openCardInvoiceModal('${cardId}')" class="px-2.5 py-1 rounded-lg text-xs font-bold ${t.paid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                        <div class="flex items-center gap-2 shrink-0" onclick="event.stopPropagation()">
+                            <strong onclick="openTxDetailsModal('${t.id}')" class="${t.isRefund ? 'text-emerald-600' : ''}">${t.isRefund ? '+ ' : ''}${fmtBRL(t.amount)}</strong>
+                            <button type="button" onclick="toggleTxPaid('${t.id}'); openCardInvoiceModal('${cardId}', ${customYear === null ? 'null' : targetYear}, ${customMonth === null ? 'null' : `'${targetMonth}'`})" class="px-2.5 py-1 rounded-lg text-xs font-bold ${t.paid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
                                 ${t.paid ? 'Pago' : 'Aberto'}
                             </button>
                         </div>
@@ -2805,6 +3662,23 @@ function doGet(e) {
 
             openModal('modalCardInvoice');
         }
+
+        function closeAllCardMenus() {
+            document.querySelectorAll('.card-options-menu').forEach(el => el.classList.add('hidden'));
+        }
+
+        function toggleCardOptionsMenu(cardId, event) {
+            if (event) event.stopPropagation();
+            const menu = document.getElementById(`cardMenu_${cardId}`);
+            if (!menu) return;
+            const isHidden = menu.classList.contains('hidden');
+            closeAllCardMenus();
+            if (isHidden) menu.classList.remove('hidden');
+        }
+
+        document.addEventListener('click', () => {
+            closeAllCardMenus();
+        });
 
         function payCardInvoice(cardId) {
             let cnt = 0;
@@ -2818,6 +3692,23 @@ function doGet(e) {
                 saveState();
                 refreshAll();
                 toast(`${cnt} lançamento(s) da fatura quitados!`);
+            }
+        }
+
+        function reopenCardInvoice(cardId) {
+            let cnt = 0;
+            getPeriodTxs().forEach(t => {
+                if (t.paymentMethod === 'card' && (t.cardId || appState.creditCards[0]?.id) === cardId && t.type === 'expense' && t.paid) {
+                    t.paid = false;
+                    cnt++;
+                }
+            });
+            if (cnt > 0) {
+                saveState();
+                refreshAll();
+                toast(`Fatura reaberta (${cnt} lançamento(s) em aberto)!`);
+            } else {
+                toast('Não há lançamentos quitados nesta fatura.');
             }
         }
 
@@ -3192,19 +4083,34 @@ function doGet(e) {
             document.getElementById('calDaysGrid').innerHTML = cells;
         }
 
+        let activeDayModalInfo = null;
+
         function openDayModal(day, dIso) {
+            activeDayModalInfo = { day, dIso };
             document.getElementById('dayModalTitle').textContent = `Dia ${dIso.split('-').reverse().join('/')}`;
             const items = appState.transactions.filter(t => t.dueDate === dIso);
             document.getElementById('dayModalSub').textContent = `${items.length} lançamento(s)`;
 
             document.getElementById('dayModalList').innerHTML = items.length === 0
                 ? '<p class="text-center text-sm text-slate-400 py-6">Nenhum vencimento neste dia.</p>'
-                : items.map(t => `
-                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-between text-sm">
-                        <strong class="truncate pr-2">${t.description}</strong>
-                        <strong class="${t.type === 'income' ? 'text-emerald-600' : 'text-rose-600'} shrink-0">${fmtBRL(t.amount)}</strong>
-                    </div>
-                `).join('');
+                : items.map(t => {
+                    const cat = appState.categories.find(c => c.id === t.categoryId);
+                    const isPos = t.type === 'income' || isWithdrawal(t) || t.isRefund;
+                    return `
+                        <div onclick="openTxDetailsModal('${t.id}')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-between gap-2 text-sm cursor-pointer active:scale-[0.99] ${t.paid ? 'opacity-60' : ''}">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <span class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs shrink-0" style="background:${cat ? cat.color : '#64748b'}">
+                                    <i class="fa-solid ${cat ? (cat.icon || 'fa-tag') : 'fa-receipt'}"></i>
+                                </span>
+                                <div class="min-w-0">
+                                    <strong class="block truncate ${t.paid ? 'line-through text-slate-400' : ''}">${t.description}</strong>
+                                    <span class="text-[11px] text-slate-400">${cat ? cat.name : 'Geral'} • ${t.paid ? 'Quitado' : 'Em aberto'}</span>
+                                </div>
+                            </div>
+                            <strong class="${isPos ? 'text-emerald-600' : 'text-rose-600'} shrink-0">${isPos ? '+ ' : '- '}${fmtBRL(t.amount)}</strong>
+                        </div>
+                    `;
+                }).join('');
 
             document.getElementById('btnAddTxOnDay').onclick = () => {
                 closeModal('modalDayDetails');
@@ -3254,18 +4160,23 @@ function doGet(e) {
                 const subs = (c.subcategories || []).filter(s => appState.showHiddenCats || !s.hidden);
 
                 return `
-                    <div class="app-card p-4 space-y-2.5 ${c.hidden ? 'opacity-65 border-dashed' : ''}">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm" style="background:${c.color}">
+                    <div onclick="openCategoryTransactionsModal('${c.id}')" class="app-card p-4 space-y-2.5 cursor-pointer active:scale-[0.99] ${c.hidden ? 'opacity-65 border-dashed' : ''}">
+                        <div class="flex items-start justify-between gap-2.5">
+                            <div class="flex items-start gap-3 min-w-0">
+                                <span class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm shrink-0 mt-0.5" style="background:${c.color}">
                                     <i class="fa-solid ${c.icon || 'fa-tag'}"></i>
                                 </span>
-                                <div>
-                                    <h3 class="text-sm sm:text-base font-extrabold">${c.name}</h3>
-                                    <span class="text-xs text-slate-400">Meta: ${budget > 0 ? fmtBRL(budget) : 'Sem meta'}</span>
+                                <div class="min-w-0">
+                                    <h3 class="text-sm sm:text-base font-extrabold truncate">${c.name}</h3>
+                                    <strong class="block text-base sm:text-lg font-black mt-0.5">${fmtBRL(spent)}</strong>
+                                    <span class="block text-xs text-slate-400 mt-0.5">Meta: ${budget > 0 ? fmtBRL(budget) : 'Sem meta'}</span>
                                 </div>
                             </div>
-                            <strong class="text-base sm:text-lg font-black">${fmtBRL(spent)}</strong>
+                            <div onclick="event.stopPropagation()" class="shrink-0">
+                                <button type="button" onclick="openCategoryManagerModal('${c.id}')" class="px-3.5 py-2 rounded-xl theme-btn text-xs sm:text-sm font-bold shadow-sm">
+                                    <i class="fa-solid fa-gear mr-1"></i>Gerir
+                                </button>
+                            </div>
                         </div>
 
                         ${budget > 0 ? `
@@ -3289,31 +4200,160 @@ function doGet(e) {
             }).join('');
         }
 
-        function openCategoryManagerModal() {
+        let activeCategoryModalId = null;
+
+        function openCategoryTransactionsModal(catId) {
+            const cat = appState.categories.find(c => c.id === catId);
+            if (!cat) return;
+            activeCategoryModalId = catId;
+
+            const txs = getPeriodTxs()
+                .filter(t => t.categoryId === catId)
+                .sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || ''));
+
+            const total = txs.reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+            const periodStr = appState.selectedMonth === 'ALL' ? `Ano ${appState.selectedYear}` : `${MONTHS[Number(appState.selectedMonth)]} / ${appState.selectedYear}`;
+
+            document.getElementById('catTxModalTitle').textContent = cat.name;
+            document.getElementById('catTxModalSub').textContent = `${periodStr} • ${txs.length} lançamento(s)`;
+            document.getElementById('catTxModalIcon').className = `fa-solid ${cat.icon || 'fa-tag'}`;
+            document.getElementById('catTxModalIconBox').style.backgroundColor = cat.color || 'rgba(255,255,255,0.2)';
+            document.getElementById('catTxModalTotal').textContent = fmtBRL(total);
+
+            const listEl = document.getElementById('catTxModalList');
+            if (txs.length === 0) {
+                listEl.innerHTML = '<p class="text-center text-sm text-slate-400 py-8">Nenhum lançamento nesta categoria no período.</p>';
+            } else {
+                listEl.innerHTML = txs.map(t => {
+                    const sub = cat.subcategories ? cat.subcategories.find(s => s.id === t.subcategoryId) : null;
+                    const dueFmt = t.dueDate ? t.dueDate.split('-').reverse().join('/') : '-';
+                    const cardObj = t.paymentMethod === 'card' ? appState.creditCards.find(c => c.id === t.cardId) : null;
+                    const methodTxt = t.paymentMethod === 'card' ? (cardObj ? cardObj.name : 'Cartão') : (t.paymentMethod === 'wallet' ? 'Carteira' : 'Conta');
+                    return `
+                        <div onclick="openTxDetailsModal('${t.id}')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 flex items-center justify-between gap-2.5 cursor-pointer active:scale-[0.99] ${t.paid ? 'opacity-60' : ''}">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <span class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs shrink-0" style="background:${cat.color}">
+                                    <i class="fa-solid ${cat.icon || 'fa-tag'}"></i>
+                                </span>
+                                <div class="min-w-0">
+                                    <strong class="block text-xs sm:text-sm font-extrabold truncate">${t.description}</strong>
+                                    <span class="text-[11px] text-slate-400 block truncate">${dueFmt} • ${methodTxt}${sub ? ' • ' + sub.name : ''}</span>
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <strong class="block text-xs sm:text-sm font-black ${t.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">${fmtBRL(t.amount)}</strong>
+                                <span class="text-[10px] font-bold ${t.paid ? 'text-emerald-600' : 'text-amber-600'}">${t.paid ? 'Quitado' : 'Aberto'}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            document.getElementById('btnCatTxAddNew').onclick = () => {
+                closeModal('modalCategoryTransactions');
+                openNewTxModal(cat.type === 'income' ? 'income' : (cat.type === 'investment' ? 'investment' : 'expense'));
+                const catSel = document.getElementById('txCatSelect');
+                if (catSel) {
+                    catSel.value = cat.id;
+                    onFormCatChange();
+                }
+            };
+
+            openModal('modalCategoryTransactions');
+        }
+
+        function renderCategoryColorAndIconPickers() {
+            const selectedColor = document.getElementById('catColorInput').value || '#10b981';
+            const selectedIcon = document.getElementById('catIconInput').value || 'fa-tag';
+
+            const preview = document.getElementById('catSelectedIconPreview');
+            if (preview) {
+                preview.style.backgroundColor = selectedColor;
+                preview.innerHTML = `<i class="fa-solid ${selectedIcon}"></i>`;
+            }
+
+            const colorsGrid = document.getElementById('catColorsPaletteGrid');
+            if (colorsGrid) {
+                colorsGrid.innerHTML = CATEGORY_COLORS_40.map(hex => `
+                    <button type="button" onclick="selectCategoryColor('${hex}')" aria-label="Cor ${hex}" class="w-6 h-6 rounded-full mx-auto transition-transform ${selectedColor.toLowerCase() === hex.toLowerCase() ? 'ring-2 ring-offset-2 ring-slate-900 dark:ring-white scale-110' : 'hover:scale-105'}" style="background:${hex}"></button>
+                `).join('');
+            }
+
+            const iconsGrid = document.getElementById('catIconsPaletteGrid');
+            if (iconsGrid) {
+                iconsGrid.innerHTML = CATEGORY_ICONS_100.map(ic => `
+                    <button type="button" onclick="selectCategoryIcon('${ic}')" aria-label="Ícone ${ic}" class="w-7 h-7 rounded-lg flex items-center justify-center text-xs transition-all ${selectedIcon === ic ? 'text-white shadow-sm scale-105' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700'}" style="${selectedIcon === ic ? `background:${selectedColor}` : ''}">
+                        <i class="fa-solid ${ic}"></i>
+                    </button>
+                `).join('');
+            }
+        }
+
+        function selectCategoryColor(hex) {
+            document.getElementById('catColorInput').value = hex;
+            renderCategoryColorAndIconPickers();
+        }
+
+        function selectCategoryIcon(ic) {
+            document.getElementById('catIconInput').value = ic;
+            renderCategoryColorAndIconPickers();
+        }
+
+        function openCategoryManagerModal(preselectCatId = null) {
             document.getElementById('editCatId').value = '';
             document.getElementById('catNameInput').value = '';
             document.getElementById('catBudgetInput').value = '';
+            document.getElementById('catColorInput').value = '#10b981';
+            document.getElementById('catIconInput').value = 'fa-tag';
             document.getElementById('subParentCatSelect').innerHTML = appState.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            renderCategoryColorAndIconPickers();
             renderCatManagerList();
+            if (preselectCatId) {
+                editCatItem(preselectCatId);
+                document.getElementById('subParentCatSelect').value = preselectCatId;
+            }
             openModal('modalCategoryManager');
         }
 
         function renderCatManagerList() {
-            document.getElementById('catManagerList').innerHTML = appState.categories.map(c => `
-                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-between text-xs sm:text-sm">
-                    <div class="flex items-center gap-2.5">
-                        <span class="w-3.5 h-3.5 rounded-full" style="background:${c.color}"></span>
-                        <div>
-                            <strong class="block font-bold ${c.hidden ? 'line-through text-slate-400' : ''}">${c.name}</strong>
-                            <span class="text-xs text-slate-400">Meta: ${fmtBRL(c.budget)}</span>
+            document.getElementById('catManagerList').innerHTML = appState.categories.map(c => {
+                const subs = c.subcategories || [];
+                return `
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 space-y-2 text-xs sm:text-sm">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <span class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs shrink-0" style="background:${c.color}">
+                                    <i class="fa-solid ${c.icon || 'fa-tag'}"></i>
+                                </span>
+                                <div class="min-w-0">
+                                    <strong class="block font-bold truncate ${c.hidden ? 'line-through text-slate-400' : ''}">${c.name}</strong>
+                                    <span class="text-xs text-slate-400">Meta: ${fmtBRL(c.budget)}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1 shrink-0">
+                                <button type="button" onclick="editCatItem('${c.id}')" title="Editar categoria" class="p-1.5 text-slate-400 hover:text-emerald-600"><i class="fa-solid fa-pen"></i></button>
+                                <button type="button" onclick="toggleCatHidden('${c.id}')" title="${c.hidden ? 'Mostrar categoria' : 'Ocultar categoria'}" class="p-1.5 text-amber-500"><i class="fa-solid ${c.hidden ? 'fa-eye' : 'fa-eye-slash'}"></i></button>
+                                <button type="button" onclick="confirmDeleteCategory('${c.id}')" title="Excluir categoria" class="p-1.5 text-rose-500 hover:text-rose-600"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
                         </div>
+
+                        ${subs.length > 0 ? `
+                            <div class="pl-4 ml-3 border-l-2 border-slate-200 dark:border-slate-700 space-y-1.5 pt-1">
+                                ${subs.map(s => `
+                                    <div class="flex items-center justify-between gap-2 py-1 px-2 rounded-lg bg-white/70 dark:bg-slate-900/50 text-xs">
+                                        <span class="truncate font-semibold ${s.hidden ? 'line-through text-slate-400' : 'text-slate-600 dark:text-slate-300'}">└ ${s.name}</span>
+                                        <div class="flex items-center gap-1 shrink-0">
+                                            <button type="button" onclick="editSubItem('${c.id}', '${s.id}')" title="Editar subcategoria" class="p-1 text-slate-400 hover:text-emerald-600"><i class="fa-solid fa-pen"></i></button>
+                                            <button type="button" onclick="toggleSubHidden('${c.id}', '${s.id}')" title="${s.hidden ? 'Mostrar subcategoria' : 'Ocultar subcategoria'}" class="p-1 text-amber-500"><i class="fa-solid ${s.hidden ? 'fa-eye' : 'fa-eye-slash'}"></i></button>
+                                            <button type="button" onclick="confirmDeleteSubcategory('${c.id}', '${s.id}')" title="Excluir subcategoria" class="p-1 text-rose-500 hover:text-rose-600"><i class="fa-solid fa-trash-can"></i></button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
                     </div>
-                    <div class="flex gap-1.5">
-                        <button type="button" onclick="editCatItem('${c.id}')" class="p-1.5 text-slate-400"><i class="fa-solid fa-pen"></i></button>
-                        <button type="button" onclick="toggleCatHidden('${c.id}')" class="p-1.5 text-amber-500"><i class="fa-solid ${c.hidden ? 'fa-eye' : 'fa-eye-slash'}"></i></button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function editCatItem(id) {
@@ -3324,6 +4364,8 @@ function doGet(e) {
             document.getElementById('catTypeInput').value = c.type;
             document.getElementById('catBudgetInput').value = c.budget || '';
             document.getElementById('catColorInput').value = c.color || '#10b981';
+            document.getElementById('catIconInput').value = c.icon || 'fa-tag';
+            renderCategoryColorAndIconPickers();
         }
 
         function handleSaveCategory(e) {
@@ -3333,35 +4375,82 @@ function doGet(e) {
                 name: document.getElementById('catNameInput').value.trim(),
                 type: document.getElementById('catTypeInput').value,
                 budget: parseFloat(document.getElementById('catBudgetInput').value) || 0,
-                color: document.getElementById('catColorInput').value
+                color: document.getElementById('catColorInput').value || '#10b981',
+                icon: document.getElementById('catIconInput').value || 'fa-tag'
             };
             if (id) {
                 const c = appState.categories.find(x => x.id === id);
                 if (c) Object.assign(c, data);
             } else {
-                appState.categories.push({ id: 'cat_' + Date.now(), icon: 'fa-tag', hidden: false, subcategories: [], ...data });
+                appState.categories.push({ id: 'cat_' + Date.now(), hidden: false, subcategories: [], ...data });
             }
             document.getElementById('editCatId').value = '';
             document.getElementById('catNameInput').value = '';
             document.getElementById('catBudgetInput').value = '';
+            document.getElementById('catColorInput').value = '#10b981';
+            document.getElementById('catIconInput').value = 'fa-tag';
+            document.getElementById('subParentCatSelect').innerHTML = appState.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
             saveState();
+            renderCategoryColorAndIconPickers();
             renderCatManagerList();
             refreshAll();
             toast('Categoria salva!');
         }
 
+        function resetSubcategoryForm() {
+            document.getElementById('editSubCatId').value = '';
+            document.getElementById('editSubId').value = '';
+            document.getElementById('subNameInput').value = '';
+            document.getElementById('subFormHeading').textContent = 'Nova Subcategoria';
+            document.getElementById('btnSaveSubSubmit').textContent = 'Adicionar Subcategoria';
+            document.getElementById('btnCancelSubEdit').classList.add('hidden');
+        }
+
+        function editSubItem(catId, subId) {
+            const cat = appState.categories.find(c => c.id === catId);
+            if (!cat || !cat.subcategories) return;
+            const sub = cat.subcategories.find(s => s.id === subId);
+            if (!sub) return;
+            document.getElementById('editSubCatId').value = catId;
+            document.getElementById('editSubId').value = subId;
+            document.getElementById('subParentCatSelect').value = catId;
+            document.getElementById('subNameInput').value = sub.name;
+            document.getElementById('subFormHeading').textContent = 'Editar Subcategoria';
+            document.getElementById('btnSaveSubSubmit').textContent = 'Salvar Subcategoria';
+            document.getElementById('btnCancelSubEdit').classList.remove('hidden');
+        }
+
         function handleSaveSubcategory(e) {
             e.preventDefault();
-            const pid = document.getElementById('subParentCatSelect').value;
+            const targetCatId = document.getElementById('subParentCatSelect').value;
             const name = document.getElementById('subNameInput').value.trim();
-            const cat = appState.categories.find(c => c.id === pid);
-            if (!cat || !name) return;
-            if (!cat.subcategories) cat.subcategories = [];
-            cat.subcategories.push({ id: 'sub_' + Date.now(), name, hidden: false });
-            document.getElementById('subNameInput').value = '';
+            const origCatId = document.getElementById('editSubCatId').value;
+            const editSubId = document.getElementById('editSubId').value;
+            const targetCat = appState.categories.find(c => c.id === targetCatId);
+            if (!targetCat || !name) return;
+            if (!targetCat.subcategories) targetCat.subcategories = [];
+
+            if (editSubId && origCatId) {
+                const origCat = appState.categories.find(c => c.id === origCatId);
+                const subObj = origCat && origCat.subcategories ? origCat.subcategories.find(s => s.id === editSubId) : null;
+                if (subObj) {
+                    subObj.name = name;
+                    if (origCatId !== targetCatId) {
+                        origCat.subcategories = origCat.subcategories.filter(s => s.id !== editSubId);
+                        targetCat.subcategories.push(subObj);
+                    }
+                }
+                resetSubcategoryForm();
+                toast('Subcategoria atualizada!');
+            } else {
+                targetCat.subcategories.push({ id: 'sub_' + Date.now(), name, hidden: false });
+                document.getElementById('subNameInput').value = '';
+                toast('Subcategoria adicionada!');
+            }
+
             saveState();
+            renderCatManagerList();
             refreshAll();
-            toast('Subcategoria adicionada!');
         }
 
         function toggleCatHidden(id) {
@@ -3371,6 +4460,52 @@ function doGet(e) {
             saveState();
             renderCatManagerList();
             refreshAll();
+        }
+
+        function toggleSubHidden(catId, subId) {
+            const cat = appState.categories.find(c => c.id === catId);
+            if (!cat || !cat.subcategories) return;
+            const sub = cat.subcategories.find(s => s.id === subId);
+            if (!sub) return;
+            sub.hidden = !sub.hidden;
+            saveState();
+            renderCatManagerList();
+            refreshAll();
+        }
+
+        function confirmDeleteCategory(catId) {
+            const cat = appState.categories.find(c => c.id === catId);
+            if (!cat) return;
+            document.getElementById('confirmDelTitle').textContent = 'Excluir Categoria';
+            document.getElementById('confirmDelMessage').innerHTML = `Deseja realmente excluir a categoria <strong>"${cat.name}"</strong> e todas as suas subcategorias?`;
+            document.getElementById('btnConfirmDelProceed').onclick = () => {
+                appState.categories = appState.categories.filter(c => c.id !== catId);
+                document.getElementById('subParentCatSelect').innerHTML = appState.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                saveState();
+                renderCatManagerList();
+                refreshAll();
+                closeModal('modalConfirmDelete');
+                toast('Categoria excluída!');
+            };
+            openModal('modalConfirmDelete');
+        }
+
+        function confirmDeleteSubcategory(catId, subId) {
+            const cat = appState.categories.find(c => c.id === catId);
+            if (!cat || !cat.subcategories) return;
+            const sub = cat.subcategories.find(s => s.id === subId);
+            if (!sub) return;
+            document.getElementById('confirmDelTitle').textContent = 'Excluir Subcategoria';
+            document.getElementById('confirmDelMessage').innerHTML = `Deseja realmente excluir a subcategoria <strong>"${sub.name}"</strong>?`;
+            document.getElementById('btnConfirmDelProceed').onclick = () => {
+                cat.subcategories = cat.subcategories.filter(s => s.id !== subId);
+                saveState();
+                renderCatManagerList();
+                refreshAll();
+                closeModal('modalConfirmDelete');
+                toast('Subcategoria excluída!');
+            };
+            openModal('modalConfirmDelete');
         }
 
         // ==================== SINCRONIZAÇÃO NUVEM & EXPORTAÇÃO ====================
