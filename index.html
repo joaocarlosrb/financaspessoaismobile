@@ -809,8 +809,8 @@
                 <button type="button" onclick="togglePrivacy()" aria-label="Ocultar valores" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300">
                     <i id="privacyIcon" class="fa-regular fa-eye text-sm"></i>
                 </button>
-                <button type="button" onclick="syncSaveToCloud()" aria-label="Salvar na nuvem" title="Salvar no Google Drive" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-blue-600 dark:text-blue-400 active:scale-95 transition-transform">
-                    <i class="fa-solid fa-floppy-disk text-sm"></i>
+                <button type="button" onclick="toggleDarkMode()" aria-label="Alternar tema" title="Alternar Modo Claro / Escuro" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-amber-500 dark:text-amber-400 active:scale-95 transition-transform">
+                    <i id="headerDarkModeIcon" class="fa-solid fa-moon text-sm"></i>
                 </button>
             </div>
         </div>
@@ -1511,58 +1511,55 @@
                 <div id="calDaysGrid" class="grid grid-cols-7 gap-1.5"></div>
             </div>
 
-            <!-- Relatório Financeiro do Dia de Hoje -->
-            <div class="app-card p-4 space-y-3">
-                <div class="flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <span class="w-9 h-9 rounded-xl theme-btn flex items-center justify-center text-sm shrink-0 shadow-sm">
-                            <i class="fa-solid fa-calendar-day"></i>
-                        </span>
+            <!-- Relatório Financeiro do Dia de Hoje (Layout Limpo sem Card) -->
+            <div class="pt-2 px-1 space-y-2.5">
+                <div class="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-200/80 dark:border-slate-800">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <i class="fa-solid fa-calendar-day theme-text text-sm shrink-0"></i>
                         <div class="min-w-0">
-                            <h3 class="text-sm sm:text-base font-extrabold truncate">Relatório Financeiro de Hoje</h3>
-                            <p id="calTodayReportDate" class="text-xs text-slate-500 dark:text-slate-400 truncate">Resumo do dia atual</p>
+                            <h3 class="text-xs sm:text-sm font-extrabold uppercase tracking-wide text-slate-600 dark:text-slate-300 truncate">Relatório Financeiro de Hoje</h3>
+                            <p id="calTodayReportDate" class="text-[11px] text-slate-400 truncate">Resumo do dia atual</p>
                         </div>
                     </div>
-                    <button type="button" id="btnCalTodayDetails" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-extrabold theme-text shrink-0">
-                        Ver Dia
+                    <button type="button" id="btnCalTodayDetails" class="px-2.5 py-1 rounded-lg text-xs font-extrabold theme-text hover:bg-slate-200/60 dark:hover:bg-slate-800 shrink-0">
+                        Ver Dia ›
                     </button>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2.5">
-                    <div class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/35 border border-emerald-200/70 dark:border-emerald-800/60">
-                        <div class="flex items-center justify-between text-emerald-700 dark:text-emerald-300 text-xs font-bold">
-                            <span>Receitas</span>
-                            <i class="fa-solid fa-arrow-trend-up"></i>
+                <div class="divide-y divide-slate-200/70 dark:divide-slate-800/80 text-xs sm:text-sm">
+                    <div class="py-2.5 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+                            <span class="font-bold text-slate-700 dark:text-slate-200">Receitas</span>
+                            <span id="calTodayIncomeCnt" class="text-[11px] text-slate-400">(0)</span>
                         </div>
-                        <strong id="calTodayIncome" class="block text-base sm:text-lg font-black text-emerald-700 dark:text-emerald-300 mt-1 truncate">R$ 0,00</strong>
-                        <span id="calTodayIncomeCnt" class="block text-[11px] font-semibold text-emerald-600/80 dark:text-emerald-400/80 mt-0.5">0 lançamentos</span>
+                        <strong id="calTodayIncome" class="font-black text-emerald-600 dark:text-emerald-400 shrink-0">R$ 0,00</strong>
                     </div>
 
-                    <div class="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/35 border border-rose-200/70 dark:border-rose-800/60">
-                        <div class="flex items-center justify-between text-rose-700 dark:text-rose-300 text-xs font-bold">
-                            <span>Despesas</span>
-                            <i class="fa-solid fa-arrow-trend-down"></i>
+                    <div class="py-2.5 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0"></span>
+                            <span class="font-bold text-slate-700 dark:text-slate-200">Despesas</span>
+                            <span id="calTodayExpenseCnt" class="text-[11px] text-slate-400">(0)</span>
                         </div>
-                        <strong id="calTodayExpense" class="block text-base sm:text-lg font-black text-rose-700 dark:text-rose-300 mt-1 truncate">R$ 0,00</strong>
-                        <span id="calTodayExpenseCnt" class="block text-[11px] font-semibold text-rose-600/80 dark:text-rose-400/80 mt-0.5">0 lançamentos</span>
+                        <strong id="calTodayExpense" class="font-black text-rose-600 dark:text-rose-400 shrink-0">R$ 0,00</strong>
                     </div>
 
-                    <div class="p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/35 border border-purple-200/70 dark:border-purple-800/60">
-                        <div class="flex items-center justify-between text-purple-700 dark:text-purple-300 text-xs font-bold">
-                            <span>Cartões de Crédito</span>
-                            <i class="fa-solid fa-credit-card"></i>
+                    <div class="py-2.5 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-2.5 h-2.5 rounded-full bg-purple-500 shrink-0"></span>
+                            <span class="font-bold text-slate-700 dark:text-slate-200">Cartões de Crédito</span>
+                            <span id="calTodayCardsCnt" class="text-[11px] text-slate-400">(0)</span>
                         </div>
-                        <strong id="calTodayCards" class="block text-base sm:text-lg font-black text-purple-700 dark:text-purple-300 mt-1 truncate">R$ 0,00</strong>
-                        <span id="calTodayCardsCnt" class="block text-[11px] font-semibold text-purple-600/80 dark:text-purple-400/80 mt-0.5">0 lançamentos</span>
+                        <strong id="calTodayCards" class="font-black text-purple-600 dark:text-purple-400 shrink-0">R$ 0,00</strong>
                     </div>
 
-                    <div class="p-3 rounded-2xl bg-slate-900 dark:bg-slate-800 text-white border border-slate-800 dark:border-slate-700">
-                        <div class="flex items-center justify-between text-slate-300 text-xs font-bold">
-                            <span>Balanço do Dia</span>
-                            <i class="fa-solid fa-scale-balanced"></i>
+                    <div class="pt-3 pb-1 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <i class="fa-solid fa-scale-balanced text-slate-400 text-xs shrink-0"></i>
+                            <span class="font-extrabold text-slate-800 dark:text-white">Balanço do Dia</span>
                         </div>
-                        <strong id="calTodayBalance" class="block text-base sm:text-lg font-black text-emerald-400 mt-1 truncate">R$ 0,00</strong>
-                        <span class="block text-[11px] font-semibold text-slate-400 mt-0.5">Receitas - Despesas</span>
+                        <strong id="calTodayBalance" class="text-base font-black text-emerald-600 dark:text-emerald-400 shrink-0">R$ 0,00</strong>
                     </div>
                 </div>
             </div>
@@ -1920,12 +1917,8 @@
                 </div>
 
                 <!-- Descrição -->
-                <div class="space-y-1">
+                <div>
                     <input type="text" id="txDescInput" oninput="onTxDescInputChange()" required placeholder="Descrição (Ex: Supermercado, Salário...)" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
-                    <div id="txAutoSuggestHint" class="hidden px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 flex items-center justify-between gap-2">
-                        <span id="txAutoSuggestText" class="truncate"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Sugestão aplicada pelo histórico</span>
-                        <button type="button" onclick="document.getElementById('txAutoSuggestHint').classList.add('hidden')" class="opacity-60 hover:opacity-100 shrink-0"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
                 </div>
 
                 <!-- Valores (Compacto) -->
@@ -1987,15 +1980,15 @@
                 <div id="txCategoryBox" class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">Categoria</label>
-                        <button type="button" onclick="openOptionPicker('formCat')" class="pretty-select-trigger w-full px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center justify-between gap-1 text-left">
-                            <span id="lblFormCat" class="truncate">Selecionar</span>
+                        <button type="button" id="btnFormCatTrigger" onclick="openOptionPicker('formCat')" class="pretty-select-trigger w-full px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center justify-between gap-1 text-left transition-all duration-300">
+                            <span id="lblFormCat" class="truncate transition-opacity duration-200">Selecionar</span>
                             <i class="fa-solid fa-chevron-down text-[10px] opacity-60 shrink-0"></i>
                         </button>
                     </div>
                     <div>
                         <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">Subcategoria</label>
-                        <button type="button" onclick="openOptionPicker('formSub')" class="pretty-select-trigger w-full px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center justify-between gap-1 text-left">
-                            <span id="lblFormSub" class="truncate">Geral</span>
+                        <button type="button" id="btnFormSubTrigger" onclick="openOptionPicker('formSub')" class="pretty-select-trigger w-full px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center justify-between gap-1 text-left transition-all duration-300">
+                            <span id="lblFormSub" class="truncate transition-opacity duration-200">Geral</span>
                             <i class="fa-solid fa-chevron-down text-[10px] opacity-60 shrink-0"></i>
                         </button>
                     </div>
@@ -2420,14 +2413,14 @@
                     <input type="hidden" id="editCatId">
                     <input type="hidden" id="catColorInput" value="#10b981">
                     <input type="hidden" id="catIconInput" value="fa-tag">
+                    <input type="hidden" id="catTypeInput" value="expense">
                     <h4 class="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300">Categoria Principal</h4>
                     <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="catNameInput" required placeholder="Nome da Categoria" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                        <select id="catTypeInput" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold">
-                            <option value="expense">Despesa</option>
-                            <option value="income">Receita</option>
-                            <option value="investment">Investimento</option>
-                        </select>
+                        <input type="text" id="catNameInput" required placeholder="Nova Categoria" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                        <button type="button" onclick="openOptionPicker('catMgrType')" class="pretty-select-trigger w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-bold flex items-center justify-between gap-1.5 text-left">
+                            <span id="lblCatMgrType" class="truncate">Despesa</span>
+                            <i class="fa-solid fa-chevron-down text-[10px] opacity-60 shrink-0"></i>
+                        </button>
                     </div>
                     <div>
                         <input type="number" step="0.01" min="0" id="catBudgetInput" placeholder="Meta Mensal (R$)" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
@@ -2450,20 +2443,26 @@
                         <div id="catIconsPaletteGrid" class="grid grid-cols-5 gap-2 max-h-48 overflow-y-auto p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700"></div>
                     </div>
 
-                    <button type="submit" class="w-full py-2.5 rounded-xl theme-btn text-sm font-bold">Salvar Categoria</button>
+                    <button type="submit" id="btnSaveCategorySubmit" class="w-full py-2.5 rounded-xl theme-btn text-sm font-bold">Nova Categoria</button>
                 </form>
 
                 <!-- Nova / Editar Subcategoria -->
                 <form onsubmit="handleSaveSubcategory(event)" class="space-y-2 pb-4 border-b border-slate-200 dark:border-slate-800">
                     <input type="hidden" id="editSubCatId">
                     <input type="hidden" id="editSubId">
+                    <input type="hidden" id="subParentCatSelect" value="">
                     <div class="flex items-center justify-between">
                         <h4 id="subFormHeading" class="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300">Nova Subcategoria</h4>
                         <button type="button" id="btnCancelSubEdit" onclick="resetSubcategoryForm()" class="hidden text-xs font-bold text-rose-500">Cancelar edição</button>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <select id="subParentCatSelect" required class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"></select>
-                        <input type="text" id="subNameInput" required placeholder="Nome da Subcategoria" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                    <div id="subFieldsGrid" class="grid grid-cols-2 gap-2">
+                        <div id="subParentCatWrapper">
+                            <button type="button" onclick="openOptionPicker('subParentCat')" class="pretty-select-trigger w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-bold flex items-center justify-between gap-1.5 text-left">
+                                <span id="lblSubParentCat" class="truncate">Categoria</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] opacity-60 shrink-0"></i>
+                            </button>
+                        </div>
+                        <input type="text" id="subNameInput" required placeholder="Nome da Subcategoria" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
                     </div>
                     <button type="submit" id="btnSaveSubSubmit" class="w-full py-2.5 rounded-xl bg-slate-800 dark:bg-slate-700 text-white text-sm font-bold">Adicionar Subcategoria</button>
                 </form>
@@ -2871,14 +2870,6 @@ function doGet(e) {
     } catch(ex) {}
   }
 
-  if (e && e.parameter && e.parameter.checkVersion === "1") {
-    return ContentService.createTextOutput(JSON.stringify({
-      status: "success",
-      profileId: profileId,
-      profiles: profiles
-    })).setMimeType(ContentService.MimeType.JSON);
-  }
-
   var bankAccountConfig = null, walletBalance = 0, lastModified = "";
   var sm = ss.getSheetByName("Configuracao_Geral" + suffix);
   if (sm) {
@@ -2888,6 +2879,15 @@ function doGet(e) {
       if (mv[m][0] === "bankAccountConfig") { try { bankAccountConfig = JSON.parse(mv[m][1]); } catch(ex) {} }
       if (mv[m][0] === "walletBalance") walletBalance = Number(mv[m][1]) || 0;
     }
+  }
+
+  if (e && e.parameter && e.parameter.checkVersion === "1") {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      profileId: profileId,
+      lastModified: lastModified,
+      profiles: profiles
+    })).setMimeType(ContentService.MimeType.JSON);
   }
 
   var txs = [];
@@ -2927,6 +2927,45 @@ function doGet(e) {
 }</textarea>
                 </div>
                 <button type="button" onclick="saveAppsScriptUrl()" class="w-full py-3 rounded-xl theme-btn text-sm font-bold">Salvar URL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: ALERTA DE VERSÃO DO BACKUP NA NUVEM ==================== -->
+    <div id="modalBackupVersionConflict" onclick="if(event.target===this) closeModal('modalBackupVersionConflict')" class="modal-backdrop hidden z-[135]">
+        <div class="modal-sheet max-w-sm">
+            <div class="p-4 bg-amber-500 text-white flex items-center gap-3 shrink-0">
+                <span class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-lg shrink-0">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                </span>
+                <div class="min-w-0">
+                    <h3 class="text-base font-extrabold leading-tight">Backup Mais Recente na Nuvem</h3>
+                    <p class="text-xs text-white/90 truncate">Conflito de versão detectado</p>
+                </div>
+            </div>
+            <div class="p-4 space-y-3.5">
+                <p id="backupConflictMessage" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Existe um backup salvo no Google Drive mais recente do que os dados atuais deste aparelho. Deseja baixar a versão mais recente do backup agora?
+                </p>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-1 text-xs">
+                    <div class="flex justify-between gap-2">
+                        <span class="text-slate-400 font-bold">Versão na Nuvem:</span>
+                        <strong id="backupConflictRemoteDate" class="font-extrabold text-emerald-600 dark:text-emerald-400">--</strong>
+                    </div>
+                    <div class="flex justify-between gap-2">
+                        <span class="text-slate-400 font-bold">Versão Local:</span>
+                        <strong id="backupConflictLocalDate" class="font-extrabold text-slate-700 dark:text-slate-200">--</strong>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 pt-1">
+                    <button type="button" id="btnConfirmDownloadNewerBackup" class="w-full py-3 rounded-xl theme-btn text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                        <span>Sim, Baixar Versão Mais Recente</span>
+                    </button>
+                    <button type="button" id="btnForceOverwriteCloudBackup" class="w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold">
+                        Manter Dados Locais e Sobrescrever Nuvem
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -3947,6 +3986,8 @@ function doGet(e) {
             document.documentElement.classList.toggle('dark', appState.darkMode);
             const icon = document.getElementById('darkModeIcon');
             if (icon) icon.className = appState.darkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            const headerIcon = document.getElementById('headerDarkModeIcon');
+            if (headerIcon) headerIcon.className = appState.darkMode ? 'fa-solid fa-sun text-sm' : 'fa-solid fa-moon text-sm';
             const btnIcon = document.getElementById('darkModeBtnIcon');
             if (btnIcon) btnIcon.className = appState.darkMode ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon text-amber-500';
             const btnLabel = document.getElementById('darkModeBtnLabel');
@@ -5196,6 +5237,22 @@ function doGet(e) {
             return bestMatch;
         }
 
+        function smoothSwapSelectLabel(lblId, btnId, newText) {
+            const lbl = document.getElementById(lblId);
+            const btn = document.getElementById(btnId);
+            if (!lbl || lbl.textContent === newText) return;
+            lbl.style.opacity = '0.25';
+            if (btn) btn.style.borderColor = 'var(--theme-secondary)';
+            clearTimeout(lbl._swapTimer);
+            lbl._swapTimer = setTimeout(() => {
+                lbl.textContent = newText;
+                lbl.style.opacity = '1';
+                setTimeout(() => {
+                    if (btn) btn.style.borderColor = '';
+                }, 420);
+            }, 120);
+        }
+
         function onTxDescInputChange() {
             const isEditing = Boolean(document.getElementById('txId').value);
             if (isEditing || txUserManuallyPickedCat) return;
@@ -5203,28 +5260,22 @@ function doGet(e) {
             const curType = document.getElementById('txType').value;
             if (curType === 'transfer') return;
 
-            const hintEl = document.getElementById('txAutoSuggestHint');
-            const hintTxt = document.getElementById('txAutoSuggestText');
             const match = findBestHistoryCategoryMatch(desc, curType);
-
             if (match) {
-                document.getElementById('txCatSelect').value = match.categoryId;
-                document.getElementById('txSubSelect').value = match.subcategoryId || '';
-                onFormCatChange();
-                if (hintEl && hintTxt) {
-                    hintTxt.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Sugerido: <strong>${match.catName}${match.subName ? ' › ' + match.subName : ''}</strong>`;
-                    hintEl.classList.remove('hidden');
+                const prevCat = document.getElementById('txCatSelect').value;
+                const prevSub = document.getElementById('txSubSelect').value;
+                if (prevCat !== match.categoryId || prevSub !== (match.subcategoryId || '')) {
+                    document.getElementById('txCatSelect').value = match.categoryId;
+                    document.getElementById('txSubSelect').value = match.subcategoryId || '';
+                    smoothSwapSelectLabel('lblFormCat', 'btnFormCatTrigger', match.catName || 'Selecionar');
+                    smoothSwapSelectLabel('lblFormSub', 'btnFormSubTrigger', match.subName || 'Geral');
                 }
-            } else if (hintEl) {
-                hintEl.classList.add('hidden');
             }
         }
 
         function openNewTxModal(type = 'expense', customDate = null) {
             txUserManuallyPickedCat = false;
             txUserManuallyPickedSub = false;
-            const hintEl = document.getElementById('txAutoSuggestHint');
-            if (hintEl) hintEl.classList.add('hidden');
             document.getElementById('txId').value = '';
             document.getElementById('txModalTitle').textContent = 'Nova Transação';
             document.getElementById('txDescInput').value = '';
@@ -5552,8 +5603,6 @@ function doGet(e) {
                         return;
                     }
                     txUserManuallyPickedCat = true;
-                    const hintEl = document.getElementById('txAutoSuggestHint');
-                    if (hintEl) hintEl.classList.add('hidden');
                     document.getElementById('txCatSelect').value = val;
                     onFormCatChange();
                 };
@@ -5576,6 +5625,26 @@ function doGet(e) {
                     txUserManuallyPickedSub = true;
                     document.getElementById('txSubSelect').value = val;
                     onFormCatChange();
+                };
+            } else if (kind === 'catMgrType') {
+                title = 'Tipo da Categoria';
+                currentVal = document.getElementById('catTypeInput').value;
+                options = [
+                    { value: 'expense', label: 'Despesa', icon: 'fa-arrow-trend-down' },
+                    { value: 'income', label: 'Receita', icon: 'fa-arrow-trend-up' },
+                    { value: 'investment', label: 'Investimento', icon: 'fa-chart-line' }
+                ];
+                onSelect = val => {
+                    document.getElementById('catTypeInput').value = val;
+                    syncCatManagerSelectLabels();
+                };
+            } else if (kind === 'subParentCat') {
+                title = 'Categoria da Subcategoria';
+                currentVal = document.getElementById('subParentCatSelect').value;
+                options = appState.categories.map(c => ({ value: c.id, label: c.name, color: c.color, icon: c.icon }));
+                onSelect = val => {
+                    document.getElementById('subParentCatSelect').value = val;
+                    syncCatManagerSelectLabels();
                 };
             }
 
@@ -5999,7 +6068,7 @@ function doGet(e) {
                                         </button>
                                         <button type="button" onclick="closeAllCardMenus(); reopenCardInvoice('${c.id}')" ${cPaid === 0 ? 'disabled' : ''} class="w-full px-3.5 py-2.5 text-left flex items-center gap-2 ${cPaid > 0 ? 'hover:bg-slate-100 dark:hover:bg-slate-700 text-amber-600 dark:text-amber-400' : 'opacity-40 cursor-not-allowed text-slate-400'}">
                                             <i class="fa-solid fa-lock-open w-4"></i>
-                                            <span>Abrir Fatura</span>
+                                            <span>Reabrir Fatura</span>
                                         </button>
                                     </div>
                                 </div>
@@ -6766,11 +6835,13 @@ function doGet(e) {
                     }
                 });
                 const tot = cVals.reduce((a, b) => a + b, 0);
+                const isInc = c.type === 'income';
+                const rowColorCls = isInc ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400';
                 html += `
-                    <tr class="font-bold">
-                        <td class="p-3 sticky left-0 bg-white dark:bg-slate-900 z-10 truncate">${c.name}</td>
+                    <tr class="font-bold ${rowColorCls}">
+                        <td class="p-3 sticky left-0 bg-white dark:bg-slate-900 z-10 truncate ${rowColorCls}">${c.name}</td>
                         ${cVals.map(v => `<td class="p-2.5 text-right whitespace-nowrap">${v > 0 ? fmtBRL(v) : '-'}</td>`).join('')}
-                        <td class="p-3 text-right bg-slate-50 dark:bg-slate-800 whitespace-nowrap">${fmtBRL(tot)}</td>
+                        <td class="p-3 text-right bg-slate-50 dark:bg-slate-800 whitespace-nowrap font-extrabold">${fmtBRL(tot)}</td>
                         <td class="p-3 text-right bg-slate-50 dark:bg-slate-800 whitespace-nowrap">${fmtBRL(tot / 12)}</td>
                     </tr>
                 `;
@@ -6915,14 +6986,14 @@ function doGet(e) {
             const elBal = document.getElementById('calTodayBalance');
 
             if (elInc) elInc.textContent = fmtBRL(todayInc);
-            if (elIncCnt) elIncCnt.textContent = `${todayIncCnt} ${todayIncCnt === 1 ? 'lançamento' : 'lançamentos'}`;
+            if (elIncCnt) elIncCnt.textContent = `(${todayIncCnt})`;
             if (elExp) elExp.textContent = fmtBRL(todayExp);
-            if (elExpCnt) elExpCnt.textContent = `${todayExpCnt} ${todayExpCnt === 1 ? 'lançamento' : 'lançamentos'}`;
+            if (elExpCnt) elExpCnt.textContent = `(${todayExpCnt})`;
             if (elCards) elCards.textContent = fmtBRL(todayCards);
-            if (elCardsCnt) elCardsCnt.textContent = `${todayCardsCnt} ${todayCardsCnt === 1 ? 'lançamento' : 'lançamentos'}`;
+            if (elCardsCnt) elCardsCnt.textContent = `(${todayCardsCnt})`;
             if (elBal) {
                 elBal.textContent = fmtBRL(bal);
-                elBal.className = `block text-base sm:text-lg font-black mt-1 truncate ${bal >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+                elBal.className = `text-base font-black shrink-0 ${bal >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
             }
         }
 
@@ -7154,21 +7225,56 @@ function doGet(e) {
 
         let categoryManagerFocusId = null;
 
+        const CAT_TYPE_LABELS = { expense: 'Despesa', income: 'Receita', investment: 'Investimento' };
+
+        function syncCatManagerSelectLabels() {
+            const typeVal = document.getElementById('catTypeInput')?.value || 'expense';
+            const lblType = document.getElementById('lblCatMgrType');
+            if (lblType) lblType.textContent = CAT_TYPE_LABELS[typeVal] || 'Despesa';
+
+            const subParentInp = document.getElementById('subParentCatSelect');
+            if (subParentInp && (!subParentInp.value || !appState.categories.some(c => c.id === subParentInp.value))) {
+                subParentInp.value = categoryManagerFocusId || appState.categories[0]?.id || '';
+            }
+            const parentCat = appState.categories.find(c => c.id === subParentInp?.value);
+            const lblParent = document.getElementById('lblSubParentCat');
+            if (lblParent) lblParent.textContent = parentCat ? parentCat.name : 'Selecionar';
+        }
+
         function openCategoryManagerModal(preselectCatId = null) {
             categoryManagerFocusId = preselectCatId || null;
             document.getElementById('editCatId').value = '';
-            document.getElementById('catNameInput').value = '';
+            const catNameEl = document.getElementById('catNameInput');
+            catNameEl.value = '';
+            catNameEl.placeholder = 'Nova Categoria';
+            const saveCatBtn = document.getElementById('btnSaveCategorySubmit');
+            if (saveCatBtn) saveCatBtn.textContent = 'Nova Categoria';
             document.getElementById('catTypeInput').value = 'expense';
             document.getElementById('catBudgetInput').value = '';
             document.getElementById('catColorInput').value = '#10b981';
             document.getElementById('catIconInput').value = 'fa-tag';
             resetSubcategoryForm();
-            document.getElementById('subParentCatSelect').innerHTML = appState.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+            const subParentWrapper = document.getElementById('subParentCatWrapper');
+            const subFieldsGrid = document.getElementById('subFieldsGrid');
+            if (subParentWrapper && subFieldsGrid) {
+                if (categoryManagerFocusId) {
+                    subParentWrapper.classList.add('hidden');
+                    subFieldsGrid.className = 'grid grid-cols-1 gap-2';
+                } else {
+                    subParentWrapper.classList.remove('hidden');
+                    subFieldsGrid.className = 'grid grid-cols-2 gap-2';
+                }
+            }
+
+            document.getElementById('subParentCatSelect').value = preselectCatId || (appState.categories[0]?.id || '');
+            syncCatManagerSelectLabels();
             renderCategoryColorAndIconPickers();
             renderCatManagerList();
             if (preselectCatId) {
                 editCatItem(preselectCatId);
                 document.getElementById('subParentCatSelect').value = preselectCatId;
+                syncCatManagerSelectLabels();
             }
             openModal('modalCategoryManager');
             resetCategoryManagerModalScroll();
@@ -7224,11 +7330,16 @@ function doGet(e) {
             const c = appState.categories.find(x => x.id === id);
             if (!c) return;
             document.getElementById('editCatId').value = c.id;
-            document.getElementById('catNameInput').value = c.name;
+            const catNameEl = document.getElementById('catNameInput');
+            catNameEl.value = c.name;
+            catNameEl.placeholder = 'Nome da Categoria';
+            const saveCatBtn = document.getElementById('btnSaveCategorySubmit');
+            if (saveCatBtn) saveCatBtn.textContent = 'Salvar Categoria';
             document.getElementById('catTypeInput').value = c.type;
             document.getElementById('catBudgetInput').value = c.budget || '';
             document.getElementById('catColorInput').value = c.color || '#10b981';
             document.getElementById('catIconInput').value = c.icon || 'fa-tag';
+            syncCatManagerSelectLabels();
             renderCategoryColorAndIconPickers();
         }
 
@@ -7249,11 +7360,16 @@ function doGet(e) {
                 appState.categories.push({ id: 'cat_' + Date.now(), hidden: false, subcategories: [], ...data });
             }
             document.getElementById('editCatId').value = '';
-            document.getElementById('catNameInput').value = '';
+            const catNameResetEl = document.getElementById('catNameInput');
+            catNameResetEl.value = '';
+            catNameResetEl.placeholder = 'Nova Categoria';
+            const saveCatResetBtn = document.getElementById('btnSaveCategorySubmit');
+            if (saveCatResetBtn) saveCatResetBtn.textContent = 'Nova Categoria';
             document.getElementById('catBudgetInput').value = '';
             document.getElementById('catColorInput').value = '#10b981';
             document.getElementById('catIconInput').value = 'fa-tag';
-            document.getElementById('subParentCatSelect').innerHTML = appState.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            document.getElementById('subParentCatSelect').value = categoryManagerFocusId || appState.categories[0]?.id || '';
+            syncCatManagerSelectLabels();
             saveState({ autoBackup: true });
             renderCategoryColorAndIconPickers();
             renderCatManagerList();
@@ -7279,6 +7395,7 @@ function doGet(e) {
             document.getElementById('editSubCatId').value = catId;
             document.getElementById('editSubId').value = subId;
             document.getElementById('subParentCatSelect').value = catId;
+            syncCatManagerSelectLabels();
             document.getElementById('subNameInput').value = sub.name;
             document.getElementById('subFormHeading').textContent = 'Editar Subcategoria';
             document.getElementById('btnSaveSubSubmit').textContent = 'Salvar Subcategoria';
@@ -7345,7 +7462,8 @@ function doGet(e) {
             document.getElementById('confirmDelMessage').innerHTML = `Deseja realmente excluir a categoria <strong>"${cat.name}"</strong> e todas as suas subcategorias?`;
             document.getElementById('btnConfirmDelProceed').onclick = () => {
                 appState.categories = appState.categories.filter(c => c.id !== catId);
-                document.getElementById('subParentCatSelect').innerHTML = appState.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                document.getElementById('subParentCatSelect').value = categoryManagerFocusId || appState.categories[0]?.id || '';
+            syncCatManagerSelectLabels();
                 saveState();
                 renderCatManagerList();
                 refreshAll();
@@ -7399,7 +7517,50 @@ function doGet(e) {
             toast('Código copiado!');
         }
 
-        async function syncSaveToCloud(silent = false) {
+        function getLocalSyncTimestampIso() {
+            return localStorage.getItem(getStorageKey('orcamento_last_sync_iso')) || '';
+        }
+
+        function setLocalSyncTimestampIso(isoStr) {
+            const val = isoStr || new Date().toISOString();
+            try {
+                localStorage.setItem(getStorageKey('orcamento_last_sync_iso'), val);
+            } catch (e) {}
+        }
+
+        function formatIsoBr(isoStr) {
+            if (!isoStr) return 'Desconhecida';
+            const dt = new Date(isoStr);
+            if (isNaN(dt.getTime())) return String(isoStr);
+            return `${dt.toLocaleDateString('pt-BR')} às ${dt.toLocaleTimeString('pt-BR')}`;
+        }
+
+        function showBackupVersionConflictModal(remoteIso, localIso) {
+            const remEl = document.getElementById('backupConflictRemoteDate');
+            const locEl = document.getElementById('backupConflictLocalDate');
+            const btnDownload = document.getElementById('btnConfirmDownloadNewerBackup');
+            const btnForce = document.getElementById('btnForceOverwriteCloudBackup');
+
+            if (remEl) remEl.textContent = formatIsoBr(remoteIso);
+            if (locEl) locEl.textContent = localIso ? formatIsoBr(localIso) : 'Sem sincronização anterior';
+
+            if (btnDownload) {
+                btnDownload.onclick = async () => {
+                    closeModal('modalBackupVersionConflict');
+                    await syncRestoreFromCloud();
+                };
+            }
+            if (btnForce) {
+                btnForce.onclick = async () => {
+                    closeModal('modalBackupVersionConflict');
+                    await syncSaveToCloud(false, true);
+                };
+            }
+
+            openModal('modalBackupVersionConflict');
+        }
+
+        async function syncSaveToCloud(silent = false, forceOverwrite = false) {
             saveState();
             if (!appState.appsScriptUrl) {
                 if (!silent) {
@@ -7408,8 +7569,29 @@ function doGet(e) {
                 }
                 return;
             }
-            if (!silent) toast('Salvando no Google Drive...');
+            if (!silent) toast('Verificando versão no Google Drive...');
             try {
+                if (!forceOverwrite) {
+                    try {
+                        const checkUrl = appState.appsScriptUrl + (appState.appsScriptUrl.includes('?') ? '&' : '?') + 'checkVersion=1&profileId=' + encodeURIComponent(appState.activeProfileId);
+                        const verRes = await fetch(checkUrl);
+                        const verData = await verRes.json();
+                        if (verData && verData.lastModified) {
+                            const remoteMs = Date.parse(verData.lastModified);
+                            const localIso = getLocalSyncTimestampIso();
+                            const localMs = localIso ? Date.parse(localIso) : 0;
+                            if (!isNaN(remoteMs) && remoteMs > (isNaN(localMs) ? 0 : localMs + 1500)) {
+                                showBackupVersionConflictModal(verData.lastModified, localIso);
+                                return;
+                            }
+                        }
+                    } catch (verErr) {
+                        // Se falhar apenas a checagem de versão (ex: CORS), prossegue normalmente
+                    }
+                }
+
+                if (!silent) toast('Salvando no Google Drive...');
+                const syncIso = new Date().toISOString();
                 await fetch(appState.appsScriptUrl, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -7417,7 +7599,7 @@ function doGet(e) {
                     body: JSON.stringify({
                         profileId: appState.activeProfileId,
                         profiles: getProfiles(),
-                        timestamp: new Date().toISOString(),
+                        timestamp: syncIso,
                         walletBalance: appState.walletBalance,
                         bankAccountConfig: appState.bankAccountConfig,
                         categories: appState.categories,
@@ -7425,9 +7607,10 @@ function doGet(e) {
                         transactions: appState.transactions
                     })
                 });
-                const now = new Date();
+                const now = new Date(syncIso);
                 appState.lastSyncTime = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR')}`;
                 localStorage.setItem(getStorageKey('orcamento_last_sync_time'), appState.lastSyncTime);
+                setLocalSyncTimestampIso(syncIso);
                 updateSyncLabel();
                 if (!silent) toast('Backup salvo no Google Drive!');
             } catch (e) {
@@ -7452,6 +7635,14 @@ function doGet(e) {
                     if (Array.isArray(data.transactions)) appState.transactions = data.transactions;
                     if (data.bankAccountConfig) appState.bankAccountConfig = data.bankAccountConfig;
                     if (data.walletBalance !== undefined) appState.walletBalance = Number(data.walletBalance) || 0;
+                    const restoredIso = data.lastModified || new Date().toISOString();
+                    setLocalSyncTimestampIso(restoredIso);
+                    const dt = new Date(restoredIso);
+                    if (!isNaN(dt.getTime())) {
+                        appState.lastSyncTime = `${dt.toLocaleDateString('pt-BR')} às ${dt.toLocaleTimeString('pt-BR')}`;
+                        localStorage.setItem(getStorageKey('orcamento_last_sync_time'), appState.lastSyncTime);
+                        updateSyncLabel();
+                    }
                     saveState();
                     refreshAll();
                     toast('Dados restaurados com sucesso!');
