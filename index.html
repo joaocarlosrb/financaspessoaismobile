@@ -485,6 +485,100 @@
         .dark #modalityPieChart {
             filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.55));
         }
+
+        /* Cards quadrados abaulados/rebaixados no Calendário com sombras coloridas */
+        .cal-day-card {
+            aspect-ratio: 1 / 1;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: linear-gradient(145deg, #f1f5f9 0%, #ffffff 100%);
+            border: 1.5px solid #e2e8f0;
+            box-shadow:
+                0 6px 14px -2px rgba(15, 23, 42, 0.12),
+                inset 0 4px 9px rgba(15, 23, 42, 0.14),
+                inset 0 -3px 6px rgba(255, 255, 255, 0.9);
+            transition: transform 0.16s ease, box-shadow 0.2s ease;
+        }
+        .dark .cal-day-card {
+            background: linear-gradient(145deg, #0b1120 0%, #1e293b 100%);
+            border-color: #1f2937;
+            box-shadow:
+                0 6px 14px -2px rgba(0, 0, 0, 0.55),
+                inset 0 4px 10px rgba(0, 0, 0, 0.72),
+                inset 0 -2px 5px rgba(255, 255, 255, 0.06);
+        }
+        .cal-day-card:active {
+            transform: scale(0.94);
+        }
+        /* Sombra interna e externa Verde (Receita no dia) */
+        .cal-day-card.has-income {
+            border-color: rgba(16, 185, 129, 0.55);
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.08) 0%, #ffffff 100%);
+            box-shadow:
+                0 6px 15px -2px rgba(16, 185, 129, 0.28),
+                inset 0 5px 11px rgba(16, 185, 129, 0.34),
+                inset 0 -3px 7px rgba(16, 185, 129, 0.14);
+        }
+        .dark .cal-day-card.has-income {
+            border-color: rgba(16, 185, 129, 0.55);
+            background: linear-gradient(145deg, rgba(6, 78, 59, 0.45) 0%, #111827 100%);
+            box-shadow:
+                0 6px 16px -2px rgba(16, 185, 129, 0.25),
+                inset 0 5px 12px rgba(16, 185, 129, 0.42),
+                inset 0 -3px 7px rgba(0, 0, 0, 0.6);
+        }
+        /* Sombra interna e externa Vermelha (Despesa no dia) */
+        .cal-day-card.has-expense {
+            border-color: rgba(244, 63, 94, 0.55);
+            background: linear-gradient(145deg, rgba(244, 63, 94, 0.08) 0%, #ffffff 100%);
+            box-shadow:
+                0 6px 15px -2px rgba(244, 63, 94, 0.28),
+                inset 0 5px 11px rgba(244, 63, 94, 0.34),
+                inset 0 -3px 7px rgba(244, 63, 94, 0.14);
+        }
+        .dark .cal-day-card.has-expense {
+            border-color: rgba(244, 63, 94, 0.55);
+            background: linear-gradient(145deg, rgba(136, 19, 55, 0.42) 0%, #111827 100%);
+            box-shadow:
+                0 6px 16px -2px rgba(244, 63, 94, 0.25),
+                inset 0 5px 12px rgba(244, 63, 94, 0.42),
+                inset 0 -3px 7px rgba(0, 0, 0, 0.6);
+        }
+        /* Sombra mista Verde + Vermelha (Receita e Despesa no mesmo dia) */
+        .cal-day-card.has-both {
+            border-color: rgba(16, 185, 129, 0.55);
+            box-shadow:
+                -3px 5px 13px -2px rgba(16, 185, 129, 0.28),
+                3px 5px 13px -2px rgba(244, 63, 94, 0.28),
+                inset 4px 4px 10px rgba(16, 185, 129, 0.32),
+                inset -4px -4px 10px rgba(244, 63, 94, 0.32);
+        }
+        /* Destaque especial para o dia de HOJE */
+        .cal-day-card.is-today {
+            border: 2.5px solid var(--theme-primary) !important;
+            ring: 2px;
+            box-shadow:
+                0 8px 18px -2px color-mix(in srgb, var(--theme-primary) 42%, transparent),
+                inset 0 4px 10px color-mix(in srgb, var(--theme-secondary) 28%, transparent) !important;
+            transform: scale(1.03);
+            z-index: 2;
+        }
+        .dark .cal-day-card.is-today {
+            border: 2.5px solid var(--theme-secondary) !important;
+        }
+        .cal-day-card.is-today.has-expense {
+            box-shadow:
+                0 8px 18px -2px rgba(244, 63, 94, 0.38),
+                inset 0 5px 11px rgba(244, 63, 94, 0.36) !important;
+        }
+        .cal-day-card.is-today.has-income {
+            box-shadow:
+                0 8px 18px -2px rgba(16, 185, 129, 0.38),
+                inset 0 5px 11px rgba(16, 185, 129, 0.36) !important;
+        }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-full flex flex-col">
@@ -1416,6 +1510,62 @@
                 </div>
                 <div id="calDaysGrid" class="grid grid-cols-7 gap-1.5"></div>
             </div>
+
+            <!-- Relatório Financeiro do Dia de Hoje -->
+            <div class="app-card p-4 space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="w-9 h-9 rounded-xl theme-btn flex items-center justify-center text-sm shrink-0 shadow-sm">
+                            <i class="fa-solid fa-calendar-day"></i>
+                        </span>
+                        <div class="min-w-0">
+                            <h3 class="text-sm sm:text-base font-extrabold truncate">Relatório Financeiro de Hoje</h3>
+                            <p id="calTodayReportDate" class="text-xs text-slate-500 dark:text-slate-400 truncate">Resumo do dia atual</p>
+                        </div>
+                    </div>
+                    <button type="button" id="btnCalTodayDetails" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-extrabold theme-text shrink-0">
+                        Ver Dia
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/35 border border-emerald-200/70 dark:border-emerald-800/60">
+                        <div class="flex items-center justify-between text-emerald-700 dark:text-emerald-300 text-xs font-bold">
+                            <span>Receitas</span>
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                        </div>
+                        <strong id="calTodayIncome" class="block text-base sm:text-lg font-black text-emerald-700 dark:text-emerald-300 mt-1 truncate">R$ 0,00</strong>
+                        <span id="calTodayIncomeCnt" class="block text-[11px] font-semibold text-emerald-600/80 dark:text-emerald-400/80 mt-0.5">0 lançamentos</span>
+                    </div>
+
+                    <div class="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/35 border border-rose-200/70 dark:border-rose-800/60">
+                        <div class="flex items-center justify-between text-rose-700 dark:text-rose-300 text-xs font-bold">
+                            <span>Despesas</span>
+                            <i class="fa-solid fa-arrow-trend-down"></i>
+                        </div>
+                        <strong id="calTodayExpense" class="block text-base sm:text-lg font-black text-rose-700 dark:text-rose-300 mt-1 truncate">R$ 0,00</strong>
+                        <span id="calTodayExpenseCnt" class="block text-[11px] font-semibold text-rose-600/80 dark:text-rose-400/80 mt-0.5">0 lançamentos</span>
+                    </div>
+
+                    <div class="p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/35 border border-purple-200/70 dark:border-purple-800/60">
+                        <div class="flex items-center justify-between text-purple-700 dark:text-purple-300 text-xs font-bold">
+                            <span>Cartões de Crédito</span>
+                            <i class="fa-solid fa-credit-card"></i>
+                        </div>
+                        <strong id="calTodayCards" class="block text-base sm:text-lg font-black text-purple-700 dark:text-purple-300 mt-1 truncate">R$ 0,00</strong>
+                        <span id="calTodayCardsCnt" class="block text-[11px] font-semibold text-purple-600/80 dark:text-purple-400/80 mt-0.5">0 lançamentos</span>
+                    </div>
+
+                    <div class="p-3 rounded-2xl bg-slate-900 dark:bg-slate-800 text-white border border-slate-800 dark:border-slate-700">
+                        <div class="flex items-center justify-between text-slate-300 text-xs font-bold">
+                            <span>Balanço do Dia</span>
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </div>
+                        <strong id="calTodayBalance" class="block text-base sm:text-lg font-black text-emerald-400 mt-1 truncate">R$ 0,00</strong>
+                        <span class="block text-[11px] font-semibold text-slate-400 mt-0.5">Receitas - Despesas</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- ==================== ABA 8: CATEGORIAS & METAS ==================== -->
@@ -1770,8 +1920,12 @@
                 </div>
 
                 <!-- Descrição -->
-                <div>
-                    <input type="text" id="txDescInput" required placeholder="Descrição (Ex: Supermercado, Salário...)" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                <div class="space-y-1">
+                    <input type="text" id="txDescInput" oninput="onTxDescInputChange()" required placeholder="Descrição (Ex: Supermercado, Salário...)" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                    <div id="txAutoSuggestHint" class="hidden px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 flex items-center justify-between gap-2">
+                        <span id="txAutoSuggestText" class="truncate"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Sugestão aplicada pelo histórico</span>
+                        <button type="button" onclick="document.getElementById('txAutoSuggestHint').classList.add('hidden')" class="opacity-60 hover:opacity-100 shrink-0"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
                 </div>
 
                 <!-- Valores (Compacto) -->
@@ -1874,6 +2028,64 @@
                 </button>
             </div>
             <div id="optionPickerList" class="p-3 space-y-1.5 overflow-y-auto flex-1"></div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: NOVA CATEGORIA RÁPIDA (VIA NOVA TRANSAÇÃO) ==================== -->
+    <div id="modalQuickCategory" onclick="if(event.target===this) closeModal('modalQuickCategory')" class="modal-backdrop hidden z-[130]">
+        <div class="modal-sheet max-w-sm">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-folder-plus"></i>
+                    <h3 class="text-base font-extrabold">Nova Categoria</h3>
+                </div>
+                <button type="button" onclick="closeModal('modalQuickCategory')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="handleSaveQuickCategory(event)" class="p-4 space-y-3.5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Nome da Categoria</label>
+                    <input type="text" id="quickCatNameInput" required placeholder="Ex: Saúde, Educação, Pets..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-500">Cor de Identificação</label>
+                    <div id="quickCatColorsGrid" class="grid grid-cols-8 gap-1.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700"></div>
+                </div>
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="closeModal('modalQuickCategory')" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs sm:text-sm font-bold">Cancelar</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl theme-btn text-xs sm:text-sm font-extrabold">Adicionar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: NOVA SUBCATEGORIA RÁPIDA (VIA NOVA TRANSAÇÃO) ==================== -->
+    <div id="modalQuickSubcategory" onclick="if(event.target===this) closeModal('modalQuickSubcategory')" class="modal-backdrop hidden z-[130]">
+        <div class="modal-sheet max-w-sm">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-tag"></i>
+                    <h3 class="text-base font-extrabold">Nova Subcategoria</h3>
+                </div>
+                <button type="button" onclick="closeModal('modalQuickSubcategory')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="handleSaveQuickSubcategory(event)" class="p-4 space-y-3.5">
+                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs flex items-center justify-between">
+                    <span class="text-slate-500 font-bold">Categoria:</span>
+                    <strong id="quickSubParentCatLabel" class="font-extrabold theme-text">--</strong>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Nome da Subcategoria</label>
+                    <input type="text" id="quickSubNameInput" required placeholder="Ex: Farmácia, Padaria, Uber..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                </div>
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="closeModal('modalQuickSubcategory')" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs sm:text-sm font-bold">Cancelar</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl theme-btn text-xs sm:text-sm font-extrabold">Adicionar</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -2208,7 +2420,7 @@
                     <input type="hidden" id="editCatId">
                     <input type="hidden" id="catColorInput" value="#10b981">
                     <input type="hidden" id="catIconInput" value="fa-tag">
-                    <h4 class="text-xs font-extrabold uppercase text-slate-400">Categoria Principal</h4>
+                    <h4 class="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300">Categoria Principal</h4>
                     <div class="grid grid-cols-2 gap-2">
                         <input type="text" id="catNameInput" required placeholder="Nome da Categoria" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                         <select id="catTypeInput" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold">
@@ -2227,15 +2439,15 @@
                         <div id="catColorsPaletteGrid" class="grid grid-cols-10 gap-1.5 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700"></div>
                     </div>
 
-                    <!-- Seletor de 100 Ícones de Orçamento Pessoal -->
+                    <!-- Seletor de 100 Ícones de Orçamento Pessoal (5 por linha) -->
                     <div class="space-y-1.5">
                         <div class="flex items-center justify-between">
                             <label class="text-xs font-bold text-slate-500">Ícone da Categoria (100 opções)</label>
-                            <span id="catSelectedIconPreview" class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs" style="background:#10b981">
+                            <span id="catSelectedIconPreview" class="w-8 h-8 rounded-xl flex items-center justify-center text-white text-sm" style="background:#10b981">
                                 <i class="fa-solid fa-tag"></i>
                             </span>
                         </div>
-                        <div id="catIconsPaletteGrid" class="grid grid-cols-10 gap-1.5 max-h-36 overflow-y-auto p-2 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700"></div>
+                        <div id="catIconsPaletteGrid" class="grid grid-cols-5 gap-2 max-h-48 overflow-y-auto p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700"></div>
                     </div>
 
                     <button type="submit" class="w-full py-2.5 rounded-xl theme-btn text-sm font-bold">Salvar Categoria</button>
@@ -2246,7 +2458,7 @@
                     <input type="hidden" id="editSubCatId">
                     <input type="hidden" id="editSubId">
                     <div class="flex items-center justify-between">
-                        <h4 id="subFormHeading" class="text-xs font-extrabold uppercase text-slate-400">Nova Subcategoria</h4>
+                        <h4 id="subFormHeading" class="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300">Nova Subcategoria</h4>
                         <button type="button" id="btnCancelSubEdit" onclick="resetSubcategoryForm()" class="hidden text-xs font-bold text-rose-500">Cancelar edição</button>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
@@ -3574,7 +3786,17 @@ function doGet(e) {
             refreshAll();
         }
 
-        function saveState() {
+        let autoBackupDebounceTimer = null;
+
+        function triggerSilentAutoCloudBackup() {
+            if (!appState.appsScriptUrl) return;
+            clearTimeout(autoBackupDebounceTimer);
+            autoBackupDebounceTimer = setTimeout(() => {
+                syncSaveToCloud(true);
+            }, 350);
+        }
+
+        function saveState(options = {}) {
             try {
                 localStorage.setItem(getStorageKey('orcamento_categories_v10'), JSON.stringify(appState.categories));
                 localStorage.setItem(getStorageKey('orcamento_cards_v10'), JSON.stringify(appState.creditCards));
@@ -3582,6 +3804,9 @@ function doGet(e) {
                 localStorage.setItem(getStorageKey('orcamento_bank_config_v1'), JSON.stringify(appState.bankAccountConfig));
                 localStorage.setItem(getStorageKey('orcamento_wallet_balance_v10'), String(appState.walletBalance || 0));
             } catch (e) {}
+            if (options.autoBackup) {
+                triggerSilentAutoCloudBackup();
+            }
         }
 
         // ==================== NAVEGAÇÃO & FILTROS GLOBAIS ====================
@@ -4871,7 +5096,7 @@ function doGet(e) {
             const tx = appState.transactions.find(t => t.id === activeDetailTxId);
             if (!tx || !!tx.paid === !!paidState) return;
             tx.paid = !!paidState;
-            saveState();
+            saveState({ autoBackup: true });
             refreshAll();
             syncOpenStackedModals();
             openTxDetailsModal(activeDetailTxId);
@@ -4882,7 +5107,7 @@ function doGet(e) {
             const tx = appState.transactions.find(t => t.id === id);
             if (!tx) return;
             tx.paid = !tx.paid;
-            saveState();
+            saveState({ autoBackup: true });
             refreshAll();
             toast(tx.paid ? 'Marcado como Quitado!' : 'Reaberto!');
         }
@@ -4897,14 +5122,109 @@ function doGet(e) {
                 openModal('modalSeriesScope');
             } else {
                 appState.transactions = appState.transactions.filter(t => t.id !== id);
-                saveState();
+                saveState({ autoBackup: true });
                 refreshAll();
                 toast('Lançamento excluído.');
             }
         }
 
         // ==================== FORMULÁRIO DE TRANSAÇÃO ====================
+        let txUserManuallyPickedCat = false;
+        let txUserManuallyPickedSub = false;
+
+        function normalizeSearchText(str) {
+            return String(str || '')
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[̀-ͯ]/g, '')
+                .replace(/\(\d+\/\d+\)/g, '')
+                .replace(/[^a-z0-9\s]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function findBestHistoryCategoryMatch(descText, currentType) {
+            const normInput = normalizeSearchText(descText);
+            if (normInput.length < 3) return null;
+            const inputTokens = normInput.split(' ').filter(w => w.length >= 2);
+            if (inputTokens.length === 0) return null;
+
+            let bestScore = 0;
+            let bestMatch = null;
+
+            for (let i = appState.transactions.length - 1; i >= 0; i--) {
+                const t = appState.transactions[i];
+                if (!t.description || !t.categoryId) continue;
+                const cat = appState.categories.find(c => c.id === t.categoryId);
+                if (!cat) continue;
+                const typeCompatible = (cat.type === currentType) || (currentType === 'expense' && cat.type === 'investment');
+                if (!typeCompatible) continue;
+
+                const normHist = normalizeSearchText(t.description);
+                if (!normHist) continue;
+
+                let score = 0;
+                if (normHist === normInput) {
+                    score = 100;
+                } else if (normHist.startsWith(normInput) || normInput.startsWith(normHist)) {
+                    score = 80;
+                } else if (normHist.includes(normInput) || normInput.includes(normHist)) {
+                    score = 65;
+                } else {
+                    const histTokens = normHist.split(' ').filter(w => w.length >= 2);
+                    let overlap = 0;
+                    inputTokens.forEach(tok => {
+                        if (histTokens.some(ht => ht === tok || (tok.length >= 4 && ht.startsWith(tok)) || (ht.length >= 4 && tok.startsWith(ht)))) {
+                            overlap++;
+                        }
+                    });
+                    if (overlap > 0) {
+                        score = Math.round((overlap / Math.max(inputTokens.length, histTokens.length)) * 58);
+                    }
+                }
+
+                if (score > bestScore && score >= 35) {
+                    bestScore = score;
+                    bestMatch = {
+                        categoryId: t.categoryId,
+                        subcategoryId: t.subcategoryId || '',
+                        catName: cat.name,
+                        subName: (cat.subcategories || []).find(s => s.id === t.subcategoryId)?.name || ''
+                    };
+                }
+            }
+            return bestMatch;
+        }
+
+        function onTxDescInputChange() {
+            const isEditing = Boolean(document.getElementById('txId').value);
+            if (isEditing || txUserManuallyPickedCat) return;
+            const desc = document.getElementById('txDescInput').value;
+            const curType = document.getElementById('txType').value;
+            if (curType === 'transfer') return;
+
+            const hintEl = document.getElementById('txAutoSuggestHint');
+            const hintTxt = document.getElementById('txAutoSuggestText');
+            const match = findBestHistoryCategoryMatch(desc, curType);
+
+            if (match) {
+                document.getElementById('txCatSelect').value = match.categoryId;
+                document.getElementById('txSubSelect').value = match.subcategoryId || '';
+                onFormCatChange();
+                if (hintEl && hintTxt) {
+                    hintTxt.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Sugerido: <strong>${match.catName}${match.subName ? ' › ' + match.subName : ''}</strong>`;
+                    hintEl.classList.remove('hidden');
+                }
+            } else if (hintEl) {
+                hintEl.classList.add('hidden');
+            }
+        }
+
         function openNewTxModal(type = 'expense', customDate = null) {
+            txUserManuallyPickedCat = false;
+            txUserManuallyPickedSub = false;
+            const hintEl = document.getElementById('txAutoSuggestHint');
+            if (hintEl) hintEl.classList.add('hidden');
             document.getElementById('txId').value = '';
             document.getElementById('txModalTitle').textContent = 'Nova Transação';
             document.getElementById('txDescInput').value = '';
@@ -5222,8 +5542,18 @@ function doGet(e) {
                 currentVal = document.getElementById('txCatSelect').value;
                 const type = document.getElementById('txType').value;
                 const filteredCats = appState.categories.filter(c => c.type === type || (type === 'expense' && c.type === 'investment'));
-                options = filteredCats.map(c => ({ value: c.id, label: c.name, color: c.color, icon: c.icon }));
+                options = [
+                    { value: '__ADD_NEW_CAT__', label: '+ Nova Categoria', isCreateAction: true, icon: 'fa-plus' },
+                    ...filteredCats.map(c => ({ value: c.id, label: c.name, color: c.color, icon: c.icon }))
+                ];
                 onSelect = val => {
+                    if (val === '__ADD_NEW_CAT__') {
+                        openQuickCategoryModal();
+                        return;
+                    }
+                    txUserManuallyPickedCat = true;
+                    const hintEl = document.getElementById('txAutoSuggestHint');
+                    if (hintEl) hintEl.classList.add('hidden');
                     document.getElementById('txCatSelect').value = val;
                     onFormCatChange();
                 };
@@ -5233,8 +5563,17 @@ function doGet(e) {
                 const cid = document.getElementById('txCatSelect').value;
                 const cat = appState.categories.find(c => c.id === cid);
                 const validSubs = cat && cat.subcategories ? cat.subcategories.filter(s => !s.hidden) : [];
-                options = [{ value: '', label: 'Geral' }, ...validSubs.map(s => ({ value: s.id, label: s.name }))];
+                options = [
+                    { value: '__ADD_NEW_SUB__', label: '+ Nova Subcategoria', isCreateAction: true, icon: 'fa-plus' },
+                    { value: '', label: 'Geral' },
+                    ...validSubs.map(s => ({ value: s.id, label: s.name }))
+                ];
                 onSelect = val => {
+                    if (val === '__ADD_NEW_SUB__') {
+                        openQuickSubcategoryModal();
+                        return;
+                    }
+                    txUserManuallyPickedSub = true;
                     document.getElementById('txSubSelect').value = val;
                     onFormCatChange();
                 };
@@ -5242,14 +5581,18 @@ function doGet(e) {
 
             titleEl.textContent = title;
             listEl.innerHTML = options.map((opt, idx) => {
-                const active = String(opt.value) === String(currentVal);
+                const active = !opt.isCreateAction && String(opt.value) === String(currentVal);
+                const btnCls = opt.isCreateAction
+                    ? 'w-full px-3.5 py-3 rounded-2xl text-left text-xs sm:text-sm font-extrabold flex items-center justify-between gap-2.5 transition-all border-2 border-dashed border-emerald-400/70 bg-emerald-50/80 dark:bg-emerald-950/35 text-emerald-700 dark:text-emerald-300'
+                    : `w-full px-3.5 py-3 rounded-2xl text-left text-xs sm:text-sm font-bold flex items-center justify-between gap-2.5 transition-all ${active
+                        ? 'theme-btn shadow-sm'
+                        : 'bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100'}`;
                 return `
-                    <button type="button" data-opt-idx="${idx}"
-                        class="w-full px-3.5 py-3 rounded-2xl text-left text-xs sm:text-sm font-bold flex items-center justify-between gap-2.5 transition-all ${active
-                            ? 'theme-btn shadow-sm'
-                            : 'bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100'}">
+                    <button type="button" data-opt-idx="${idx}" class="${btnCls}">
                         <div class="flex items-center gap-2.5 min-w-0">
-                            ${opt.color ? `<span class="w-6 h-6 rounded-lg flex items-center justify-center text-white text-[11px] shrink-0" style="background:${opt.color}"><i class="fa-solid ${opt.icon || 'fa-tag'}"></i></span>` : (opt.icon ? `<i class="fa-solid ${opt.icon} text-xs opacity-80 shrink-0"></i>` : '')}
+                            ${opt.isCreateAction
+                                ? `<span class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-[11px] shrink-0"><i class="fa-solid fa-plus"></i></span>`
+                                : (opt.color ? `<span class="w-6 h-6 rounded-lg flex items-center justify-center text-white text-[11px] shrink-0" style="background:${opt.color}"><i class="fa-solid ${opt.icon || 'fa-tag'}"></i></span>` : (opt.icon ? `<i class="fa-solid ${opt.icon} text-xs opacity-80 shrink-0"></i>` : ''))}
                             <span class="truncate">${opt.label}</span>
                         </div>
                         ${active ? '<i class="fa-solid fa-circle-check text-sm shrink-0"></i>' : ''}
@@ -5266,6 +5609,92 @@ function doGet(e) {
             });
 
             openModal('modalOptionPicker');
+        }
+
+
+        let tempQuickCatColor = '#10b981';
+
+        function openQuickCategoryModal() {
+            tempQuickCatColor = '#10b981';
+            const inp = document.getElementById('quickCatNameInput');
+            if (inp) inp.value = '';
+            renderQuickCatColorsGrid();
+            openModal('modalQuickCategory');
+            if (inp) setTimeout(() => inp.focus(), 70);
+        }
+
+        function renderQuickCatColorsGrid() {
+            const grid = document.getElementById('quickCatColorsGrid');
+            if (!grid) return;
+            const palette = CATEGORY_COLORS_40.slice(0, 16);
+            grid.innerHTML = palette.map(hex => `
+                <button type="button" onclick="selectQuickCatColor('${hex}')" class="w-7 h-7 rounded-full mx-auto transition-transform ${tempQuickCatColor === hex ? 'ring-2 ring-offset-2 ring-slate-900 dark:ring-white scale-110' : ''}" style="background:${hex}"></button>
+            `).join('');
+        }
+
+        function selectQuickCatColor(hex) {
+            tempQuickCatColor = hex;
+            renderQuickCatColorsGrid();
+        }
+
+        function handleSaveQuickCategory(e) {
+            e.preventDefault();
+            const name = (document.getElementById('quickCatNameInput')?.value || '').trim();
+            if (!name) return;
+            const txType = document.getElementById('txType')?.value || 'expense';
+            const catType = txType === 'income' ? 'income' : (txType === 'investment' ? 'investment' : 'expense');
+            const newCat = {
+                id: 'cat_' + Date.now(),
+                name,
+                icon: 'fa-tag',
+                color: tempQuickCatColor || '#10b981',
+                budget: 0,
+                type: catType,
+                hidden: false,
+                subcategories: []
+            };
+            appState.categories.push(newCat);
+            saveState({ autoBackup: true });
+            txUserManuallyPickedCat = true;
+            document.getElementById('txCatSelect').value = newCat.id;
+            document.getElementById('txSubSelect').value = '';
+            onFormCatChange();
+            refreshAll();
+            closeModal('modalQuickCategory');
+            toast(`Categoria "${name}" criada!`);
+        }
+
+        function openQuickSubcategoryModal() {
+            const cid = document.getElementById('txCatSelect')?.value;
+            const cat = appState.categories.find(c => c.id === cid);
+            if (!cat) {
+                toast('Selecione uma categoria primeiro.');
+                return;
+            }
+            const lbl = document.getElementById('quickSubParentCatLabel');
+            if (lbl) lbl.textContent = cat.name;
+            const inp = document.getElementById('quickSubNameInput');
+            if (inp) inp.value = '';
+            openModal('modalQuickSubcategory');
+            if (inp) setTimeout(() => inp.focus(), 70);
+        }
+
+        function handleSaveQuickSubcategory(e) {
+            e.preventDefault();
+            const cid = document.getElementById('txCatSelect')?.value;
+            const cat = appState.categories.find(c => c.id === cid);
+            const name = (document.getElementById('quickSubNameInput')?.value || '').trim();
+            if (!cat || !name) return;
+            if (!cat.subcategories) cat.subcategories = [];
+            const newSub = { id: 'sub_' + Date.now(), name, hidden: false };
+            cat.subcategories.push(newSub);
+            saveState({ autoBackup: true });
+            txUserManuallyPickedSub = true;
+            document.getElementById('txSubSelect').value = newSub.id;
+            onFormCatChange();
+            refreshAll();
+            closeModal('modalQuickSubcategory');
+            toast(`Subcategoria "${name}" adicionada!`);
         }
 
         // ==================== MODAL DO GRÁFICO EVOLUÇÃO MENSAL / DIÁRIA ====================
@@ -5397,7 +5826,7 @@ function doGet(e) {
                 }
             }
 
-            saveState();
+            saveState({ autoBackup: true });
             refreshAll();
             closeModal('modalTransaction');
             toast('Lançamento salvo!');
@@ -5437,7 +5866,7 @@ function doGet(e) {
             }
 
             pendingSeriesAction = null;
-            saveState();
+            saveState({ autoBackup: true });
             refreshAll();
             closeModal('modalSeriesScope');
         }
@@ -5947,7 +6376,7 @@ function doGet(e) {
                     if (t.type === 'expense' && !t.paid) { t.paid = true; cnt++; }
                 });
                 if (cnt > 0) {
-                    saveState();
+                    saveState({ autoBackup: true });
                     refreshAll();
                     toast(`${cnt} lançamento(s) da fatura quitados!`);
                 }
@@ -6001,7 +6430,7 @@ function doGet(e) {
                 }
             });
             if (cnt > 0) {
-                saveState();
+                saveState({ autoBackup: true });
                 refreshAll();
                 toast(`${cnt} lançamento(s) da fatura quitados!`);
             }
@@ -6016,7 +6445,7 @@ function doGet(e) {
                 }
             });
             if (cnt > 0) {
-                saveState();
+                saveState({ autoBackup: true });
                 refreshAll();
                 toast(`Fatura reaberta (${cnt} lançamento(s) em aberto)!`);
             } else {
@@ -6152,7 +6581,7 @@ function doGet(e) {
                 currentInstallment: 1,
                 totalInstallments: 1
             });
-            saveState();
+            saveState({ autoBackup: true });
             refreshAll();
             closeModal('modalBankAdjust');
             toast('Saldo bancário conciliado!');
@@ -6383,6 +6812,9 @@ function doGet(e) {
             const m = appState.calMonth;
             document.getElementById('calMonthTitle').textContent = `${MONTHS[m]} / ${y}`;
 
+            const now = new Date();
+            const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
             const daysInMonth = new Date(y, m + 1, 0).getDate();
             const firstDow = new Date(y, m, 1).getDay();
             const map = {};
@@ -6405,22 +6837,93 @@ function doGet(e) {
             document.getElementById('calNetTotal').textContent = fmtBRL(mInc - mExp);
 
             let cells = '';
-            for (let i = 0; i < firstDow; i++) cells += '<div class="h-14 rounded-xl bg-slate-50/50 dark:bg-slate-900/40"></div>';
+            for (let i = 0; i < firstDow; i++) cells += '<div class="aspect-square rounded-2xl bg-slate-50/40 dark:bg-slate-900/30"></div>';
 
             for (let d = 1; d <= daysInMonth; d++) {
                 const info = map[d];
                 const dIso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const isToday = dIso === todayIso;
+                const hasInc = info.inc > 0;
+                const hasExp = info.exp > 0;
+                let stateCls = '';
+                if (hasInc && hasExp) stateCls = 'has-both';
+                else if (hasInc) stateCls = 'has-income';
+                else if (hasExp) stateCls = 'has-expense';
+
+                const numColorCls = isToday
+                    ? 'theme-text font-black text-base'
+                    : (hasExp && !hasInc
+                        ? 'text-rose-700 dark:text-rose-300 font-extrabold text-sm sm:text-base'
+                        : (hasInc && !hasExp
+                            ? 'text-emerald-700 dark:text-emerald-300 font-extrabold text-sm sm:text-base'
+                            : 'text-slate-800 dark:text-slate-100 font-extrabold text-sm sm:text-base'));
+
                 cells += `
-                    <button type="button" onclick="openDayModal(${d}, '${dIso}')" class="app-card h-14 p-1.5 rounded-xl flex flex-col justify-between text-left active:scale-95 transition-transform">
-                        <span class="text-sm font-extrabold">${d}</span>
-                        <div class="flex gap-1">
-                            ${info.inc > 0 ? '<span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>' : ''}
-                            ${info.exp > 0 ? '<span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>' : ''}
-                        </div>
+                    <button type="button" onclick="openDayModal(${d}, '${dIso}')" aria-label="Dia ${d}" class="cal-day-card ${stateCls} ${isToday ? 'is-today' : ''}">
+                        <span class="${numColorCls} leading-none select-none">${d}</span>
+                        ${isToday ? '<span class="absolute bottom-1 w-1.5 h-1.5 rounded-full theme-btn"></span>' : ''}
                     </button>
                 `;
             }
             document.getElementById('calDaysGrid').innerHTML = cells;
+
+            renderCalendarTodayReport(now, todayIso);
+        }
+
+        function renderCalendarTodayReport(nowObj, todayIso) {
+            const dateLbl = document.getElementById('calTodayReportDate');
+            if (dateLbl) {
+                const fmtDate = nowObj.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' });
+                dateLbl.textContent = fmtDate.charAt(0).toUpperCase() + fmtDate.slice(1);
+            }
+
+            const btnDay = document.getElementById('btnCalTodayDetails');
+            if (btnDay) {
+                btnDay.onclick = () => openDayModal(nowObj.getDate(), todayIso);
+            }
+
+            let todayInc = 0, todayIncCnt = 0;
+            let todayExp = 0, todayExpCnt = 0;
+            let todayCards = 0, todayCardsCnt = 0;
+
+            appState.transactions.forEach(t => {
+                const matchDue = t.dueDate === todayIso;
+                const matchOp = t.operationDate === todayIso;
+                if (!matchDue && !matchOp) return;
+                const amt = Number(t.amount) || 0;
+
+                if (t.type === 'income' || isWithdrawal(t)) {
+                    todayInc += amt;
+                    todayIncCnt++;
+                } else if (t.type === 'expense') {
+                    if (t.paymentMethod === 'card') {
+                        todayCards += amt;
+                        todayCardsCnt++;
+                    }
+                    todayExp += amt;
+                    todayExpCnt++;
+                }
+            });
+
+            const bal = todayInc - todayExp;
+            const elInc = document.getElementById('calTodayIncome');
+            const elIncCnt = document.getElementById('calTodayIncomeCnt');
+            const elExp = document.getElementById('calTodayExpense');
+            const elExpCnt = document.getElementById('calTodayExpenseCnt');
+            const elCards = document.getElementById('calTodayCards');
+            const elCardsCnt = document.getElementById('calTodayCardsCnt');
+            const elBal = document.getElementById('calTodayBalance');
+
+            if (elInc) elInc.textContent = fmtBRL(todayInc);
+            if (elIncCnt) elIncCnt.textContent = `${todayIncCnt} ${todayIncCnt === 1 ? 'lançamento' : 'lançamentos'}`;
+            if (elExp) elExp.textContent = fmtBRL(todayExp);
+            if (elExpCnt) elExpCnt.textContent = `${todayExpCnt} ${todayExpCnt === 1 ? 'lançamento' : 'lançamentos'}`;
+            if (elCards) elCards.textContent = fmtBRL(todayCards);
+            if (elCardsCnt) elCardsCnt.textContent = `${todayCardsCnt} ${todayCardsCnt === 1 ? 'lançamento' : 'lançamentos'}`;
+            if (elBal) {
+                elBal.textContent = fmtBRL(bal);
+                elBal.className = `block text-base sm:text-lg font-black mt-1 truncate ${bal >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+            }
         }
 
         let activeDayModalInfo = null;
@@ -6622,7 +7125,7 @@ function doGet(e) {
             const iconsGrid = document.getElementById('catIconsPaletteGrid');
             if (iconsGrid) {
                 iconsGrid.innerHTML = CATEGORY_ICONS_100.map(ic => `
-                    <button type="button" onclick="selectCategoryIcon('${ic}')" aria-label="Ícone ${ic}" class="w-7 h-7 rounded-lg flex items-center justify-center text-xs transition-all ${selectedIcon === ic ? 'text-white shadow-sm scale-105' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700'}" style="${selectedIcon === ic ? `background:${selectedColor}` : ''}">
+                    <button type="button" onclick="selectCategoryIcon('${ic}')" aria-label="Ícone ${ic}" class="w-full h-12 rounded-xl flex items-center justify-center text-lg transition-all ${selectedIcon === ic ? 'text-white shadow-md scale-105' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700'}" style="${selectedIcon === ic ? `background:${selectedColor}` : ''}">
                         <i class="fa-solid ${ic}"></i>
                     </button>
                 `).join('');
@@ -6649,7 +7152,10 @@ function doGet(e) {
             if (iconsGrid) iconsGrid.scrollTop = 0;
         }
 
+        let categoryManagerFocusId = null;
+
         function openCategoryManagerModal(preselectCatId = null) {
+            categoryManagerFocusId = preselectCatId || null;
             document.getElementById('editCatId').value = '';
             document.getElementById('catNameInput').value = '';
             document.getElementById('catTypeInput').value = 'expense';
@@ -6670,7 +7176,11 @@ function doGet(e) {
         }
 
         function renderCatManagerList() {
-            document.getElementById('catManagerList').innerHTML = appState.categories.map(c => {
+            const visibleCategories = categoryManagerFocusId
+                ? appState.categories.filter(c => c.id === categoryManagerFocusId)
+                : appState.categories;
+
+            document.getElementById('catManagerList').innerHTML = visibleCategories.map(c => {
                 const subs = c.subcategories || [];
                 return `
                     <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 space-y-2 text-xs sm:text-sm">
@@ -6744,10 +7254,11 @@ function doGet(e) {
             document.getElementById('catColorInput').value = '#10b981';
             document.getElementById('catIconInput').value = 'fa-tag';
             document.getElementById('subParentCatSelect').innerHTML = appState.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            saveState();
+            saveState({ autoBackup: true });
             renderCategoryColorAndIconPickers();
             renderCatManagerList();
             refreshAll();
+            closeModal('modalCategoryManager');
             toast('Categoria salva!');
         }
 
@@ -6888,14 +7399,16 @@ function doGet(e) {
             toast('Código copiado!');
         }
 
-        async function syncSaveToCloud() {
+        async function syncSaveToCloud(silent = false) {
             saveState();
             if (!appState.appsScriptUrl) {
-                openAppsScriptModal();
-                toast('Configure a URL do Apps Script primeiro.');
+                if (!silent) {
+                    openAppsScriptModal();
+                    toast('Configure a URL do Apps Script primeiro.');
+                }
                 return;
             }
-            toast('Salvando no Google Drive...');
+            if (!silent) toast('Salvando no Google Drive...');
             try {
                 await fetch(appState.appsScriptUrl, {
                     method: 'POST',
@@ -6916,9 +7429,9 @@ function doGet(e) {
                 appState.lastSyncTime = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR')}`;
                 localStorage.setItem(getStorageKey('orcamento_last_sync_time'), appState.lastSyncTime);
                 updateSyncLabel();
-                toast('Backup salvo no Google Drive!');
+                if (!silent) toast('Backup salvo no Google Drive!');
             } catch (e) {
-                toast('Erro ao conectar com Google Drive.');
+                if (!silent) toast('Erro ao conectar com Google Drive.');
             }
         }
 
