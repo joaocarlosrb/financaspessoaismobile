@@ -118,6 +118,19 @@
             scrollbar-width: none;
         }
 
+        /* Bloqueio total de rolagem e interação do fundo quando qualquer modal ou leque estiver aberto */
+        html.modal-open,
+        body.modal-open {
+            overflow: hidden !important;
+            overscroll-behavior: none !important;
+            touch-action: none !important;
+        }
+        body.modal-open > #appShell > header,
+        body.modal-open > #appShell > main {
+            pointer-events: none !important;
+            user-select: none !important;
+        }
+
         /* Modais centralizados com bordas visíveis nos 4 lados */
         .modal-backdrop {
             position: fixed;
@@ -129,7 +142,76 @@
             align-items: center;
             justify-content: center;
             padding: 16px;
+            overscroll-behavior: contain;
+            touch-action: none;
             animation: fadeInBackdrop 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        .modal-backdrop .modal-sheet {
+            touch-action: pan-y;
+        }
+
+        /* Leque / Lista flutuante de opções acima do botão "+" */
+        #quickAddFanBackdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 45;
+            background-color: rgba(15, 23, 42, 0.42);
+            backdrop-filter: blur(2px);
+            touch-action: none;
+            transition: opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #quickAddFanBackdrop.hidden {
+            display: none !important;
+        }
+        #quickAddFanMenu {
+            position: fixed;
+            left: 50%;
+            bottom: calc(82px + env(safe-area-inset-bottom));
+            transform: translateX(-50%) translateY(16px) scale(0.94);
+            opacity: 0;
+            z-index: 50;
+            width: min(286px, calc(100vw - 28px));
+            padding: 12px;
+            border-radius: 26px;
+            background: var(--theme-banner);
+            border: 1.5px solid rgba(255, 255, 255, 0.24);
+            box-shadow: 0 22px 44px -8px color-mix(in srgb, var(--theme-primary) 55%, rgba(15, 23, 42, 0.45)),
+                        0 8px 18px -4px rgba(15, 23, 42, 0.22);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+            transition: opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.30s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #quickAddFanMenu.is-open {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        .quick-fan-item {
+            opacity: 0;
+            transform: translateY(14px) scale(0.94);
+            transition: opacity 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.30s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.14);
+        }
+        .dark .quick-fan-item {
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+        }
+        #quickAddFanMenu.is-open .quick-fan-item {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        #quickAddFanMenu.is-open .quick-fan-item:nth-child(4) { transition-delay: 0.02s; }
+        #quickAddFanMenu.is-open .quick-fan-item:nth-child(3) { transition-delay: 0.05s; }
+        #quickAddFanMenu.is-open .quick-fan-item:nth-child(2) { transition-delay: 0.08s; }
+        #quickAddFanMenu.is-open .quick-fan-item:nth-child(1) { transition-delay: 0.11s; }
+        #fabPlusIcon {
+            transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #fabPlusBtn.is-open #fabPlusIcon {
+            transform: rotate(45deg);
         }
 
         .modal-backdrop.hidden {
@@ -1671,10 +1753,10 @@
 
             <!-- Botão Central Flutuante Redondo "+" -->
             <div class="relative z-10 flex justify-center">
-                <button type="button" onclick="openNewTxModal('expense')" aria-label="Nova Transação"
+                <button type="button" id="fabPlusBtn" onclick="toggleQuickAddFanMenu()" aria-label="Opções de Lançamento"
                     style="box-shadow: 0 12px 24px -4px color-mix(in srgb, var(--theme-primary) 55%, transparent), 0 6px 14px -2px color-mix(in srgb, var(--theme-secondary) 52%, transparent);"
                     class="-mt-8 w-14 h-14 rounded-full theme-btn border-4 border-white dark:border-slate-900 flex items-center justify-center text-2xl active:scale-95 transition-transform">
-                    <i class="fa-solid fa-plus"></i>
+                    <i id="fabPlusIcon" class="fa-solid fa-plus"></i>
                 </button>
             </div>
 
@@ -1689,6 +1771,42 @@
             </button>
         </div>
     </nav>
+
+    <!-- LEQUE DE OPÇÕES RÁPIDAS ACIMA DO BOTÃO "+" -->
+    <div id="quickAddFanBackdrop" onclick="closeQuickAddFanMenu()" class="hidden opacity-0"></div>
+    <div id="quickAddFanMenu" aria-hidden="true">
+        <button type="button" onclick="selectQuickAddOption('expense', 'bank')"
+            class="quick-fan-item w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-rose-200 dark:border-rose-800/70 flex items-center justify-between gap-3 text-left active:scale-95">
+            <span class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white">Despesa</span>
+            <span class="w-8 h-8 rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center text-sm shrink-0">
+                <i class="fa-solid fa-arrow-trend-down"></i>
+            </span>
+        </button>
+
+        <button type="button" onclick="selectQuickAddOption('income', 'bank')"
+            class="quick-fan-item w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-800/70 flex items-center justify-between gap-3 text-left active:scale-95">
+            <span class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white">Receita</span>
+            <span class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm shrink-0">
+                <i class="fa-solid fa-arrow-trend-up"></i>
+            </span>
+        </button>
+
+        <button type="button" onclick="selectQuickAddOption('expense', 'card')"
+            class="quick-fan-item w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-800/70 flex items-center justify-between gap-3 text-left active:scale-95">
+            <span class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white">Despesa Cartão</span>
+            <span class="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center text-sm shrink-0">
+                <i class="fa-solid fa-credit-card"></i>
+            </span>
+        </button>
+
+        <button type="button" onclick="selectQuickAddOption('transfer', 'bank')"
+            class="quick-fan-item w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-sky-200 dark:border-sky-800/70 flex items-center justify-between gap-3 text-left active:scale-95">
+            <span class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white">Transferência</span>
+            <span class="w-8 h-8 rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center text-sm shrink-0">
+                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+            </span>
+        </button>
+    </div>
 
     <!-- ==================== MODAL: DETALHES DA TRANSAÇÃO ==================== -->
     <div id="modalTxDetails" onclick="if(event.target===this) closeModal('modalTxDetails')" class="modal-backdrop hidden z-[80]">
@@ -3102,12 +3220,33 @@ function doGet(e) {
             el._t = setTimeout(() => el.classList.add('opacity-0'), 2600);
         }
 
+        function syncBackgroundScrollLock() {
+            const anyModalOpen = Array.from(document.querySelectorAll('.modal-backdrop')).some(
+                el => !el.classList.contains('hidden') && !el.classList.contains('closing')
+            );
+            const fanMenu = document.getElementById('quickAddFanMenu');
+            const fanOpen = fanMenu && fanMenu.classList.contains('is-open');
+            const shouldLock = anyModalOpen || fanOpen;
+            document.documentElement.classList.toggle('modal-open', shouldLock);
+            document.body.classList.toggle('modal-open', shouldLock);
+        }
+
+        document.addEventListener('touchmove', function(e) {
+            if (!document.body.classList.contains('modal-open')) return;
+            const scrollableInsideModal = e.target.closest('.modal-sheet .overflow-y-auto, .modal-sheet textarea');
+            if (!scrollableInsideModal) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
         function openModal(id) {
+            closeQuickAddFanMenu(true);
             const el = document.getElementById(id);
             if (!el) return;
             clearTimeout(el._closeTimer);
             el.classList.remove('closing');
             el.classList.remove('hidden');
+            syncBackgroundScrollLock();
         }
 
         function closeModal(id) {
@@ -3119,7 +3258,59 @@ function doGet(e) {
             el._closeTimer = setTimeout(() => {
                 el.classList.add('hidden');
                 el.classList.remove('closing');
+                syncBackgroundScrollLock();
             }, 190);
+        }
+
+        function toggleQuickAddFanMenu() {
+            const menu = document.getElementById('quickAddFanMenu');
+            if (!menu) return;
+            if (menu.classList.contains('is-open')) {
+                closeQuickAddFanMenu();
+            } else {
+                openQuickAddFanMenu();
+            }
+        }
+
+        function openQuickAddFanMenu() {
+            const backdrop = document.getElementById('quickAddFanBackdrop');
+            const menu = document.getElementById('quickAddFanMenu');
+            const fabBtn = document.getElementById('fabPlusBtn');
+            if (!backdrop || !menu) return;
+            clearTimeout(menu._closeTimer);
+            backdrop.classList.remove('hidden');
+            void backdrop.offsetWidth;
+            backdrop.classList.remove('opacity-0');
+            menu.classList.add('is-open');
+            menu.setAttribute('aria-hidden', 'false');
+            if (fabBtn) fabBtn.classList.add('is-open');
+            syncBackgroundScrollLock();
+        }
+
+        function closeQuickAddFanMenu(immediate = false) {
+            const backdrop = document.getElementById('quickAddFanBackdrop');
+            const menu = document.getElementById('quickAddFanMenu');
+            const fabBtn = document.getElementById('fabPlusBtn');
+            if (!backdrop || !menu) return;
+            clearTimeout(menu._closeTimer);
+            menu.classList.remove('is-open');
+            menu.setAttribute('aria-hidden', 'true');
+            if (fabBtn) fabBtn.classList.remove('is-open');
+            backdrop.classList.add('opacity-0');
+            if (immediate) {
+                backdrop.classList.add('hidden');
+                syncBackgroundScrollLock();
+            } else {
+                menu._closeTimer = setTimeout(() => {
+                    backdrop.classList.add('hidden');
+                    syncBackgroundScrollLock();
+                }, 220);
+            }
+        }
+
+        function selectQuickAddOption(txType, payMethod = 'bank') {
+            closeQuickAddFanMenu(true);
+            openNewTxModal(txType, null, payMethod);
         }
 
         function getStorageKey(base, pid = null) {
@@ -3893,6 +4084,7 @@ function doGet(e) {
         });
 
         function switchTab(tab) {
+            closeQuickAddFanMenu(true);
             appState.activeTab = tab;
             const topKpis = document.getElementById('dashboardTopKpisSection');
             if (topKpis) {
@@ -5273,7 +5465,7 @@ function doGet(e) {
             }
         }
 
-        function openNewTxModal(type = 'expense', customDate = null) {
+        function openNewTxModal(type = 'expense', customDate = null, payMethod = 'bank') {
             txUserManuallyPickedCat = false;
             txUserManuallyPickedSub = false;
             document.getElementById('txId').value = '';
@@ -5300,7 +5492,9 @@ function doGet(e) {
 
             populateCardSelect();
             setFormTxType(type);
-            setFormPayMethod('bank');
+            if (type !== 'transfer') {
+                setFormPayMethod(payMethod || 'bank');
+            }
             calcFormTotal();
             openModal('modalTransaction');
         }
