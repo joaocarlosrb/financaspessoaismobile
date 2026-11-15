@@ -24,7 +24,7 @@
     <!-- Google Fonts & FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fira+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Lato:wght@400;700;900&family=Manrope:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800&family=Open+Sans:wght@400;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Chart.js & SheetJS -->
@@ -45,9 +45,16 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --app-font: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        html, body, body *:not(.fa):not(.fas):not(.far):not(.fab):not(.fa-solid):not(.fa-regular):not(.fa-brands):not([class*="fa-"]) {
+            font-family: var(--app-font) !important;
+        }
+
         html, body {
             background-color: #f1f5f9;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             font-variant-numeric: tabular-nums;
             overscroll-behavior-y: contain;
         }
@@ -1110,89 +1117,61 @@
             <div id="budgetsCardsList" class="space-y-3"></div>
         </div>
 
-        <!-- ==================== ABA 9: CONFIGURAÇÕES & NUVEM ==================== -->
-        <div id="tab-settings" class="hidden space-y-4">
-            <!-- Aparência (Modo Claro / Escuro) -->
-            <div class="app-card p-4 sm:p-5 flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-base shrink-0">
-                        <i id="darkModeIcon" class="fa-solid fa-moon"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-base font-extrabold">Aparência do Aplicativo</h3>
-                        <p id="darkModeSubtitle" class="text-xs text-slate-500 dark:text-slate-400">Modo Claro ativado</p>
-                    </div>
-                </div>
-                <button type="button" onclick="toggleDarkMode()" id="btnToggleDarkSettings" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-bold flex items-center gap-2 shrink-0">
-                    <i id="darkModeBtnIcon" class="fa-solid fa-moon text-amber-500"></i>
-                    <span id="darkModeBtnLabel">Modo Escuro</span>
-                </button>
+        <!-- ==================== ABA 9: CONFIGURAÇÕES & NUVEM (2 CARDS POR LINHA) ==================== -->
+        <div id="tab-settings" class="hidden space-y-3.5">
+            <div class="app-card p-4">
+                <h2 class="text-base font-extrabold">Configurações</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Toque em uma opção para configurar</p>
             </div>
 
-            <!-- Perfil, Usuário & Senha -->
-            <div class="app-card p-4 sm:p-5 flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-10 h-10 rounded-xl theme-btn flex items-center justify-center text-base shrink-0">
+            <div class="grid grid-cols-2 gap-3">
+                <!-- Card 1: Perfil, Usuário & Senha -->
+                <button type="button" onclick="openUserProfileModal()" class="app-card p-4 flex flex-col items-center justify-center text-center gap-2.5 min-h-[116px] active:scale-95 transition-transform">
+                    <span class="w-12 h-12 rounded-2xl theme-btn flex items-center justify-center text-lg shadow-sm">
                         <i id="settingsProfileIcon" class="fa-solid fa-user-shield"></i>
-                    </div>
-                    <div class="min-w-0">
-                        <h3 class="text-base font-extrabold truncate">Perfil, Usuário & Senha</h3>
-                        <p id="settingsProfileSummary" class="text-xs text-slate-500 dark:text-slate-400 truncate">Configure seu usuário de login e senha</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-1.5 shrink-0">
-                    <button type="button" onclick="openUserProfileModal()" class="px-3 py-2 rounded-xl theme-btn text-xs font-bold">
-                        <i class="fa-solid fa-pen mr-1"></i>Editar
-                    </button>
-                    <button type="button" onclick="openProfileSwitchLockModal()" title="Trocar ou bloquear perfil" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold">
-                        <i class="fa-solid fa-lock"></i>
-                    </button>
-                </div>
-            </div>
+                    </span>
+                    <strong class="text-xs sm:text-sm font-extrabold leading-tight">Perfil & Acesso</strong>
+                </button>
 
-            <!-- Paleta de Cores -->
-            <div class="app-card p-4 sm:p-5 space-y-3">
-                <h3 class="text-base font-extrabold">Paleta de Cores do Aplicativo</h3>
-                <div id="colorThemesGrid" class="grid grid-cols-5 gap-2"></div>
-            </div>
+                <!-- Card 2: Aparência (Modo Claro / Escuro) -->
+                <button type="button" onclick="openModal('modalAppearanceSettings')" class="app-card p-4 flex flex-col items-center justify-center text-center gap-2.5 min-h-[116px] active:scale-95 transition-transform">
+                    <span class="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-lg">
+                        <i id="darkModeIcon" class="fa-solid fa-circle-half-stroke"></i>
+                    </span>
+                    <strong class="text-xs sm:text-sm font-extrabold leading-tight">Aparência</strong>
+                </button>
 
-            <!-- Sincronização Google Drive / Apps Script -->
-            <div class="app-card p-4 sm:p-5 space-y-3.5">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <h3 class="text-base font-extrabold"><i class="fa-brands fa-google-drive text-emerald-600 mr-1.5"></i>Google Drive / Apps Script</h3>
-                        <p id="syncStatusLabel" class="text-xs text-slate-400 mt-0.5">Última sincronização: Nunca</p>
-                    </div>
-                    <button type="button" onclick="openAppsScriptModal()" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold shrink-0">
-                        <i class="fa-solid fa-link mr-1"></i>URL / Script
-                    </button>
-                </div>
+                <!-- Card 3: Paleta de Cores -->
+                <button type="button" onclick="openModal('modalPaletteSettings')" class="app-card p-4 flex flex-col items-center justify-center text-center gap-2.5 min-h-[116px] active:scale-95 transition-transform">
+                    <span class="w-12 h-12 rounded-2xl theme-btn flex items-center justify-center text-lg shadow-sm">
+                        <i class="fa-solid fa-palette"></i>
+                    </span>
+                    <strong class="text-xs sm:text-sm font-extrabold leading-tight">Paleta de Cores</strong>
+                </button>
 
-                <div class="grid grid-cols-2 gap-2.5">
-                    <button type="button" onclick="syncSaveToCloud()" class="py-3 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold">
-                        <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>Salvar na Nuvem
-                    </button>
-                    <button type="button" onclick="syncRestoreFromCloud()" class="py-3 rounded-xl bg-amber-600 text-white text-xs sm:text-sm font-bold">
-                        <i class="fa-solid fa-cloud-arrow-down mr-1.5"></i>Restaurar Nuvem
-                    </button>
-                </div>
-            </div>
+                <!-- Card 4: Fontes dos Textos e Números -->
+                <button type="button" onclick="openFontSettingsModal()" class="app-card p-4 flex flex-col items-center justify-center text-center gap-2.5 min-h-[116px] active:scale-95 transition-transform">
+                    <span class="w-12 h-12 rounded-2xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-font"></i>
+                    </span>
+                    <strong class="text-xs sm:text-sm font-extrabold leading-tight">Fontes</strong>
+                </button>
 
-            <!-- Backup Local JSON & Excel -->
-            <div class="app-card p-4 sm:p-5 space-y-3">
-                <h3 class="text-base font-extrabold">Backup Local & Planilha Excel</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                    <button type="button" onclick="exportExcel()" class="py-3 px-3 rounded-xl bg-emerald-600 text-white text-xs sm:text-sm font-bold">
-                        <i class="fa-solid fa-file-excel mr-1.5"></i>Exportar Excel (.xlsx)
-                    </button>
-                    <button type="button" onclick="exportJsonBackup()" class="py-3 px-3 rounded-xl bg-indigo-600 text-white text-xs sm:text-sm font-bold">
-                        <i class="fa-solid fa-download mr-1.5"></i>Backup JSON (.json)
-                    </button>
-                    <button type="button" onclick="document.getElementById('importJsonInput').click()" class="py-3 px-3 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-xs sm:text-sm font-bold">
-                        <i class="fa-solid fa-upload mr-1.5"></i>Importar JSON
-                    </button>
-                    <input type="file" id="importJsonInput" accept=".json,application/json" onchange="importJsonBackup(event)" class="hidden">
-                </div>
+                <!-- Card 5: Google Drive / Apps Script -->
+                <button type="button" onclick="openModal('modalCloudSyncSettings')" class="app-card p-4 flex flex-col items-center justify-center text-center gap-2.5 min-h-[116px] active:scale-95 transition-transform">
+                    <span class="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-lg">
+                        <i class="fa-brands fa-google-drive"></i>
+                    </span>
+                    <strong class="text-xs sm:text-sm font-extrabold leading-tight">Google Drive</strong>
+                </button>
+
+                <!-- Card 6: Backup Local & Excel -->
+                <button type="button" onclick="openModal('modalBackupSettings')" class="app-card p-4 flex flex-col items-center justify-center text-center gap-2.5 min-h-[116px] active:scale-95 transition-transform">
+                    <span class="w-12 h-12 rounded-2xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-file-export"></i>
+                    </span>
+                    <strong class="text-xs sm:text-sm font-extrabold leading-tight">Backup & Excel</strong>
+                </button>
             </div>
         </div>
 
@@ -1211,9 +1190,11 @@
                 <span class="text-[11px] font-bold mt-0.5">Lançamentos</span>
             </button>
 
-            <!-- Botão Central Destacado "+" -->
+            <!-- Botão Central Flutuante Redondo "+" -->
             <div class="flex justify-center">
-                <button type="button" onclick="openNewTxModal('expense')" aria-label="Nova Transação" class="-mt-6 w-12 h-12 rounded-2xl theme-btn flex items-center justify-center text-xl shadow-lg active:scale-95 transition-transform">
+                <button type="button" onclick="openNewTxModal('expense')" aria-label="Nova Transação"
+                    style="box-shadow: 0 12px 24px -4px rgba(15, 23, 42, 0.38), 0 6px 12px -2px rgba(16, 185, 129, 0.45);"
+                    class="-mt-8 w-14 h-14 rounded-full theme-btn border-4 border-white dark:border-slate-900 flex items-center justify-center text-2xl active:scale-95 transition-transform">
                     <i class="fa-solid fa-plus"></i>
                 </button>
             </div>
@@ -2021,11 +2002,140 @@
                     <div id="userProfileIconsGrid" class="grid grid-cols-6 gap-1.5 max-h-40 overflow-y-auto p-1"></div>
                 </div>
 
-                <div class="pt-2 flex gap-2">
-                    <button type="button" onclick="closeModal('modalUserProfile')" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs sm:text-sm font-bold">Cancelar</button>
-                    <button type="submit" class="flex-1 py-2.5 rounded-xl theme-btn text-xs sm:text-sm font-extrabold">Salvar Perfil</button>
+                <div class="pt-2 grid grid-cols-3 gap-2">
+                    <button type="button" onclick="closeModal('modalUserProfile')" class="py-2.5 px-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs sm:text-sm font-bold">Cancelar</button>
+                    <button type="button" onclick="logoutFromProfileModal()" class="py-2.5 px-2 rounded-xl bg-rose-600 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-right-from-bracket text-xs"></i><span>Sair</span>
+                    </button>
+                    <button type="submit" class="py-2.5 px-2 rounded-xl theme-btn text-xs sm:text-sm font-extrabold">Salvar Perfil</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: CONFIGURAÇÃO DE APARÊNCIA ==================== -->
+    <div id="modalAppearanceSettings" onclick="if(event.target===this) closeModal('modalAppearanceSettings')" class="modal-backdrop hidden">
+        <div class="modal-sheet">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-circle-half-stroke text-base"></i>
+                    <h3 class="text-base font-extrabold">Aparência do Aplicativo</h3>
+                </div>
+                <button type="button" onclick="closeModal('modalAppearanceSettings')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 space-y-4">
+                <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3">
+                    <div>
+                        <strong class="block text-sm font-extrabold">Tema Atual</strong>
+                        <p id="darkModeSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Modo Claro ativado</p>
+                    </div>
+                    <button type="button" onclick="toggleDarkMode()" id="btnToggleDarkSettings" class="px-4 py-2.5 rounded-xl theme-btn text-xs sm:text-sm font-bold flex items-center gap-2 shrink-0">
+                        <i id="darkModeBtnIcon" class="fa-solid fa-moon"></i>
+                        <span id="darkModeBtnLabel">Modo Escuro</span>
+                    </button>
+                </div>
+            </div>
+            <div class="p-3.5 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" onclick="closeModal('modalAppearanceSettings')" class="w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-sm font-bold">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: PALETA DE CORES (12 CORES) ==================== -->
+    <div id="modalPaletteSettings" onclick="if(event.target===this) closeModal('modalPaletteSettings')" class="modal-backdrop hidden">
+        <div class="modal-sheet">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-palette text-base"></i>
+                    <h3 class="text-base font-extrabold">Paleta de Cores (12 opções)</h3>
+                </div>
+                <button type="button" onclick="closeModal('modalPaletteSettings')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 overflow-y-auto flex-1">
+                <div id="colorThemesGrid" class="grid grid-cols-3 gap-2.5"></div>
+            </div>
+            <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 shrink-0">
+                <button type="button" onclick="closeModal('modalPaletteSettings')" class="w-full py-2.5 rounded-xl theme-btn text-sm font-bold">Concluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: FONTES DOS TEXTOS E NÚMEROS (12 FONTES) ==================== -->
+    <div id="modalFontSettings" onclick="if(event.target===this) closeModal('modalFontSettings')" class="modal-backdrop hidden">
+        <div class="modal-sheet">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-font text-base"></i>
+                    <h3 class="text-base font-extrabold">Fontes dos Textos e Números</h3>
+                </div>
+                <button type="button" onclick="closeModal('modalFontSettings')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 overflow-y-auto flex-1">
+                <div id="fontPickerList" class="divide-y divide-slate-200/70 dark:divide-slate-700/70 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/70 overflow-hidden"></div>
+            </div>
+            <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 shrink-0">
+                <button type="button" onclick="closeModal('modalFontSettings')" class="w-full py-2.5 rounded-xl theme-btn text-sm font-bold">Concluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: SINCRONIZAÇÃO GOOGLE DRIVE ==================== -->
+    <div id="modalCloudSyncSettings" onclick="if(event.target===this) closeModal('modalCloudSyncSettings')" class="modal-backdrop hidden">
+        <div class="modal-sheet">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-brands fa-google-drive text-base"></i>
+                    <h3 class="text-base font-extrabold">Google Drive / Apps Script</h3>
+                </div>
+                <button type="button" onclick="closeModal('modalCloudSyncSettings')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 space-y-3.5">
+                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2">
+                    <p id="syncStatusLabel" class="text-xs text-slate-500 dark:text-slate-400 font-semibold">Última sincronização: Nunca</p>
+                    <button type="button" onclick="openAppsScriptModal()" class="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 text-xs font-bold shrink-0">
+                        <i class="fa-solid fa-link mr-1"></i>URL / Script
+                    </button>
+                </div>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button type="button" onclick="syncSaveToCloud()" class="py-3 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold">
+                        <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>Salvar na Nuvem
+                    </button>
+                    <button type="button" onclick="syncRestoreFromCloud()" class="py-3 rounded-xl bg-amber-600 text-white text-xs sm:text-sm font-bold">
+                        <i class="fa-solid fa-cloud-arrow-down mr-1.5"></i>Restaurar Nuvem
+                    </button>
+                </div>
+            </div>
+            <div class="p-3.5 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" onclick="closeModal('modalCloudSyncSettings')" class="w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-sm font-bold">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: BACKUP LOCAL & PLANILHA EXCEL ==================== -->
+    <div id="modalBackupSettings" onclick="if(event.target===this) closeModal('modalBackupSettings')" class="modal-backdrop hidden">
+        <div class="modal-sheet">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-file-export text-base"></i>
+                    <h3 class="text-base font-extrabold">Backup Local & Planilha Excel</h3>
+                </div>
+                <button type="button" onclick="closeModal('modalBackupSettings')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 space-y-2.5">
+                <button type="button" onclick="exportExcel()" class="w-full py-3 px-4 rounded-xl bg-emerald-600 text-white text-sm font-bold flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-excel"></i><span>Exportar Excel (.xlsx)</span>
+                </button>
+                <button type="button" onclick="exportJsonBackup()" class="w-full py-3 px-4 rounded-xl bg-indigo-600 text-white text-sm font-bold flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-download"></i><span>Backup JSON (.json)</span>
+                </button>
+                <button type="button" onclick="document.getElementById('importJsonInput').click()" class="w-full py-3 px-4 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm font-bold flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-upload"></i><span>Importar Backup JSON</span>
+                </button>
+                <input type="file" id="importJsonInput" accept=".json,application/json" onchange="importJsonBackup(event)" class="hidden">
+            </div>
+            <div class="p-3.5 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" onclick="closeModal('modalBackupSettings')" class="w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-sm font-bold">Fechar</button>
+            </div>
         </div>
     </div>
 
@@ -2226,12 +2336,34 @@ function doGet(e) {
     <script>
         const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
+        const APP_FONT_OPTIONS = [
+            { id: 'Inter', label: 'Inter', family: "'Inter', sans-serif", sample: 'Padrão moderno' },
+            { id: 'Plus Jakarta Sans', label: 'Jakarta Sans', family: "'Plus Jakarta Sans', sans-serif", sample: 'Geométrica' },
+            { id: 'Roboto', label: 'Roboto', family: "'Roboto', sans-serif", sample: 'Clássica limpa' },
+            { id: 'Poppins', label: 'Poppins', family: "'Poppins', sans-serif", sample: 'Arredondada' },
+            { id: 'Montserrat', label: 'Montserrat', family: "'Montserrat', sans-serif", sample: 'Elegante' },
+            { id: 'Open Sans', label: 'Open Sans', family: "'Open Sans', sans-serif", sample: 'Legível' },
+            { id: 'Lato', label: 'Lato', family: "'Lato', sans-serif", sample: 'Humanista' },
+            { id: 'Nunito', label: 'Nunito', family: "'Nunito', sans-serif", sample: 'Suave' },
+            { id: 'DM Sans', label: 'DM Sans', family: "'DM Sans', sans-serif", sample: 'Minimalista' },
+            { id: 'Manrope', label: 'Manrope', family: "'Manrope', sans-serif", sample: 'Contemporânea' },
+            { id: 'Outfit', label: 'Outfit', family: "'Outfit', sans-serif", sample: 'Moderna' },
+            { id: 'Fira Sans', label: 'Fira Sans', family: "'Fira Sans', sans-serif", sample: 'Executiva' }
+        ];
+
         const COLOR_THEMES = [
-            { id: 'emerald', name: 'Esmeralda', primary: '#0f766e', secondary: '#10b981', banner: 'linear-gradient(135deg, #064e3b 0%, #0f766e 55%, #10b981 100%)' },
-            { id: 'ocean', name: 'Oceano', primary: '#1d4ed8', secondary: '#3b82f6', banner: 'linear-gradient(135deg, #172554 0%, #1d4ed8 55%, #0284c7 100%)' },
-            { id: 'indigo', name: 'Índigo', primary: '#4338ca', secondary: '#6366f1', banner: 'linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #7c3aed 100%)' },
-            { id: 'violet', name: 'Roxo', primary: '#6d28d9', secondary: '#8b5cf6', banner: 'linear-gradient(135deg, #2e1065 0%, #6d28d9 55%, #a855f7 100%)' },
-            { id: 'terracotta', name: 'Terracota', primary: '#c2410c', secondary: '#f97316', banner: 'linear-gradient(135deg, #431407 0%, #c2410c 55%, #ea580c 100%)' }
+            { id: 'emerald', name: 'Esmeralda', primary: '#0f766e', secondary: '#10b981', banner: 'linear-gradient(125deg, #042f2e 0%, #0f766e 48%, #3730a3 118%)' },
+            { id: 'ocean', name: 'Azul Oceano', primary: '#1d4ed8', secondary: '#3b82f6', banner: 'linear-gradient(125deg, #172554 0%, #1d4ed8 52%, #0284c7 118%)' },
+            { id: 'indigo', name: 'Índigo Royal', primary: '#4338ca', secondary: '#6366f1', banner: 'linear-gradient(125deg, #1e1b4b 0%, #4338ca 52%, #7c3aed 118%)' },
+            { id: 'violet', name: 'Roxo Ametista', primary: '#6d28d9', secondary: '#8b5cf6', banner: 'linear-gradient(125deg, #2e1065 0%, #6d28d9 52%, #a855f7 118%)' },
+            { id: 'rose', name: 'Rosa Rubi', primary: '#be123c', secondary: '#f43f5e', banner: 'linear-gradient(125deg, #4c0519 0%, #be123c 52%, #e11d48 118%)' },
+            { id: 'amber', name: 'Âmbar Dourado', primary: '#b45309', secondary: '#f59e0b', banner: 'linear-gradient(125deg, #451a03 0%, #b45309 52%, #d97706 118%)' },
+            { id: 'orange', name: 'Laranja Coral', primary: '#c2410c', secondary: '#f97316', banner: 'linear-gradient(125deg, #431407 0%, #c2410c 52%, #ea580c 118%)' },
+            { id: 'cyan', name: 'Ciano Turquesa', primary: '#0e7490', secondary: '#06b6d4', banner: 'linear-gradient(125deg, #083344 0%, #0e7490 52%, #0284c7 118%)' },
+            { id: 'forest', name: 'Verde Floresta', primary: '#15803d', secondary: '#22c55e', banner: 'linear-gradient(125deg, #052e16 0%, #15803d 52%, #0f766e 118%)' },
+            { id: 'slate', name: 'Grafite Executivo', primary: '#334155', secondary: '#475569', banner: 'linear-gradient(125deg, #0f172a 0%, #334155 52%, #475569 118%)' },
+            { id: 'pink', name: 'Magenta Moderno', primary: '#a21caf', secondary: '#d946ef', banner: 'linear-gradient(125deg, #4a044e 0%, #a21caf 52%, #9333ea 118%)' },
+            { id: 'teal', name: 'Petróleo Profundo', primary: '#115e59', secondary: '#14b8a6', banner: 'linear-gradient(125deg, #042f2e 0%, #115e59 52%, #0f766e 118%)' }
         ];
 
         const BANK_PRESETS = [
@@ -3127,13 +3259,59 @@ function doGet(e) {
             if (appState.activeTab === 'dashboard') renderDashboardCharts();
         }
 
+        function logoutFromProfileModal() {
+            closeModal('modalUserProfile', true);
+            openProfileSwitchLockModal();
+            toast('Você saiu do perfil.');
+        }
+
+        function applyAppFont(fontId) {
+            const found = APP_FONT_OPTIONS.find(f => f.id === fontId) || APP_FONT_OPTIONS[0];
+            appState.appFont = found.id;
+            document.documentElement.style.setProperty('--app-font', found.family);
+            renderFontPicker();
+        }
+
+        function setAppFont(fontId) {
+            applyAppFont(fontId);
+            try { localStorage.setItem('orcamento_app_font', fontId); } catch(e) {}
+            const found = APP_FONT_OPTIONS.find(f => f.id === fontId);
+            toast(`Fonte alterada para ${found ? found.label : fontId}!`);
+        }
+
+        function openFontSettingsModal() {
+            renderFontPicker();
+            openModal('modalFontSettings');
+        }
+
+        function renderFontPicker() {
+            const list = document.getElementById('fontPickerList');
+            if (!list) return;
+            list.innerHTML = APP_FONT_OPTIONS.map(f => {
+                const active = (appState.appFont || 'Inter') === f.id;
+                return `
+                    <button type="button" onclick="setAppFont('${f.id}')"
+                        style="font-family: ${f.family} !important;"
+                        class="w-full px-4 py-3 text-left flex items-center justify-between gap-2 transition-colors ${active
+                            ? 'bg-slate-200/80 dark:bg-slate-700/80 font-extrabold theme-text'
+                            : 'hover:bg-slate-100 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-200'}">
+                        <div class="min-w-0">
+                            <span class="block text-sm font-bold truncate" style="font-family: ${f.family} !important;">${f.label}</span>
+                            <span class="block text-xs text-slate-400 truncate" style="font-family: ${f.family} !important;">${f.sample} • R$ 1.250,00</span>
+                        </div>
+                        ${active ? '<i class="fa-solid fa-circle-check text-sm shrink-0"></i>' : ''}
+                    </button>
+                `;
+            }).join('');
+        }
+
         function renderColorThemes() {
             const grid = document.getElementById('colorThemesGrid');
             if (!grid) return;
             grid.innerHTML = COLOR_THEMES.map(t => `
-                <button type="button" onclick="applyColorTheme('${t.id}')" class="p-2.5 rounded-xl border text-center ${appState.colorTheme === t.id ? 'border-slate-900 dark:border-white ring-2 ring-emerald-500/40' : 'border-slate-200 dark:border-slate-700'}">
-                    <span class="block w-6 h-6 rounded-full mx-auto mb-1" style="background:${t.banner}"></span>
-                    <span class="block text-xs font-bold truncate">${t.name}</span>
+                <button type="button" onclick="applyColorTheme('${t.id}')" class="p-3 rounded-2xl border text-center transition-all ${appState.colorTheme === t.id ? 'border-slate-900 dark:border-white ring-2 ring-emerald-500/40 bg-slate-50 dark:bg-slate-800' : 'border-slate-200 dark:border-slate-700'}">
+                    <span class="block w-7 h-7 rounded-full mx-auto mb-1.5 shadow-sm" style="background:${t.banner}"></span>
+                    <span class="block text-xs font-bold leading-tight truncate">${t.name}</span>
                 </button>
             `).join('');
         }
@@ -4238,7 +4416,8 @@ function doGet(e) {
                 list.innerHTML = '<div class="app-card p-6 text-center text-sm text-slate-400">Nenhum cartão cadastrado.</div>';
                 return;
             }
-            list.className = 'grid grid-cols-2 gap-2.5 sm:gap-3.5';
+            const isDark = appState.darkMode;
+            list.className = 'grid grid-cols-1 gap-3.5';
             list.innerHTML = appState.creditCards.map(c => {
                 const cTxs = txs.filter(t => (t.cardId || appState.creditCards[0]?.id) === c.id);
                 let cInv = 0, cPaid = 0, cPend = 0;
@@ -4253,22 +4432,58 @@ function doGet(e) {
                 const avail = Math.max(0, limit - comm);
                 const pct = limit > 0 ? Math.min(100, (comm / limit) * 100) : 0;
 
+                // Detecta se a cor do cartão é preta/escura
+                const hex = (c.color || '#820ad1').replace('#', '');
+                const fullHex = hex.length === 3 ? hex.split('').map(ch => ch + ch).join('') : hex;
+                const rCol = parseInt(fullHex.substring(0, 2), 16) || 0;
+                const gCol = parseInt(fullHex.substring(2, 4), 16) || 0;
+                const bCol = parseInt(fullHex.substring(4, 6), 16) || 0;
+                const luminance = (0.299 * rCol + 0.587 * gCol + 0.114 * bCol) / 255;
+                const isBlackCard = luminance < 0.22;
+
+                // Fundo bem clarinho com a cor do cartão (e elegante no modo escuro), com contraste total
+                let cardBgStyle = '';
+                let subBoxBgStyle = '';
+                if (isBlackCard) {
+                    cardBgStyle = isDark
+                        ? 'background: linear-gradient(145deg, #18181b 0%, #09090b 100%); border-color: #3f3f46;'
+                        : 'background: linear-gradient(145deg, #27272a 0%, #18181b 100%); border-color: #3f3f46;';
+                    subBoxBgStyle = 'background-color: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.14);';
+                } else {
+                    cardBgStyle = isDark
+                        ? `background-color: color-mix(in srgb, ${c.color} 16%, #111827); border-color: color-mix(in srgb, ${c.color} 42%, #1f2937);`
+                        : `background-color: color-mix(in srgb, ${c.color} 11%, #ffffff); border-color: color-mix(in srgb, ${c.color} 32%, #e2e8f0);`;
+                    subBoxBgStyle = isDark
+                        ? 'background-color: rgba(15, 23, 42, 0.58); border: 1px solid rgba(255, 255, 255, 0.08);'
+                        : 'background-color: rgba(255, 255, 255, 0.78); border: 1px solid rgba(15, 23, 42, 0.06);';
+                }
+
+                const titleColorCls = isBlackCard ? 'text-white' : 'text-slate-900 dark:text-white';
+                const mutedTextCls = isBlackCard ? 'text-white/90' : 'text-slate-600 dark:text-slate-300';
+                const invoiceValCls = isBlackCard ? 'text-white' : 'text-purple-700 dark:text-purple-300';
+                const limitValCls = isBlackCard ? 'text-white' : 'text-slate-900 dark:text-white';
+                const availValCls = isBlackCard ? 'text-white' : 'text-emerald-600 dark:text-emerald-400';
+                const pctTextCls = isBlackCard ? 'text-white' : 'text-slate-700 dark:text-slate-200';
+                const barTrackCls = isBlackCard ? 'bg-white/25' : 'bg-slate-200/90 dark:bg-slate-800';
+                const barFillColor = isBlackCard ? '#ffffff' : c.color;
+                const actionIconCls = isBlackCard ? 'text-white hover:bg-white/15' : 'text-slate-600 dark:text-slate-300 hover:bg-black/5 dark:hover:bg-white/10';
+
                 return `
-                    <div onclick="openCardOverviewModal('${c.id}')" class="app-card p-3 sm:p-4 flex flex-col justify-between space-y-2.5 relative cursor-pointer active:scale-[0.99]">
-                        <div class="space-y-1.5">
-                            <div class="flex items-center justify-between gap-1">
-                                <div class="flex items-center gap-1.5 min-w-0">
-                                    <span class="w-3 h-3 rounded-full shrink-0" style="background:${c.color}"></span>
-                                    <h3 class="text-sm sm:text-base font-extrabold truncate">${c.name}</h3>
+                    <div onclick="openCardOverviewModal('${c.id}')" style="${cardBgStyle}" class="app-card p-4 sm:p-5 flex flex-col justify-between space-y-3.5 relative cursor-pointer active:scale-[0.99]">
+                        <div class="space-y-1">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <span class="w-4 h-4 rounded-full shrink-0 border border-white/40 shadow-sm" style="background:${c.color}"></span>
+                                    <h3 class="text-lg sm:text-xl font-black truncate ${titleColorCls}">${c.name}</h3>
                                 </div>
-                                <div onclick="event.stopPropagation()" class="flex items-center gap-0.5 shrink-0 relative">
-                                    <button type="button" onclick="openNewTxForCard('${c.id}')" aria-label="Nova despesa neste cartão" title="Nova despesa neste cartão" class="w-7 h-7 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center theme-text">
-                                        <i class="fa-solid fa-plus text-xs"></i>
+                                <div onclick="event.stopPropagation()" class="flex items-center gap-1 shrink-0 relative">
+                                    <button type="button" onclick="openNewTxForCard('${c.id}')" aria-label="Nova despesa neste cartão" title="Nova despesa neste cartão" class="w-9 h-9 rounded-xl flex items-center justify-center ${actionIconCls}">
+                                        <i class="fa-solid fa-plus text-sm"></i>
                                     </button>
-                                    <button type="button" onclick="toggleCardOptionsMenu('${c.id}', event)" aria-label="Mais opções do cartão" class="w-7 h-7 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-300">
-                                        <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+                                    <button type="button" onclick="toggleCardOptionsMenu('${c.id}', event)" aria-label="Mais opções do cartão" class="w-9 h-9 rounded-xl flex items-center justify-center ${actionIconCls}">
+                                        <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
                                     </button>
-                                    <div id="cardMenu_${c.id}" class="card-options-menu hidden absolute right-0 top-8 z-30 w-44 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl py-1.5 text-xs font-bold">
+                                    <div id="cardMenu_${c.id}" class="card-options-menu hidden absolute right-0 top-10 z-30 w-48 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl py-1.5 text-xs font-bold">
                                         <button type="button" onclick="closeAllCardMenus(); openCardInvoiceModal('${c.id}')" class="w-full px-3.5 py-2.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 text-slate-700 dark:text-slate-200">
                                             <i class="fa-solid fa-file-invoice-dollar text-purple-600 w-4"></i>
                                             <span>Fatura (${cTxs.length})</span>
@@ -4284,41 +4499,42 @@ function doGet(e) {
                                     </div>
                                 </div>
                             </div>
-                            <p class="text-[11px] sm:text-xs text-slate-400">Fecha dia ${c.closingDay} • Vence ${c.dueDay}</p>
+                            <p class="text-xs sm:text-sm font-semibold ${mutedTextCls}">Fecha dia ${c.closingDay} • Vence dia ${c.dueDay}</p>
                         </div>
 
-                        <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 space-y-1.5">
-                            <div>
-                                <span class="text-[11px] font-bold text-slate-500 block">Fatura Atual</span>
-                                <strong class="text-base sm:text-lg font-black text-purple-700 dark:text-purple-300 block truncate">${fmtBRL(cInv)}</strong>
+                        <div style="${subBoxBgStyle}" class="p-3.5 rounded-2xl space-y-2.5">
+                            <div class="flex items-baseline justify-between gap-2">
+                                <span class="text-xs sm:text-sm font-extrabold ${mutedTextCls}">Fatura Atual</span>
+                                <strong class="text-xl sm:text-2xl font-black truncate ${invoiceValCls}">${fmtBRL(cInv)}</strong>
                             </div>
-                            <div class="pt-1 border-t border-slate-200/70 dark:border-slate-700 space-y-1 text-[11px] sm:text-xs">
-                                <div class="flex items-center justify-between gap-1">
-                                    <span class="text-slate-500 font-semibold">Limite:</span>
-                                    <strong class="font-extrabold text-slate-700 dark:text-slate-200 truncate">${fmtBRL(limit)}</strong>
+                            <div class="pt-2 border-t ${isBlackCard ? 'border-white/15' : 'border-slate-200/70 dark:border-slate-700'} grid grid-cols-2 gap-2 text-xs sm:text-sm">
+                                <div>
+                                    <span class="block text-xs font-bold ${mutedTextCls}">Limite</span>
+                                    <strong class="block text-sm sm:text-base font-black truncate ${limitValCls}">${fmtBRL(limit)}</strong>
                                 </div>
-                                <div class="flex items-center justify-between gap-1">
-                                    <span class="text-slate-500 font-semibold">Disp.:</span>
-                                    <strong class="font-extrabold text-emerald-600 truncate">${fmtBRL(avail)}</strong>
+                                <div class="text-right">
+                                    <span class="block text-xs font-bold ${mutedTextCls}">Disp.</span>
+                                    <strong class="block text-sm sm:text-base font-black truncate ${availValCls}">${fmtBRL(avail)}</strong>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="space-y-1">
-                            <div class="w-full h-3 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-                                <div class="h-full rounded-full" style="width:${pct}%; background:${c.color}"></div>
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-xs sm:text-sm font-extrabold ${pctTextCls}">
+                                <span>Utilização do limite</span>
+                                <span>${Math.round(pct)}% usado</span>
                             </div>
-                            <div class="flex justify-end">
-                                <span class="text-[10px] font-bold text-slate-400">${Math.round(pct)}% usado</span>
+                            <div class="w-full h-3.5 rounded-full ${barTrackCls} overflow-hidden">
+                                <div class="h-full rounded-full transition-all duration-300" style="width:${pct}%; background:${barFillColor}"></div>
                             </div>
                         </div>
 
-                        <div onclick="event.stopPropagation()" class="pt-0.5 flex items-center justify-between gap-1.5">
-                            <span class="px-2 py-1 rounded-full text-[10px] sm:text-xs font-bold shrink-0 ${cPend > 0 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'}">
-                                ${cPend > 0 ? 'Aberto' : 'Pago'}
+                        <div onclick="event.stopPropagation()" class="pt-0.5 flex items-center justify-between gap-2.5">
+                            <span class="px-3 py-1.5 rounded-full text-xs sm:text-sm font-extrabold shrink-0 ${cPend > 0 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'}">
+                                ${cPend > 0 ? 'Em Aberto' : 'Quitado'}
                             </span>
-                            <button type="button" onclick="payCardInvoice('${c.id}')" ${cPend === 0 ? 'disabled' : ''} class="flex-1 py-1.5 px-2 rounded-xl ${cPend > 0 ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-200 dark:bg-slate-800 text-slate-400'} text-[10px] sm:text-xs font-bold text-center leading-tight">
-                                ${cPend > 0 ? 'Registrar Pagamento' : 'Quitada'}
+                            <button type="button" onclick="payCardInvoice('${c.id}')" ${cPend === 0 ? 'disabled' : ''} class="flex-1 py-2.5 px-3 rounded-xl ${cPend > 0 ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-200 dark:bg-slate-800 text-slate-400'} text-xs sm:text-sm font-extrabold text-center">
+                                ${cPend > 0 ? 'Registrar Pagamento' : 'Fatura Quitada'}
                             </button>
                         </div>
                     </div>
@@ -5685,10 +5901,12 @@ function doGet(e) {
         document.addEventListener('DOMContentLoaded', () => {
             appState.darkMode = localStorage.getItem('orcamento_dark_mode') === 'true';
             appState.hideValues = localStorage.getItem('orcamento_hide_values') === 'true';
+            appState.appFont = localStorage.getItem('orcamento_app_font') || 'Inter';
             appState.colorTheme = localStorage.getItem('orcamento_app_color_theme') || 'emerald';
             appState.appsScriptUrl = localStorage.getItem('orcamento_appscript_url') || '';
 
             applyDarkMode();
+            applyAppFont(appState.appFont);
             applyColorTheme(appState.colorTheme);
             document.getElementById('privacyIcon').className = appState.hideValues ? 'fa-regular fa-eye-slash text-sm text-amber-500' : 'fa-regular fa-eye text-sm';
 
