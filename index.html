@@ -3088,6 +3088,44 @@ function doGet(e) {
         </div>
     </div>
 
+    <!-- ==================== MODAL: SINCRONIZAÇÃO PÓS-LOGIN (GOOGLE DRIVE) ==================== -->
+    <div id="modalPostLoginSync" class="modal-backdrop hidden z-[145]" role="dialog" aria-modal="true" aria-labelledby="postLoginSyncTitle">
+        <div class="modal-sheet max-w-sm">
+            <div class="theme-gradient p-4 text-white flex items-center gap-3 shrink-0">
+                <div class="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center text-xl shrink-0">
+                    <i id="postLoginSyncHeaderIcon" class="fa-brands fa-google-drive"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <h3 id="postLoginSyncTitle" class="text-base font-extrabold leading-tight truncate">Sincronizando Backup</h3>
+                    <p id="postLoginSyncSubtitle" class="text-xs text-white/85 truncate">Google Drive • Atualizando dados</p>
+                </div>
+                <span id="postLoginSyncPctBadge" class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-white/20 text-white shrink-0">0%</span>
+            </div>
+
+            <div class="p-5 space-y-4">
+                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center gap-3">
+                    <div id="postLoginSyncIconBox" class="w-10 h-10 rounded-xl theme-btn flex items-center justify-center text-base text-white shrink-0">
+                        <i id="postLoginSyncStepIcon" class="fa-solid fa-cloud-arrow-down fa-bounce"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p id="postLoginSyncStatusTitle" class="text-xs sm:text-sm font-extrabold truncate">Conectando ao Google Drive...</p>
+                        <p id="postLoginSyncStatusDesc" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Buscando a versão mais recente das transações</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="w-full h-2.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                        <div id="postLoginSyncProgressBar" class="h-full rounded-full theme-btn transition-all duration-300" style="width: 0%;"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-[11px] font-bold text-slate-400">
+                        <span id="postLoginSyncStepLabel">Etapa 1/4</span>
+                        <span id="postLoginSyncTimeHint">Aguarde...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST NOTIFICAÇÃO -->
     <div id="toastBox" class="fixed top-16 left-1/2 -translate-x-1/2 z-[110] px-4 py-2.5 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs sm:text-sm font-bold shadow-xl transition-all duration-200 opacity-0 pointer-events-none"></div>
     </div>
@@ -3604,6 +3642,8 @@ function doGet(e) {
             if (userInp) userInp.value = '';
             if (pwdInput) pwdInput.value = '';
             if (errBox) errBox.classList.add('hidden');
+            const authCard = document.getElementById('authGateCard');
+            if (authCard) authCard.classList.remove('hidden');
             if (overlay) overlay.classList.remove('auth-gate-hidden');
             revealAuthLoginScreen();
             if (userInp) setTimeout(() => userInp.focus(), 60);
@@ -3665,6 +3705,117 @@ function doGet(e) {
             if (txt) txt.textContent = isLoading ? 'Autenticando no Google Drive...' : 'Entrar no Sistema';
         }
 
+        function setPostLoginSyncProgress(pct, title, desc, stepText, isSuccess = false, isWarning = false) {
+            const bar = document.getElementById('postLoginSyncProgressBar');
+            const pctBadge = document.getElementById('postLoginSyncPctBadge');
+            const tEl = document.getElementById('postLoginSyncStatusTitle');
+            const dEl = document.getElementById('postLoginSyncStatusDesc');
+            const sEl = document.getElementById('postLoginSyncStepLabel');
+            const hEl = document.getElementById('postLoginSyncTimeHint');
+            const stepIcon = document.getElementById('postLoginSyncStepIcon');
+            const iconBox = document.getElementById('postLoginSyncIconBox');
+
+            const clampedPct = Math.max(0, Math.min(100, Math.round(pct)));
+            if (bar) bar.style.width = `${clampedPct}%`;
+            if (pctBadge) pctBadge.textContent = `${clampedPct}%`;
+            if (tEl && title) tEl.textContent = title;
+            if (dEl && desc) dEl.textContent = desc;
+            if (sEl && stepText) sEl.textContent = stepText;
+            if (hEl) {
+                if (isSuccess) hEl.textContent = 'Concluído!';
+                else if (isWarning) hEl.textContent = 'Dados locais';
+                else hEl.textContent = 'Sincronizando...';
+            }
+            if (stepIcon && iconBox) {
+                if (isSuccess) {
+                    iconBox.className = 'w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-base text-white shrink-0';
+                    stepIcon.className = 'fa-solid fa-circle-check';
+                } else if (isWarning) {
+                    iconBox.className = 'w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-base text-white shrink-0';
+                    stepIcon.className = 'fa-solid fa-triangle-exclamation';
+                } else {
+                    iconBox.className = 'w-10 h-10 rounded-xl theme-btn flex items-center justify-center text-base text-white shrink-0';
+                    stepIcon.className = 'fa-solid fa-cloud-arrow-down fa-bounce';
+                }
+            }
+        }
+
+        async function runPostLoginSyncFlow(prof) {
+            const overlay = document.getElementById('authGateOverlay');
+            const authCard = document.getElementById('authGateCard');
+
+            // Oculta o formulário de login mantendo o fundo bloqueado até concluir a sincronização
+            if (authCard) authCard.classList.add('hidden');
+            setPostLoginSyncProgress(10, 'Autenticado com sucesso!', `Preparando sincronização de ${prof.name}...`, 'Etapa 1/4');
+            openModal('modalPostLoginSync');
+
+            const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+            await wait(240);
+
+            if (appState.appsScriptUrl) {
+                const syncRes = await syncRestoreFromCloud({
+                    silent: true,
+                    onProgress: (pct, title, desc, step) => {
+                        setPostLoginSyncProgress(pct, title, desc, step);
+                    }
+                });
+
+                if (syncRes && syncRes.ok) {
+                    setPostLoginSyncProgress(
+                        100,
+                        'Backup sincronizado!',
+                        `${syncRes.count} transação(ões) atualizada(s) do Google Drive`,
+                        'Etapa 4/4',
+                        true
+                    );
+                } else {
+                    setPostLoginSyncProgress(
+                        100,
+                        'Não foi possível baixar da nuvem',
+                        'Abrindo com os dados salvos neste aparelho',
+                        'Etapa 4/4',
+                        false,
+                        true
+                    );
+                }
+            } else {
+                setPostLoginSyncProgress(
+                    55,
+                    'Carregando dados locais...',
+                    'Nenhum link do Google Drive configurado',
+                    'Etapa 2/4'
+                );
+                await wait(260);
+                setPostLoginSyncProgress(
+                    100,
+                    'Dados locais prontos!',
+                    'Configure o Google Drive em Configurações para backup na nuvem',
+                    'Etapa 4/4',
+                    true
+                );
+            }
+
+            await wait(520);
+
+            // Fecha o modal de sincronização e libera o aplicativo completo
+            closeModal('modalPostLoginSync');
+            await wait(195);
+
+            if (overlay) overlay.classList.add('auth-gate-hidden');
+            if (authCard) authCard.classList.remove('hidden');
+
+            shouldAnimateInitialKpis = true;
+            refreshAll();
+            showHeroWelcomeBanner();
+            toast(`Bem-vindo(a), ${prof.name}!`);
+
+            if (!prof.username || !prof.username.trim()) {
+                setTimeout(() => {
+                    openUserProfileModal(true);
+                }, 280);
+            }
+        }
+
         async function handleProfileLoginSubmit(e) {
             e.preventDefault();
             const userInp = document.getElementById('authUsernameInput');
@@ -3683,7 +3834,6 @@ function doGet(e) {
             }
 
             if (errBox) errBox.classList.add('hidden');
-            let syncedFromDrive = false;
 
             if (appState.appsScriptUrl) {
                 setAuthLoginLoadingState(true);
@@ -3693,7 +3843,6 @@ function doGet(e) {
                     const remoteData = await res.json();
                     if (remoteData && Array.isArray(remoteData.profiles) && remoteData.profiles.length > 0) {
                         mergeRemoteProfiles(remoteData.profiles);
-                        syncedFromDrive = true;
                     }
                 } catch (err) {
                     console.warn('Falha ao consultar autenticação no Google Drive:', err);
@@ -3728,25 +3877,7 @@ function doGet(e) {
                 loadProfileData(prof.id);
             }
 
-            const hasLocalSavedTxs = localStorage.getItem(getStorageKey('orcamento_transactions_v10', prof.id)) !== null;
-            if (syncedFromDrive && appState.appsScriptUrl && !hasLocalSavedTxs) {
-                try {
-                    await syncRestoreFromCloud();
-                } catch (err) {}
-            }
-
-            const overlay = document.getElementById('authGateOverlay');
-            if (overlay) overlay.classList.add('auth-gate-hidden');
-            shouldAnimateInitialKpis = true;
-            updateKPIs();
-            showHeroWelcomeBanner();
-            toast(`Bem-vindo(a), ${prof.name}!`);
-
-            if (!prof.username || !prof.username.trim()) {
-                setTimeout(() => {
-                    openUserProfileModal(true);
-                }, 280);
-            }
+            await runPostLoginSyncFlow(prof);
         }
 
         function toggleAuthCreateProfileMode(showCreate) {
@@ -7812,17 +7943,23 @@ function doGet(e) {
             }
         }
 
-        async function syncRestoreFromCloud() {
+        async function syncRestoreFromCloud(options = {}) {
+            const silent = Boolean(options && options.silent);
+            const onProgress = options && typeof options.onProgress === 'function' ? options.onProgress : null;
+
             if (!appState.appsScriptUrl) {
-                openAppsScriptModal();
-                return;
+                if (!silent) openAppsScriptModal();
+                return { ok: false, reason: 'no_url' };
             }
-            toast('Restaurando dados da nuvem...');
+            if (!silent) toast('Restaurando dados da nuvem...');
+            if (onProgress) onProgress(30, 'Baixando backup...', 'Conectando à planilha do Google Drive', 'Etapa 2/4');
+
             try {
                 const url = appState.appsScriptUrl + (appState.appsScriptUrl.includes('?') ? '&' : '?') + 'profileId=' + encodeURIComponent(appState.activeProfileId);
                 const res = await fetch(url);
+                if (onProgress) onProgress(65, 'Processando transações...', 'Lendo lançamentos, cartões e categorias', 'Etapa 3/4');
                 const data = await res.json();
-                if (data.status === 'success') {
+                if (data && data.status === 'success') {
                     if (Array.isArray(data.profiles)) mergeRemoteProfiles(data.profiles);
                     if (Array.isArray(data.categories)) appState.categories = data.categories;
                     if (Array.isArray(data.creditCards)) appState.creditCards = data.creditCards;
@@ -7839,10 +7976,14 @@ function doGet(e) {
                     }
                     saveState();
                     refreshAll();
-                    toast('Dados restaurados com sucesso!');
+                    if (!silent) toast('Dados restaurados com sucesso!');
+                    return { ok: true, count: Array.isArray(data.transactions) ? data.transactions.length : 0 };
                 }
+                if (!silent) toast('Nenhum backup encontrado na nuvem.');
+                return { ok: false, reason: 'empty' };
             } catch (e) {
-                toast('Falha ao restaurar da nuvem.');
+                if (!silent) toast('Falha ao restaurar da nuvem.');
+                return { ok: false, reason: 'error' };
             }
         }
 
