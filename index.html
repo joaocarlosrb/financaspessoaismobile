@@ -712,8 +712,8 @@
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="flex-1 max-w-5xl w-full mx-auto px-3.5 pt-3.5 pb-28 space-y-4">
 
-        <!-- KPIs DO TOPO (2x2 MOBILE / 4x1 DESKTOP) -->
-        <section class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <!-- KPIs DO TOPO (APENAS NA ABA INÍCIO) -->
+        <section id="dashboardTopKpisSection" class="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <button type="button" onclick="goToFilteredTransactions({ type: 'income' })" class="app-card p-4 text-left active:scale-[0.98] transition-transform flex flex-col justify-between">
                 <div class="flex items-center justify-between gap-2">
                     <span class="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300">Receita Total</span>
@@ -978,58 +978,50 @@
 
         <!-- ==================== ABA 2: LANÇAMENTOS ==================== -->
         <div id="tab-transactions" class="hidden space-y-3.5">
-            <!-- 4 Cards de Tipo em uma única linha (Despesas=Vermelho, Receitas=Verde, Investimentos=Azul, Transferências=Roxo) -->
-            <div class="grid grid-cols-4 gap-2 sm:gap-2.5">
-                <button type="button" id="txTypeCard-expense" onclick="toggleTxTypeCard('expense')" class="app-card p-3 sm:p-3.5 min-h-[84px] text-left flex flex-col justify-between transition-all active:scale-95">
-                    <div class="flex items-center justify-between gap-1 w-full">
-                        <span class="text-[11px] sm:text-xs font-extrabold text-rose-700 dark:text-rose-300 truncate">Despesas</span>
-                        <span class="w-5 h-5 rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-300 flex items-center justify-center text-[10px] shrink-0">
+            <!-- 4 Cards de Tipo (2 por linha, mesmo tamanho dos cards do topo de Início) -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <button type="button" id="txTypeCard-expense" onclick="toggleTxTypeCard('expense')" class="app-card p-4 text-left active:scale-[0.98] transition-all flex flex-col justify-between">
+                    <div class="flex items-center justify-between gap-2 w-full">
+                        <span class="text-xs sm:text-sm font-extrabold text-rose-700 dark:text-rose-300 truncate">Despesas</span>
+                        <span class="w-8 h-8 rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-300 flex items-center justify-center text-sm shrink-0">
                             <i class="fa-solid fa-arrow-trend-down"></i>
                         </span>
                     </div>
-                    <div class="mt-1.5 w-full">
-                        <strong id="txCardSum-expense" class="block text-xs sm:text-base font-black text-rose-700 dark:text-rose-300 truncate">R$ 0,00</strong>
-                        <span id="txCardCnt-expense" class="block text-[10px] sm:text-[11px] font-bold text-rose-600/80 dark:text-rose-300/80 mt-0.5 truncate">0 itens</span>
-                    </div>
+                    <strong id="txCardSum-expense" class="block text-lg sm:text-xl font-black text-rose-700 dark:text-rose-300 mt-2 truncate">R$ 0,00</strong>
+                    <span id="txCardCnt-expense" class="block text-xs font-semibold text-rose-600/85 dark:text-rose-300/85 mt-1 truncate">0 lançamentos</span>
                 </button>
 
-                <button type="button" id="txTypeCard-income" onclick="toggleTxTypeCard('income')" class="app-card p-3 sm:p-3.5 min-h-[84px] text-left flex flex-col justify-between transition-all active:scale-95">
-                    <div class="flex items-center justify-between gap-1 w-full">
-                        <span class="text-[11px] sm:text-xs font-extrabold text-emerald-700 dark:text-emerald-300 truncate">Receitas</span>
-                        <span class="w-5 h-5 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 flex items-center justify-center text-[10px] shrink-0">
+                <button type="button" id="txTypeCard-income" onclick="toggleTxTypeCard('income')" class="app-card p-4 text-left active:scale-[0.98] transition-all flex flex-col justify-between">
+                    <div class="flex items-center justify-between gap-2 w-full">
+                        <span class="text-xs sm:text-sm font-extrabold text-emerald-700 dark:text-emerald-300 truncate">Receitas</span>
+                        <span class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 flex items-center justify-center text-sm shrink-0">
                             <i class="fa-solid fa-arrow-trend-up"></i>
                         </span>
                     </div>
-                    <div class="mt-1.5 w-full">
-                        <strong id="txCardSum-income" class="block text-xs sm:text-base font-black text-emerald-700 dark:text-emerald-300 truncate">R$ 0,00</strong>
-                        <span id="txCardCnt-income" class="block text-[10px] sm:text-[11px] font-bold text-emerald-600/80 dark:text-emerald-300/80 mt-0.5 truncate">0 itens</span>
-                    </div>
+                    <strong id="txCardSum-income" class="block text-lg sm:text-xl font-black text-emerald-700 dark:text-emerald-300 mt-2 truncate">R$ 0,00</strong>
+                    <span id="txCardCnt-income" class="block text-xs font-semibold text-emerald-600/85 dark:text-emerald-300/85 mt-1 truncate">0 lançamentos</span>
                 </button>
 
-                <button type="button" id="txTypeCard-investment" onclick="toggleTxTypeCard('investment')" class="app-card p-3 sm:p-3.5 min-h-[84px] text-left flex flex-col justify-between transition-all active:scale-95">
-                    <div class="flex items-center justify-between gap-1 w-full">
-                        <span class="text-[11px] sm:text-xs font-extrabold text-blue-700 dark:text-blue-300 truncate">Invest.</span>
-                        <span class="w-5 h-5 rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-300 flex items-center justify-center text-[10px] shrink-0">
+                <button type="button" id="txTypeCard-investment" onclick="toggleTxTypeCard('investment')" class="app-card p-4 text-left active:scale-[0.98] transition-all flex flex-col justify-between">
+                    <div class="flex items-center justify-between gap-2 w-full">
+                        <span class="text-xs sm:text-sm font-extrabold text-blue-700 dark:text-blue-300 truncate">Investimentos</span>
+                        <span class="w-8 h-8 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-300 flex items-center justify-center text-sm shrink-0">
                             <i class="fa-solid fa-chart-line"></i>
                         </span>
                     </div>
-                    <div class="mt-1.5 w-full">
-                        <strong id="txCardSum-investment" class="block text-xs sm:text-base font-black text-blue-700 dark:text-blue-300 truncate">R$ 0,00</strong>
-                        <span id="txCardCnt-investment" class="block text-[10px] sm:text-[11px] font-bold text-blue-600/80 dark:text-blue-300/80 mt-0.5 truncate">0 itens</span>
-                    </div>
+                    <strong id="txCardSum-investment" class="block text-lg sm:text-xl font-black text-blue-700 dark:text-blue-300 mt-2 truncate">R$ 0,00</strong>
+                    <span id="txCardCnt-investment" class="block text-xs font-semibold text-blue-600/85 dark:text-blue-300/85 mt-1 truncate">0 lançamentos</span>
                 </button>
 
-                <button type="button" id="txTypeCard-transfer" onclick="toggleTxTypeCard('transfer')" class="app-card p-3 sm:p-3.5 min-h-[84px] text-left flex flex-col justify-between transition-all active:scale-95">
-                    <div class="flex items-center justify-between gap-1 w-full">
-                        <span class="text-[11px] sm:text-xs font-extrabold text-purple-700 dark:text-purple-300 truncate">Transf.</span>
-                        <span class="w-5 h-5 rounded-lg bg-purple-500/15 text-purple-600 dark:text-purple-300 flex items-center justify-center text-[10px] shrink-0">
+                <button type="button" id="txTypeCard-transfer" onclick="toggleTxTypeCard('transfer')" class="app-card p-4 text-left active:scale-[0.98] transition-all flex flex-col justify-between">
+                    <div class="flex items-center justify-between gap-2 w-full">
+                        <span class="text-xs sm:text-sm font-extrabold text-purple-700 dark:text-purple-300 truncate">Transferências</span>
+                        <span class="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-300 flex items-center justify-center text-sm shrink-0">
                             <i class="fa-solid fa-arrow-right-arrow-left"></i>
                         </span>
                     </div>
-                    <div class="mt-1.5 w-full">
-                        <strong id="txCardSum-transfer" class="block text-xs sm:text-base font-black text-purple-700 dark:text-purple-300 truncate">R$ 0,00</strong>
-                        <span id="txCardCnt-transfer" class="block text-[10px] sm:text-[11px] font-bold text-purple-600/80 dark:text-purple-300/80 mt-0.5 truncate">0 itens</span>
-                    </div>
+                    <strong id="txCardSum-transfer" class="block text-lg sm:text-xl font-black text-purple-700 dark:text-purple-300 mt-2 truncate">R$ 0,00</strong>
+                    <span id="txCardCnt-transfer" class="block text-xs font-semibold text-purple-600/85 dark:text-purple-300/85 mt-1 truncate">0 lançamentos</span>
                 </button>
             </div>
 
@@ -1092,6 +1084,54 @@
 
         <!-- ==================== ABA 3: CARTÕES DE CRÉDITO ==================== -->
         <div id="tab-cards" class="hidden space-y-3.5">
+            <!-- 4 Cards Resumo no Topo (2 por linha, mesmo tamanho e aparência dos cards de Início) -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="app-card p-4 text-left flex flex-col justify-between">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300">Fatura Mês</span>
+                        <span class="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center text-sm shrink-0">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                        </span>
+                    </div>
+                    <strong id="cardsTabTotal" class="block text-lg sm:text-xl font-black mt-2 truncate text-purple-700 dark:text-purple-300">R$ 0,00</strong>
+                    <span class="block text-xs font-semibold text-purple-600 dark:text-purple-400 mt-1 truncate">Consolidado período</span>
+                </div>
+
+                <div class="app-card p-4 text-left flex flex-col justify-between">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300">Quitado</span>
+                        <span class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm shrink-0">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </span>
+                    </div>
+                    <strong id="cardsTabPaid" class="block text-lg sm:text-xl font-black mt-2 truncate text-emerald-600 dark:text-emerald-400">R$ 0,00</strong>
+                    <span class="block text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1 truncate">Faturas pagas</span>
+                </div>
+
+                <div class="app-card p-4 text-left flex flex-col justify-between">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300">Em Aberto</span>
+                        <span class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm shrink-0">
+                            <i class="fa-regular fa-clock"></i>
+                        </span>
+                    </div>
+                    <strong id="cardsTabPending" class="block text-lg sm:text-xl font-black mt-2 truncate text-amber-600 dark:text-amber-400">R$ 0,00</strong>
+                    <span class="block text-xs font-semibold text-amber-600 dark:text-amber-400 mt-1 truncate">A pagar no período</span>
+                </div>
+
+                <div class="app-card p-4 text-left flex flex-col justify-between">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300">Faturas Futuro</span>
+                        <span class="w-8 h-8 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm shrink-0">
+                            <i class="fa-solid fa-calendar-plus"></i>
+                        </span>
+                    </div>
+                    <strong id="cardsTabFuture" class="block text-lg sm:text-xl font-black mt-2 truncate text-indigo-700 dark:text-indigo-300">R$ 0,00</strong>
+                    <span id="cardsTabFutureSub" class="block text-xs font-semibold text-indigo-600 dark:text-indigo-400 mt-1 truncate">Próximos meses</span>
+                </div>
+            </div>
+
+            <!-- Card + Novo Cartão abaixo dos 4 cards -->
             <div class="app-card p-4 flex items-center justify-between gap-2">
                 <div>
                     <h2 class="text-base font-extrabold">Cartões de Crédito</h2>
@@ -1102,23 +1142,8 @@
                 </button>
             </div>
 
-            <div class="grid grid-cols-3 gap-2.5 text-center">
-                <div class="app-card p-3.5">
-                    <span class="text-xs font-bold text-slate-500 block">Fatura Mês</span>
-                    <strong id="cardsTabTotal" class="text-sm sm:text-base font-black text-purple-700 dark:text-purple-300 mt-0.5 block">R$ 0,00</strong>
-                </div>
-                <div class="app-card p-3.5">
-                    <span class="text-xs font-bold text-slate-500 block">Quitado</span>
-                    <strong id="cardsTabPaid" class="text-sm sm:text-base font-black text-emerald-600 mt-0.5 block">R$ 0,00</strong>
-                </div>
-                <div class="app-card p-3.5">
-                    <span class="text-xs font-bold text-slate-500 block">Em Aberto</span>
-                    <strong id="cardsTabPending" class="text-sm sm:text-base font-black text-amber-600 mt-0.5 block">R$ 0,00</strong>
-                </div>
-            </div>
-
-            <!-- Dois cartões na mesma linha -->
-            <div id="cardsTabList" class="grid grid-cols-2 gap-2.5 sm:gap-3.5"></div>
+            <!-- Lista de Cartões (1 por linha) -->
+            <div id="cardsTabList" class="grid grid-cols-1 gap-3.5"></div>
         </div>
 
         <!-- ==================== ABA 4: CONTAS ==================== -->
@@ -1195,21 +1220,7 @@
 
         <!-- ==================== ABA 5: INVESTIMENTOS ==================== -->
         <div id="tab-investments" class="hidden space-y-4">
-            <div class="app-card p-4 flex items-center justify-between gap-2">
-                <div>
-                    <h2 class="text-base font-extrabold">Investimentos & Patrimônio</h2>
-                    <p class="text-xs text-slate-500">Evolução acumulada em <span id="invYearLbl">2026</span></p>
-                </div>
-                <div class="flex gap-1.5 shrink-0">
-                    <button type="button" onclick="openNewTxModal('investment')" class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-xs sm:text-sm font-bold">
-                        <i class="fa-solid fa-plus mr-1"></i>Aporte
-                    </button>
-                    <button type="button" onclick="openNewTxModal('transfer')" class="px-3 py-2 rounded-xl bg-sky-600 text-white text-xs sm:text-sm font-bold">
-                        <i class="fa-solid fa-arrow-right-arrow-left mr-1"></i>Transf.
-                    </button>
-                </div>
-            </div>
-
+            <!-- 3 Cards no Topo: Patrimônio, Aportes Ano, Rendimentos -->
             <div class="grid grid-cols-3 gap-2.5 text-center">
                 <div class="app-card p-3.5 sm:p-4">
                     <span class="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 block">Patrimônio</span>
@@ -1222,6 +1233,22 @@
                 <div class="app-card p-3.5 sm:p-4">
                     <span class="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 block">Rendimentos</span>
                     <strong id="invKpiYield" class="text-base sm:text-xl font-black text-purple-600 dark:text-purple-400 mt-1 block truncate">R$ 0,00</strong>
+                </div>
+            </div>
+
+            <!-- Card Investimentos & Patrimônio abaixo dos 3 cards -->
+            <div class="app-card p-4 flex items-center justify-between gap-2">
+                <div>
+                    <h2 class="text-base font-extrabold">Investimentos & Patrimônio</h2>
+                    <p class="text-xs text-slate-500">Evolução acumulada em <span id="invYearLbl">2026</span></p>
+                </div>
+                <div class="flex gap-1.5 shrink-0">
+                    <button type="button" onclick="openNewTxModal('investment')" class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-xs sm:text-sm font-bold">
+                        <i class="fa-solid fa-plus mr-1"></i>Aporte
+                    </button>
+                    <button type="button" onclick="openNewTxModal('transfer')" class="px-3 py-2 rounded-xl bg-sky-600 text-white text-xs sm:text-sm font-bold">
+                        <i class="fa-solid fa-arrow-right-arrow-left mr-1"></i>Transf.
+                    </button>
                 </div>
             </div>
 
@@ -1299,6 +1326,23 @@
 
         <!-- ==================== ABA 7: CALENDÁRIO ==================== -->
         <div id="tab-calendar" class="hidden space-y-3.5">
+            <!-- 3 Cards no Topo: A Receber, A Pagar, Balanço -->
+            <div class="grid grid-cols-3 gap-2.5 text-center">
+                <div class="app-card p-3.5">
+                    <span class="text-xs font-bold text-slate-500 block">A Receber</span>
+                    <strong id="calIncTotal" class="text-sm sm:text-base font-black text-emerald-600 mt-0.5 block">R$ 0,00</strong>
+                </div>
+                <div class="app-card p-3.5">
+                    <span class="text-xs font-bold text-slate-500 block">A Pagar</span>
+                    <strong id="calExpTotal" class="text-sm sm:text-base font-black text-rose-600 mt-0.5 block">R$ 0,00</strong>
+                </div>
+                <div class="app-card p-3.5">
+                    <span class="text-xs font-bold text-slate-500 block">Balanço</span>
+                    <strong id="calNetTotal" class="text-sm sm:text-base font-black mt-0.5 block">R$ 0,00</strong>
+                </div>
+            </div>
+
+            <!-- Card de Seleção de Mês abaixo dos 3 cards -->
             <div class="app-card p-4 flex items-center justify-between">
                 <button type="button" onclick="shiftCalMonth(-1)" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                     <i class="fa-solid fa-chevron-left text-sm"></i>
@@ -1307,21 +1351,6 @@
                 <button type="button" onclick="shiftCalMonth(1)" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                     <i class="fa-solid fa-chevron-right text-sm"></i>
                 </button>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2.5 text-center">
-                <div class="app-card p-3">
-                    <span class="text-xs font-bold text-slate-500 block">A Receber</span>
-                    <strong id="calIncTotal" class="text-sm sm:text-base font-black text-emerald-600 mt-0.5 block">R$ 0,00</strong>
-                </div>
-                <div class="app-card p-3">
-                    <span class="text-xs font-bold text-slate-500 block">A Pagar</span>
-                    <strong id="calExpTotal" class="text-sm sm:text-base font-black text-rose-600 mt-0.5 block">R$ 0,00</strong>
-                </div>
-                <div class="app-card p-3">
-                    <span class="text-xs font-bold text-slate-500 block">Balanço</span>
-                    <strong id="calNetTotal" class="text-sm sm:text-base font-black mt-0.5 block">R$ 0,00</strong>
-                </div>
             </div>
 
             <div class="app-card p-3.5">
@@ -3512,6 +3541,10 @@ function doGet(e) {
 
         function switchTab(tab) {
             appState.activeTab = tab;
+            const topKpis = document.getElementById('dashboardTopKpisSection');
+            if (topKpis) {
+                topKpis.classList.toggle('hidden', tab !== 'dashboard');
+            }
             const allTabs = ['dashboard', 'transactions', 'cards', 'accounts', 'investments', 'matrix', 'calendar', 'budgets', 'settings'];
             allTabs.forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
@@ -4331,7 +4364,7 @@ function doGet(e) {
                 cardEl.style.borderColor = isDark
                     ? `color-mix(in srgb, ${cfg.hex} ${active ? '60%' : '38%'}, #1f2937)`
                     : `color-mix(in srgb, ${cfg.hex} ${active ? '55%' : '30%'}, #e2e8f0)`;
-                cardEl.className = `app-card p-3 sm:p-3.5 min-h-[84px] text-left flex flex-col justify-between transition-all active:scale-95 ${active ? cfg.ring : ''}`;
+                cardEl.className = `app-card p-4 text-left flex flex-col justify-between transition-all active:scale-[0.98] ${active ? cfg.ring : ''}`;
             });
 
             // Botão Limpar Filtros: fraco quando todos estão padrão, forte quando algum filtro está ativo
@@ -5268,9 +5301,32 @@ function doGet(e) {
                 }
             });
 
+            const yRef = Number(appState.selectedYear);
+            const mRef = appState.selectedMonth !== 'ALL' ? Number(appState.selectedMonth) : 11;
+            let futureSum = 0, futureCnt = 0;
+            appState.transactions.forEach(t => {
+                if (t.paymentMethod !== 'card') return;
+                const ty = Number(t.year);
+                const tm = Number(t.month);
+                if (ty > yRef || (ty === yRef && tm > mRef)) {
+                    const amt = Number(t.amount) || 0;
+                    if (t.type === 'expense') {
+                        futureSum += amt;
+                        futureCnt++;
+                    } else if (t.type === 'income' && t.isRefund) {
+                        futureSum -= amt;
+                    }
+                }
+            });
+            futureSum = Math.max(0, futureSum);
+
             document.getElementById('cardsTabTotal').textContent = fmtBRL(Math.max(0, tot));
             document.getElementById('cardsTabPaid').textContent = fmtBRL(paid);
             document.getElementById('cardsTabPending').textContent = fmtBRL(pend);
+            const futEl = document.getElementById('cardsTabFuture');
+            const futSubEl = document.getElementById('cardsTabFutureSub');
+            if (futEl) futEl.textContent = fmtBRL(futureSum);
+            if (futSubEl) futSubEl.textContent = futureCnt > 0 ? `${futureCnt} ${futureCnt === 1 ? 'lançamento futuro' : 'lançamentos futuros'}` : 'Próximos meses';
 
             const list = document.getElementById('cardsTabList');
             if (appState.creditCards.length === 0) {
