@@ -281,41 +281,43 @@
             }
         }
 
-        /* Cápsula ativa deslizante + barra luminosa superior na barra de navegação inferior */
+        /* Balão adaptável à largura e altura exata (ícone + nome), com margem superior e inferior idênticas */
         #navSmokePill {
             position: absolute;
             top: 0;
-            bottom: 2px;
             left: 0;
-            width: 20%;
-            pointer-events: none;
-            transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
-            z-index: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-        }
-        #navSmokePill::before {
-            content: "";
-            width: 34px;
-            height: 3.5px;
-            border-radius: 0 0 999px 999px;
-            background: linear-gradient(90deg, var(--theme-primary), var(--theme-secondary));
-            box-shadow: 0 3px 10px color-mix(in srgb, var(--theme-secondary) 65%, transparent);
-            margin-bottom: 3px;
-        }
-        #navSmokePill::after {
-            content: "";
-            width: 66px;
-            height: 42px;
+            height: 50px;
+            width: 64px;
             border-radius: 16px;
-            background: linear-gradient(180deg, color-mix(in srgb, var(--theme-secondary) 20%, transparent) 0%, color-mix(in srgb, var(--theme-primary) 7%, transparent) 100%);
-            border: 1px solid color-mix(in srgb, var(--theme-secondary) 28%, transparent);
+            background: color-mix(in srgb, var(--theme-secondary) 18%, transparent);
+            border: 1px solid color-mix(in srgb, var(--theme-secondary) 30%, transparent);
+            box-shadow: 0 2px 8px color-mix(in srgb, var(--theme-secondary) 22%, transparent);
+            pointer-events: none;
+            transform: translate3d(0px, 0px, 0);
+            transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+                        width 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+                        height 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+            z-index: 0;
         }
-        .dark #navSmokePill::after {
-            background: linear-gradient(180deg, color-mix(in srgb, var(--theme-secondary) 28%, transparent) 0%, color-mix(in srgb, var(--theme-primary) 10%, transparent) 100%);
-            border-color: color-mix(in srgb, var(--theme-secondary) 35%, transparent);
+        .dark #navSmokePill {
+            background: color-mix(in srgb, var(--theme-secondary) 25%, transparent);
+            border-color: color-mix(in srgb, var(--theme-secondary) 38%, transparent);
+        }
+
+        /* Transição suave ao alternar meses no Calendário */
+        .cal-month-slide-next {
+            animation: calSlideNext 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        .cal-month-slide-prev {
+            animation: calSlidePrev 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes calSlideNext {
+            from { opacity: 0.2; transform: translateX(14px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes calSlidePrev {
+            from { opacity: 0.2; transform: translateX(-14px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         /* Transição suave ao filtrar lançamentos */
@@ -813,10 +815,9 @@
                         <div id="dashBankIconBox" class="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0">
                             <i id="dashBankIcon" class="fa-solid fa-building-columns"></i>
                         </div>
-                        <div class="min-w-0">
-                            <span class="block text-xs text-slate-500 dark:text-slate-400">Conta Bancária</span>
-                            <h3 id="dashBankName" class="text-base font-extrabold truncate">Minha Conta Bancária</h3>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Fluxo e saldo projetado</p>
+                        <div class="min-w-0 flex flex-col justify-center">
+                            <span class="block text-xs text-slate-500 dark:text-slate-400 leading-tight">Conta Bancária</span>
+                            <h3 id="dashBankName" class="text-base font-extrabold truncate leading-snug">Minha Conta Bancária</h3>
                         </div>
                     </div>
                     <button type="button" onclick="openBankAdjustModal()" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold theme-text shrink-0">
@@ -1279,20 +1280,27 @@
                 </div>
             </div>
 
-            <!-- Card Investimentos & Patrimônio abaixo dos 3 cards -->
-            <div class="app-card p-4 flex items-center justify-between gap-2">
-                <div>
-                    <h2 class="text-base font-extrabold">Investimentos & Patrimônio</h2>
-                    <p class="text-xs text-slate-500">Evolução acumulada em <span id="invYearLbl">2026</span></p>
-                </div>
-                <div class="flex gap-1.5 shrink-0">
-                    <button type="button" onclick="openNewTxModal('investment')" class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-xs sm:text-sm font-bold">
-                        <i class="fa-solid fa-plus mr-1"></i>Aporte
-                    </button>
-                    <button type="button" onclick="openNewTxModal('transfer')" class="px-3 py-2 rounded-xl bg-sky-600 text-white text-xs sm:text-sm font-bold">
-                        <i class="fa-solid fa-arrow-right-arrow-left mr-1"></i>Transf.
-                    </button>
-                </div>
+            <!-- Dois cards de ação suaves: Novo Aporte & Transferências -->
+            <div class="grid grid-cols-2 gap-3">
+                <button type="button" onclick="openNewTxModal('investment')" class="app-card p-4 bg-indigo-50/90 dark:bg-indigo-950/35 border-indigo-200/80 dark:border-indigo-800/60 flex items-center gap-3 text-left active:scale-[0.98] transition-transform">
+                    <span class="w-10 h-10 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 flex items-center justify-center text-base shrink-0">
+                        <i class="fa-solid fa-plus"></i>
+                    </span>
+                    <div class="min-w-0">
+                        <strong class="block text-sm font-extrabold text-indigo-900 dark:text-indigo-200 truncate">Novo Aporte</strong>
+                        <span class="block text-[11px] font-semibold text-indigo-600/85 dark:text-indigo-300/80 truncate">Aplicar recurso</span>
+                    </div>
+                </button>
+
+                <button type="button" onclick="openNewTxModal('transfer')" class="app-card p-4 bg-sky-50/90 dark:bg-sky-950/35 border-sky-200/80 dark:border-sky-800/60 flex items-center gap-3 text-left active:scale-[0.98] transition-transform">
+                    <span class="w-10 h-10 rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-300 flex items-center justify-center text-base shrink-0">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    </span>
+                    <div class="min-w-0">
+                        <strong class="block text-sm font-extrabold text-sky-900 dark:text-sky-200 truncate">Transferências</strong>
+                        <span class="block text-[11px] font-semibold text-sky-600/85 dark:text-sky-300/80 truncate">Aporte ou resgate</span>
+                    </div>
+                </button>
             </div>
 
             <div class="app-card p-4">
@@ -1500,9 +1508,9 @@
 
     <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA (5 ABAS MOBILE) -->
     <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
-        <div class="max-w-5xl mx-auto px-2 pt-1.5 pb-1 grid grid-cols-5 items-center text-center relative">
+        <div class="max-w-5xl mx-auto px-2 pt-2 pb-2 grid grid-cols-5 items-center text-center relative">
             <!-- Efeito Fumaça Deslizante sob a Aba Ativa -->
-            <div id="navSmokePill" aria-hidden="true" style="transform: translateX(0%);"></div>
+            <div id="navSmokePill" aria-hidden="true"></div>
 
             <button type="button" id="bnav-dashboard" onclick="switchTab('dashboard')" class="relative z-10 flex flex-col items-center py-1 theme-text transition-colors duration-200">
                 <i class="fa-solid fa-chart-pie text-lg"></i>
@@ -3287,6 +3295,8 @@ function doGet(e) {
 
             const overlay = document.getElementById('authGateOverlay');
             if (overlay) overlay.classList.add('auth-gate-hidden');
+            shouldAnimateInitialKpis = true;
+            updateKPIs();
             showHeroWelcomeBanner();
             toast(`Bem-vindo(a), ${prof.name}!`);
 
@@ -3415,6 +3425,7 @@ function doGet(e) {
                 localStorage.setItem(getStorageKey('orcamento_wallet_balance_v10', newId), '0');
             } catch (err) {}
 
+            shouldAnimateInitialKpis = true;
             loadProfileData(newId);
             const overlay = document.getElementById('authGateOverlay');
             if (overlay) overlay.classList.add('auth-gate-hidden');
@@ -3577,10 +3588,45 @@ function doGet(e) {
         function updateNavSmokePosition(tab) {
             const smoke = document.getElementById('navSmokePill');
             if (!smoke) return;
-            const slotMap = { dashboard: 0, transactions: 1, cards: 3 };
-            const slotIndex = slotMap[tab] !== undefined ? slotMap[tab] : 4;
-            smoke.style.transform = `translateX(${slotIndex * 100}%)`;
+            const navContainer = smoke.parentElement;
+            const btnIdMap = { dashboard: 'bnav-dashboard', transactions: 'bnav-transactions', cards: 'bnav-cards' };
+            const activeBtn = document.getElementById(btnIdMap[tab] || 'bnav-more');
+            if (!navContainer || !activeBtn) return;
+
+            const containerRect = navContainer.getBoundingClientRect();
+            const btnRect = activeBtn.getBoundingClientRect();
+            const iconEl = activeBtn.querySelector('i');
+            const labelSpan = activeBtn.querySelector('span');
+            if (!containerRect.width || !btnRect.width) return;
+
+            const labelWidth = labelSpan ? labelSpan.getBoundingClientRect().width : 40;
+
+            // Largura adaptada ao texto da aba + margem lateral para cobrir todo o nome sem cortar
+            const pillWidth = Math.max(58, Math.ceil(labelWidth + 18));
+            const btnCenterX = (btnRect.left - containerRect.left) + (btnRect.width / 2);
+            const pillLeftX = Math.max(4, Math.min(containerRect.width - pillWidth - 4, btnCenterX - (pillWidth / 2)));
+
+            // Centralização vertical exata usando como referência o espaço acima do ícone
+            const contentTop = iconEl
+                ? (iconEl.getBoundingClientRect().top - containerRect.top)
+                : (btnRect.top - containerRect.top + 4);
+            const contentBottom = labelSpan
+                ? (labelSpan.getBoundingClientRect().bottom - containerRect.top)
+                : (btnRect.bottom - containerRect.top - 4);
+
+            const refTopSpace = 7; // mesmo espaço de referência acima do ícone e abaixo do nome da aba
+            const pillTopY = Math.max(2, contentTop - refTopSpace);
+            const actualTopSpace = contentTop - pillTopY;
+            const pillHeight = Math.round((contentBottom - contentTop) + (actualTopSpace * 2));
+
+            smoke.style.width = `${pillWidth}px`;
+            smoke.style.height = `${pillHeight}px`;
+            smoke.style.transform = `translate3d(${pillLeftX}px, ${pillTopY}px, 0)`;
         }
+
+        window.addEventListener('resize', () => {
+            updateNavSmokePosition(appState.activeTab || 'dashboard');
+        });
 
         function switchTab(tab) {
             appState.activeTab = tab;
@@ -3709,6 +3755,7 @@ function doGet(e) {
             appState.appFont = found.id;
             document.documentElement.style.setProperty('--app-font', found.family);
             renderFontPicker();
+            requestAnimationFrame(() => updateNavSmokePosition(appState.activeTab || 'dashboard'));
         }
 
         function setAppFont(fontId) {
@@ -3867,6 +3914,35 @@ function doGet(e) {
             if (appState.activeTab === 'budgets') renderBudgetsTab();
         }
 
+        let shouldAnimateInitialKpis = false;
+
+        function animateRollingBRL(elId, targetVal, duration = 900) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            if (appState.hideValues) {
+                el.textContent = 'R$ •••••';
+                return;
+            }
+            const endVal = Number(targetVal) || 0;
+            if (Math.abs(endVal) < 0.01) {
+                el.textContent = fmtBRL(0);
+                return;
+            }
+            const startTime = performance.now();
+            function tick(now) {
+                const progress = Math.min(1, (now - startTime) / duration);
+                const eased = 1 - Math.pow(1 - progress, 4);
+                const current = endVal * eased;
+                el.textContent = fmtBRL(current);
+                if (progress < 1) {
+                    requestAnimationFrame(tick);
+                } else {
+                    el.textContent = fmtBRL(endVal);
+                }
+            }
+            requestAnimationFrame(tick);
+        }
+
         function updateKPIs() {
             const txs = getPeriodTxs();
             let inc = 0, exp = 0;
@@ -3879,11 +3955,20 @@ function doGet(e) {
             const bal = (inc - exp) + wallet;
             const inv = calcAccumulatedInvestments();
 
-            document.getElementById('kpiIncome').textContent = fmtBRL(inc);
-            document.getElementById('kpiExpense').textContent = fmtBRL(exp);
-            document.getElementById('kpiBalance').textContent = fmtBRL(bal);
             document.getElementById('kpiWalletSub').textContent = `Carteira: ${fmtBRL(wallet)}`;
-            document.getElementById('kpiPatrimonio').textContent = fmtBRL(inv);
+
+            if (shouldAnimateInitialKpis) {
+                shouldAnimateInitialKpis = false;
+                animateRollingBRL('kpiIncome', inc, 950);
+                animateRollingBRL('kpiExpense', exp, 950);
+                animateRollingBRL('kpiBalance', bal, 1050);
+                animateRollingBRL('kpiPatrimonio', inv, 1150);
+            } else {
+                document.getElementById('kpiIncome').textContent = fmtBRL(inc);
+                document.getElementById('kpiExpense').textContent = fmtBRL(exp);
+                document.getElementById('kpiBalance').textContent = fmtBRL(bal);
+                document.getElementById('kpiPatrimonio').textContent = fmtBRL(inv);
+            }
         }
 
         // ==================== DASHBOARD ====================
@@ -4343,17 +4428,26 @@ function doGet(e) {
             }
 
             document.getElementById('modalityLegendList').innerHTML = `
-                <button type="button" onclick="goToFilteredTransactions({ type: 'expense', recurrence: 'fixed' })" class="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-800/60 text-center active:scale-95 transition-transform">
-                    <span class="text-xs font-extrabold text-blue-600 dark:text-blue-400 block">Fixas</span>
-                    <strong class="text-sm sm:text-base font-black text-slate-900 dark:text-white mt-0.5 block truncate">${fmtBRL(vFix)}</strong>
+                <button type="button" onclick="goToFilteredTransactions({ type: 'expense', recurrence: 'fixed' })" class="app-card p-3.5 text-center active:scale-95 transition-transform flex flex-col items-center justify-center gap-1.5">
+                    <span class="w-8 h-8 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-repeat"></i>
+                    </span>
+                    <span class="text-sm font-extrabold text-blue-600 dark:text-blue-400 block">Fixas</span>
+                    <strong class="text-sm sm:text-base font-black text-slate-900 dark:text-white block truncate w-full">${fmtBRL(vFix)}</strong>
                 </button>
-                <button type="button" onclick="goToFilteredTransactions({ type: 'expense', recurrence: 'installment' })" class="p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/70 dark:border-purple-800/60 text-center active:scale-95 transition-transform">
-                    <span class="text-xs font-extrabold text-purple-600 dark:text-purple-400 block">Parceladas</span>
-                    <strong class="text-sm sm:text-base font-black text-slate-900 dark:text-white mt-0.5 block truncate">${fmtBRL(vInst)}</strong>
+                <button type="button" onclick="goToFilteredTransactions({ type: 'expense', recurrence: 'installment' })" class="app-card p-3.5 text-center active:scale-95 transition-transform flex flex-col items-center justify-center gap-1.5">
+                    <span class="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </span>
+                    <span class="text-sm font-extrabold text-purple-600 dark:text-purple-400 block">Parceladas</span>
+                    <strong class="text-sm sm:text-base font-black text-slate-900 dark:text-white block truncate w-full">${fmtBRL(vInst)}</strong>
                 </button>
-                <button type="button" onclick="goToFilteredTransactions({ type: 'expense', recurrence: 'variable' })" class="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/70 dark:border-amber-800/60 text-center active:scale-95 transition-transform">
-                    <span class="text-xs font-extrabold text-amber-600 dark:text-amber-400 block">Variáveis</span>
-                    <strong class="text-sm sm:text-base font-black text-slate-900 dark:text-white mt-0.5 block truncate">${fmtBRL(vVar)}</strong>
+                <button type="button" onclick="goToFilteredTransactions({ type: 'expense', recurrence: 'variable' })" class="app-card p-3.5 text-center active:scale-95 transition-transform flex flex-col items-center justify-center gap-1.5">
+                    <span class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-bolt"></i>
+                    </span>
+                    <span class="text-sm font-extrabold text-amber-600 dark:text-amber-400 block">Variáveis</span>
+                    <strong class="text-sm sm:text-base font-black text-slate-900 dark:text-white block truncate w-full">${fmtBRL(vVar)}</strong>
                 </button>
             `;
         }
@@ -4951,13 +5045,23 @@ function doGet(e) {
         }
 
         function setFormPayMethod(method) {
-            document.getElementById('txMethod').value = method;
-            const map = { bank: 'btnPayBank', card: 'btnPayCard', wallet: 'btnPayWallet' };
-            Object.entries(map).forEach(([k, id]) => {
-                document.getElementById(id).className = k === method ? 'py-1.5 rounded-lg bg-white dark:bg-slate-700 theme-text shadow-sm' : 'py-1.5 rounded-lg text-slate-500';
+            animateTxModalResize(() => {
+                document.getElementById('txMethod').value = method;
+                const map = { bank: 'btnPayBank', card: 'btnPayCard', wallet: 'btnPayWallet' };
+                Object.entries(map).forEach(([k, id]) => {
+                    document.getElementById(id).className = k === method
+                        ? 'py-1.5 rounded-lg bg-white dark:bg-slate-700 theme-text shadow-sm transition-all'
+                        : 'py-1.5 rounded-lg text-slate-500 transition-all';
+                });
+                const cardBox = document.getElementById('txCardBox');
+                cardBox.classList.toggle('hidden', method !== 'card');
+                if (method === 'card') {
+                    cardBox.classList.remove('tx-form-section-anim');
+                    void cardBox.offsetWidth;
+                    cardBox.classList.add('tx-form-section-anim');
+                    onTxCardChange();
+                }
             });
-            document.getElementById('txCardBox').classList.toggle('hidden', method !== 'card');
-            if (method === 'card') onTxCardChange();
         }
 
         function populateCardSelect() {
@@ -6111,7 +6215,8 @@ function doGet(e) {
         // ==================== ABA INVESTIMENTOS ====================
         function renderInvestmentsTab() {
             const yTarget = Number(appState.selectedYear);
-            document.getElementById('invYearLbl').textContent = yTarget;
+            const invYrEl = document.getElementById('invYearLbl');
+            if (invYrEl) invYrEl.textContent = yTarget;
 
             let initial = 0;
             appState.transactions.forEach(t => {
@@ -6261,6 +6366,15 @@ function doGet(e) {
             appState.calMonth += dir;
             if (appState.calMonth > 11) { appState.calMonth = 0; appState.calYear++; }
             if (appState.calMonth < 0) { appState.calMonth = 11; appState.calYear--; }
+            const grid = document.getElementById('calDaysGrid');
+            const title = document.getElementById('calMonthTitle');
+            const animCls = dir >= 0 ? 'cal-month-slide-next' : 'cal-month-slide-prev';
+            [grid, title].forEach(el => {
+                if (!el) return;
+                el.classList.remove('cal-month-slide-next', 'cal-month-slide-prev');
+                void el.offsetWidth;
+                el.classList.add(animCls);
+            });
             renderCalendarTab();
         }
 
@@ -6921,6 +7035,10 @@ function doGet(e) {
             document.getElementById('globalMonthSelect').value = String(appState.selectedMonth);
             syncPeriodLabels();
             updateNavSmokePosition('dashboard');
+            requestAnimationFrame(() => updateNavSmokePosition(appState.activeTab || 'dashboard'));
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(() => updateNavSmokePosition(appState.activeTab || 'dashboard'));
+            }
 
             const profiles = getProfiles();
             const savedPid = localStorage.getItem('orcamento_active_profile_id_v1');
