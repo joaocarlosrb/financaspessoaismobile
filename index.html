@@ -197,16 +197,268 @@
         .pt-safe {
             padding-top: max(10px, env(safe-area-inset-top));
         }
+
+        /* Tela Inicial de Carregamento & Login Mobile */
+        #authGateOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 95;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            padding-top: max(16px, env(safe-area-inset-top));
+            padding-bottom: max(16px, env(safe-area-inset-bottom));
+            background-color: #f1f5f9;
+            background-image:
+                radial-gradient(650px 420px at 10% 0%, rgba(16, 185, 129, 0.16), transparent 62%),
+                radial-gradient(600px 400px at 95% 100%, rgba(15, 118, 110, 0.16), transparent 60%);
+            overflow-y: auto;
+            transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.3s ease;
+        }
+        html.dark #authGateOverlay {
+            background-color: #020617;
+        }
+        #authGateOverlay.auth-gate-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        #authGateCard {
+            width: 100%;
+            max-width: 440px;
+            border-radius: 26px;
+            overflow: hidden;
+            background-color: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            box-shadow: 0 24px 60px -12px rgba(15, 23, 42, 0.28);
+            animation: popInModal 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            margin: auto;
+        }
+        html.dark #authGateCard {
+            background-color: #111827;
+            border-color: #334155;
+            box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.65);
+        }
+        #authGateHeader {
+            background: var(--theme-banner);
+            padding: 20px;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+        #authGateHeader::after {
+            content: "";
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            right: -40px;
+            top: -60px;
+            background: rgba(255, 255, 255, 0.12);
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-full flex flex-col">
     <div id="appShell" class="min-h-full flex-1 flex flex-col">
 
+    <!-- TELA INICIAL DE CARREGAMENTO & LOGIN MOBILE -->
+    <div id="authGateOverlay" role="dialog" aria-modal="true" aria-labelledby="authGateTitle">
+        <div id="authGateCard">
+            <div id="authGateHeader">
+                <div class="flex items-center justify-between gap-2.5 relative z-10">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center text-white text-xl shrink-0">
+                            <i id="authGateHeaderIcon" class="fa-solid fa-wallet"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <h2 id="authGateTitle" class="text-base font-extrabold text-white tracking-tight truncate">Orçamento Pessoal</h2>
+                            <p id="authGateSubtitle" class="text-xs text-white/85 truncate">Preparando seus dados...</p>
+                        </div>
+                    </div>
+                    <span id="authLoadingBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-white/20 text-white shrink-0">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Carregando
+                    </span>
+                </div>
+            </div>
+
+            <!-- ETAPA 1: CARREGAMENTO INICIAL -->
+            <div id="authLoadingStep" class="p-5 space-y-4">
+                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl theme-btn flex items-center justify-center text-base text-white shrink-0">
+                        <i class="fa-solid fa-database fa-beat-fade"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p id="authLoadingStatusTitle" class="text-xs sm:text-sm font-extrabold">Carregando estrutura financeira...</p>
+                        <p id="authLoadingStatusDesc" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Organizando lançamentos, cartões e categorias</p>
+                    </div>
+                </div>
+                <div class="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                    <div id="authLoadingProgressBar" class="h-full rounded-full theme-btn transition-all duration-300" style="width: 25%;"></div>
+                </div>
+            </div>
+
+            <!-- ETAPA 2: LOGIN NO SISTEMA -->
+            <form id="authLoginForm" onsubmit="handleProfileLoginSubmit(event)" class="hidden p-5 space-y-4">
+                <div>
+                    <div class="flex items-center justify-between mb-1.5 gap-2">
+                        <label for="authUsernameInput" class="block text-xs font-extrabold text-slate-700 dark:text-slate-300">Usuário (ou Nome no 1º acesso)</label>
+                        <button type="button" onclick="openAppsScriptModal()" class="text-[11px] font-extrabold theme-text flex items-center gap-1 shrink-0">
+                            <i class="fa-brands fa-google-drive"></i> <span id="authScriptStatusLabel">Link Google Script</span>
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <input type="text" id="authUsernameInput" oninput="onAuthUsernameInputChange()" required placeholder="Digite seu usuário ou nome..." autocomplete="username" class="w-full pl-3.5 pr-10 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                        <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                    </div>
+                    <div id="authMatchedProfileBadge" class="hidden mt-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold text-emerald-800 dark:text-emerald-300 flex items-center justify-between gap-2">
+                        <span id="authMatchedProfileText" class="truncate">Perfil encontrado</span>
+                        <span id="authMatchedProfileTag" class="text-[10px] font-extrabold shrink-0"></span>
+                    </div>
+                </div>
+
+                <div id="authPasswordFieldGroup">
+                    <div class="flex items-center justify-between mb-1.5 gap-2">
+                        <label for="authPasswordInput" class="block text-xs font-extrabold text-slate-700 dark:text-slate-300">Senha de Acesso</label>
+                        <span id="authNoPasswordHint" class="hidden text-[11px] font-bold text-emerald-600 dark:text-emerald-400">Sem senha</span>
+                        <button type="button" id="btnForgotProfilePwd" onclick="toggleAuthResetPasswordMode(true)" class="text-[11px] font-extrabold theme-text">
+                            Esqueci minha senha
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="authPasswordInput" placeholder="Digite sua senha..." autocomplete="current-password" class="w-full pl-3.5 pr-11 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                        <button type="button" onclick="toggleAuthPasswordVisibility('authPasswordInput', 'authPwdEyeIcon')" tabindex="-1" class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-slate-400">
+                            <i id="authPwdEyeIcon" class="fa-regular fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="authLoginErrorBox" class="hidden p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-xs font-bold text-rose-700 dark:text-rose-300 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-exclamation shrink-0"></i>
+                    <span id="authLoginErrorText">Usuário ou senha incorretos.</span>
+                </div>
+
+                <div class="pt-1 space-y-2.5">
+                    <button type="submit" id="btnAuthLoginSubmit" class="w-full py-3.5 rounded-xl theme-btn text-sm font-extrabold shadow-md flex items-center justify-center gap-2">
+                        <i id="btnAuthLoginIcon" class="fa-solid fa-right-to-bracket"></i>
+                        <span id="btnAuthLoginText">Entrar no Sistema</span>
+                    </button>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="openAppsScriptModal()" class="py-2.5 px-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-link theme-text"></i>
+                            <span>Configurar Script</span>
+                        </button>
+                        <button type="button" onclick="toggleAuthCreateProfileMode(true)" class="py-2.5 px-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-user-plus theme-text"></i>
+                            <span>Novo Perfil</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- ETAPA 3: CRIAR NOVO PERFIL DO ZERO -->
+            <form id="authCreateProfileForm" onsubmit="handleCreateNewProfileSubmit(event)" class="hidden p-5 space-y-3.5">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs sm:text-sm font-extrabold">Criar Novo Perfil (Dados Zerados)</h3>
+                    <button type="button" onclick="toggleAuthCreateProfileMode(false)" class="text-xs font-bold text-slate-500">
+                        <i class="fa-solid fa-arrow-left mr-1"></i>Voltar
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div>
+                        <label for="newProfileUsernameInput" class="block text-xs font-bold mb-1">Usuário de Login</label>
+                        <input type="text" id="newProfileUsernameInput" required placeholder="Ex: joao.carlos" autocomplete="username" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                    </div>
+                    <div>
+                        <label for="newProfileNameInput" class="block text-xs font-bold mb-1">Seu Nome (Exibido no Topo)</label>
+                        <input type="text" id="newProfileNameInput" required placeholder="Ex: João Carlos" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold mb-1.5">Ícone do Perfil</label>
+                    <div id="newProfileIconsGrid" class="grid grid-cols-6 gap-1.5 max-h-24 overflow-y-auto p-1"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label for="newProfilePasswordInput" class="block text-xs font-bold mb-1">Senha (Opcional)</label>
+                        <input type="password" id="newProfilePasswordInput" placeholder="Criar senha" autocomplete="new-password" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                    </div>
+                    <div>
+                        <label for="newProfilePasswordConfirmInput" class="block text-xs font-bold mb-1">Confirmar Senha</label>
+                        <input type="password" id="newProfilePasswordConfirmInput" placeholder="Repita a senha" autocomplete="new-password" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="newProfileRecoveryHintInput" class="block text-xs font-bold mb-1">Palavra de Recuperação <span class="text-[10px] font-normal text-slate-400">(Opcional)</span></label>
+                    <input type="text" id="newProfileRecoveryHintInput" placeholder="Ex: Nome do primeiro pet..." class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                </div>
+
+                <div id="authCreateErrorBox" class="hidden p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-xs font-bold text-rose-700 dark:text-rose-300 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-exclamation shrink-0"></i>
+                    <span id="authCreateErrorText">Erro ao criar perfil.</span>
+                </div>
+
+                <div class="pt-1 flex gap-2">
+                    <button type="button" onclick="toggleAuthCreateProfileMode(false)" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold">Cancelar</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl theme-btn text-xs font-extrabold shadow-sm">Criar & Acessar</button>
+                </div>
+            </form>
+
+            <!-- ETAPA 4: REDEFINIR SENHA ESQUECIDA -->
+            <form id="authResetPasswordForm" onsubmit="handleResetProfilePasswordSubmit(event)" class="hidden p-5 space-y-3.5">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs sm:text-sm font-extrabold">Redefinir Senha do Perfil</h3>
+                    <button type="button" onclick="toggleAuthResetPasswordMode(false)" class="text-xs font-bold text-slate-500">
+                        <i class="fa-solid fa-arrow-left mr-1"></i>Voltar
+                    </button>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
+                    <span class="text-[11px] text-slate-400 block">Usuário / Perfil:</span>
+                    <strong id="resetPwdProfileNameLabel" class="font-extrabold">--</strong>
+                </div>
+
+                <div id="resetRecoveryQuestionBox" class="space-y-1">
+                    <label for="resetRecoveryAnswerInput" id="resetRecoveryPromptLabel" class="block text-xs font-bold">Palavra de Recuperação:</label>
+                    <input type="text" id="resetRecoveryAnswerInput" placeholder="Digite a palavra de recuperação..." class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label for="resetNewPasswordInput" class="block text-xs font-bold mb-1">Nova Senha</label>
+                        <input type="password" id="resetNewPasswordInput" placeholder="Nova senha" autocomplete="new-password" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                    </div>
+                    <div>
+                        <label for="resetNewPasswordConfirmInput" class="block text-xs font-bold mb-1">Confirmar</label>
+                        <input type="password" id="resetNewPasswordConfirmInput" placeholder="Repita a senha" autocomplete="new-password" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                    </div>
+                </div>
+
+                <div id="authResetErrorBox" class="hidden p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-xs font-bold text-rose-700 dark:text-rose-300 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-exclamation shrink-0"></i>
+                    <span id="authResetErrorText">Não foi possível redefinir a senha.</span>
+                </div>
+
+                <div class="pt-1 flex gap-2">
+                    <button type="button" onclick="toggleAuthResetPasswordMode(false)" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold">Cancelar</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl theme-btn text-xs font-extrabold shadow-sm">Salvar & Entrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- CABEÇALHO SUPERIOR FIXO MOBILE (NEUTRO) -->
     <header class="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 pt-safe">
         <div class="max-w-5xl mx-auto px-3.5 py-2.5 flex items-center justify-between gap-2">
-            <!-- Identificação do Usuário -->
-            <div class="flex items-center gap-2.5 min-w-0 text-left">
+            <!-- Identificação do Usuário (Toque para editar Perfil & Ícone) -->
+            <button type="button" onclick="openUserProfileModal()" title="Editar Perfil & Ícone" class="flex items-center gap-2.5 min-w-0 text-left active:scale-95 transition-transform">
                 <div class="w-10 h-10 rounded-xl theme-btn flex items-center justify-center text-base shrink-0 shadow-sm">
                     <i id="headerProfileIcon" class="fa-solid fa-wallet"></i>
                 </div>
@@ -214,7 +466,7 @@
                     <span class="block text-[11px] font-bold text-slate-400 leading-none">Orçamento</span>
                     <span id="headerProfileName" class="block text-sm font-extrabold truncate max-w-[115px] sm:max-w-[180px] mt-0.5">João Carlos</span>
                 </div>
-            </div>
+            </button>
 
             <!-- Seletor Rápido Mês/Ano -->
             <div class="flex items-center gap-1.5">
@@ -875,6 +1127,27 @@
                     <i id="darkModeBtnIcon" class="fa-solid fa-moon text-amber-500"></i>
                     <span id="darkModeBtnLabel">Modo Escuro</span>
                 </button>
+            </div>
+
+            <!-- Perfil, Usuário & Senha -->
+            <div class="app-card p-4 sm:p-5 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 rounded-xl theme-btn flex items-center justify-center text-base shrink-0">
+                        <i id="settingsProfileIcon" class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 class="text-base font-extrabold truncate">Perfil, Usuário & Senha</h3>
+                        <p id="settingsProfileSummary" class="text-xs text-slate-500 dark:text-slate-400 truncate">Configure seu usuário de login e senha</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button type="button" onclick="openUserProfileModal()" class="px-3 py-2 rounded-xl theme-btn text-xs font-bold">
+                        <i class="fa-solid fa-pen mr-1"></i>Editar
+                    </button>
+                    <button type="button" onclick="openProfileSwitchLockModal()" title="Trocar ou bloquear perfil" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold">
+                        <i class="fa-solid fa-lock"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- Paleta de Cores -->
@@ -1693,8 +1966,71 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL: PERFIL & ÍCONE ==================== -->
+    <div id="modalUserProfile" onclick="if(event.target===this) closeModal('modalUserProfile')" class="modal-backdrop hidden z-[105]">
+        <div class="modal-sheet">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-base">
+                        <i id="modalUserProfilePreviewIcon" class="fa-solid fa-wallet"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-base font-extrabold">Perfil & Ícone</h3>
+                        <p class="text-xs text-white/80">Usuário de login, nome no topo e senha</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeModal('modalUserProfile')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleSaveUserProfile(event)" class="p-4 space-y-3.5 overflow-y-auto flex-1">
+                <div id="firstAccessUsernameNotice" class="hidden p-3 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-700 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2">
+                    <i class="fa-solid fa-user-shield text-amber-600 mt-0.5 shrink-0"></i>
+                    <span><strong>Primeiro Acesso:</strong> Crie seu <strong>Usuário de Login</strong> abaixo para utilizar nas próximas entradas no sistema.</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div>
+                        <label for="cfgUserProfileUsername" class="block text-xs font-bold mb-1">Usuário de Login</label>
+                        <input type="text" id="cfgUserProfileUsername" required placeholder="Ex: joao.carlos" autocomplete="username" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                    </div>
+                    <div>
+                        <label for="cfgUserProfileName" class="block text-xs font-bold mb-1">Seu Nome (Topo do App)</label>
+                        <input type="text" id="cfgUserProfileName" required placeholder="Digite seu nome..." class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="cfgUserProfilePassword" class="block text-xs font-bold mb-1">Senha de Acesso <span class="text-[10px] font-normal text-slate-400">(vazio = sem senha)</span></label>
+                    <div class="relative">
+                        <input type="password" id="cfgUserProfilePassword" placeholder="Definir ou alterar senha..." autocomplete="new-password" class="w-full pl-3 pr-10 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                        <button type="button" onclick="toggleAuthPasswordVisibility('cfgUserProfilePassword', 'cfgProfilePwdEyeIcon')" tabindex="-1" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                            <i id="cfgProfilePwdEyeIcon" class="fa-regular fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="cfgUserProfileRecovery" class="block text-xs font-bold mb-1">Palavra de Recuperação <span class="text-[10px] font-normal text-slate-400">(para redefinir senha se esquecer)</span></label>
+                    <input type="text" id="cfgUserProfileRecovery" placeholder="Ex: Nome do pet, cidade natal..." class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold mb-1.5">Selecione um Ícone</label>
+                    <div id="userProfileIconsGrid" class="grid grid-cols-6 gap-1.5 max-h-40 overflow-y-auto p-1"></div>
+                </div>
+
+                <div class="pt-2 flex gap-2">
+                    <button type="button" onclick="closeModal('modalUserProfile')" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs sm:text-sm font-bold">Cancelar</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl theme-btn text-xs sm:text-sm font-extrabold">Salvar Perfil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- ==================== MODAL: GOOGLE APPS SCRIPT CONFIG ==================== -->
-    <div id="modalAppsScript" onclick="if(event.target===this) closeModal('modalAppsScript')" class="modal-backdrop hidden">
+    <div id="modalAppsScript" onclick="if(event.target===this) closeModal('modalAppsScript')" class="modal-backdrop hidden z-[110]">
         <div class="modal-sheet">
             <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
                 <h3 class="text-base font-extrabold">Google Apps Script / Drive</h3>
@@ -1723,8 +2059,36 @@ function doPost(e) {
   if (Array.isArray(data.profiles)) {
     var sp = ss.getSheetByName("Perfis_Usuarios") || ss.insertSheet("Perfis_Usuarios");
     sp.clearContents();
-    sp.appendRow(["Perfis JSON"]);
-    sp.appendRow([JSON.stringify(data.profiles)]);
+    sp.appendRow(["Perfis JSON", "Usuario", "Nome", "Senha", "Recuperacao", "Icone"]);
+    var cleanProfiles = data.profiles.map(function(p) {
+      return {
+        id: String(p.id || "default"),
+        username: String(p.username || "").trim(),
+        name: String(p.name || "Usuário").trim(),
+        icon: String(p.icon || "fa-wallet"),
+        password: String(p.password || ""),
+        recoveryHint: String(p.recoveryHint || "").trim(),
+        createdAt: p.createdAt || new Date().toISOString()
+      };
+    });
+    sp.appendRow([
+      JSON.stringify(cleanProfiles),
+      cleanProfiles[0] ? cleanProfiles[0].username : "",
+      cleanProfiles[0] ? cleanProfiles[0].name : "",
+      cleanProfiles[0] ? cleanProfiles[0].password : "",
+      cleanProfiles[0] ? cleanProfiles[0].recoveryHint : "",
+      cleanProfiles[0] ? cleanProfiles[0].icon : ""
+    ]);
+    for (var pIdx = 1; pIdx < cleanProfiles.length; pIdx++) {
+      sp.appendRow([
+        "",
+        cleanProfiles[pIdx].username,
+        cleanProfiles[pIdx].name,
+        cleanProfiles[pIdx].password,
+        cleanProfiles[pIdx].recoveryHint,
+        cleanProfiles[pIdx].icon
+      ]);
+    }
   }
 
   var st = ss.getSheetByName("Historico_Lancamentos" + suffix) || ss.insertSheet("Historico_Lancamentos" + suffix);
@@ -1776,7 +2140,32 @@ function doGet(e) {
 
   var profiles = null;
   var sp = ss.getSheetByName("Perfis_Usuarios");
-  if (sp && sp.getLastRow() >= 2) { try { profiles = JSON.parse(sp.getRange(2, 1).getValue()); } catch(ex) {} }
+  if (sp && sp.getLastRow() >= 2) {
+    try {
+      var parsedProfs = JSON.parse(sp.getRange(2, 1).getValue());
+      if (Array.isArray(parsedProfs)) {
+        profiles = parsedProfs.map(function(p) {
+          return {
+            id: String(p.id || "default"),
+            username: String(p.username || ""),
+            name: String(p.name || "Usuário"),
+            icon: String(p.icon || "fa-wallet"),
+            password: String(p.password || ""),
+            recoveryHint: String(p.recoveryHint || ""),
+            createdAt: p.createdAt || ""
+          };
+        });
+      }
+    } catch(ex) {}
+  }
+
+  if (e && e.parameter && e.parameter.checkVersion === "1") {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      profileId: profileId,
+      profiles: profiles
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
 
   var bankAccountConfig = null, walletBalance = 0, lastModified = "";
   var sm = ss.getSheetByName("Configuracao_Geral" + suffix);
@@ -1987,7 +2376,16 @@ function doGet(e) {
             ];
         }
 
-        // ==================== PERFIL & CARREGAMENTO ====================
+        // ==================== PERFIL, LOGIN & CARREGAMENTO ====================
+        const USER_PROFILE_ICONS = [
+            'fa-wallet', 'fa-user', 'fa-user-tie', 'fa-user-graduate', 'fa-user-astronaut', 'fa-user-ninja',
+            'fa-crown', 'fa-gem', 'fa-star', 'fa-bolt', 'fa-fire', 'fa-rocket',
+            'fa-piggy-bank', 'fa-coins', 'fa-sack-dollar', 'fa-chart-line', 'fa-landmark', 'fa-briefcase',
+            'fa-house', 'fa-car', 'fa-motorcycle', 'fa-plane', 'fa-heart', 'fa-shield-halved'
+        ];
+        let tempSelectedUserIcon = 'fa-wallet';
+        let tempNewProfileIcon = 'fa-user';
+
         function getProfiles() {
             let list = [];
             try {
@@ -1995,11 +2393,616 @@ function doGet(e) {
                 if (raw) list = JSON.parse(raw);
             } catch (e) {}
             if (!Array.isArray(list) || list.length === 0) {
-                list = [{ id: 'default', name: localStorage.getItem('orcamento_user_name') || 'João Carlos', icon: localStorage.getItem('orcamento_user_icon') || 'fa-wallet' }];
+                list = [{
+                    id: 'default',
+                    username: '',
+                    name: localStorage.getItem('orcamento_user_name') || 'João Carlos',
+                    icon: localStorage.getItem('orcamento_user_icon') || 'fa-wallet',
+                    password: '',
+                    recoveryHint: '',
+                    createdAt: new Date().toISOString()
+                }];
                 localStorage.setItem('orcamento_profiles_registry_v1', JSON.stringify(list));
             }
             appState.profiles = list;
             return list;
+        }
+
+        function saveProfilesList(list) {
+            appState.profiles = list;
+            try {
+                localStorage.setItem('orcamento_profiles_registry_v1', JSON.stringify(list));
+            } catch (e) {}
+        }
+
+        function getActiveProfileObj() {
+            const list = getProfiles();
+            return list.find(p => p.id === (appState.activeProfileId || 'default')) || list[0];
+        }
+
+        function updateActiveProfileMetadata(patch) {
+            const list = getProfiles();
+            const idx = list.findIndex(p => p.id === (appState.activeProfileId || 'default'));
+            if (idx !== -1) {
+                list[idx] = { ...list[idx], ...patch };
+                saveProfilesList(list);
+            }
+        }
+
+        function mergeRemoteProfiles(remoteList) {
+            if (!Array.isArray(remoteList) || remoteList.length === 0) return;
+            const localList = getProfiles();
+            const map = new Map(localList.map(p => [p.id, p]));
+            remoteList.forEach(rp => {
+                if (rp && rp.id) {
+                    const existing = map.get(rp.id);
+                    map.set(rp.id, existing ? {
+                        ...existing,
+                        ...rp,
+                        username: rp.username !== undefined ? String(rp.username || '') : (existing.username || ''),
+                        recoveryHint: rp.recoveryHint !== undefined ? String(rp.recoveryHint || '') : (existing.recoveryHint || '')
+                    } : {
+                        id: String(rp.id),
+                        username: String(rp.username || ''),
+                        name: String(rp.name || 'Perfil'),
+                        icon: String(rp.icon || 'fa-wallet'),
+                        password: String(rp.password || ''),
+                        recoveryHint: String(rp.recoveryHint || ''),
+                        createdAt: rp.createdAt || new Date().toISOString()
+                    });
+                }
+            });
+            saveProfilesList(Array.from(map.values()));
+            onAuthUsernameInputChange();
+        }
+
+        function updateSettingsProfileSummary() {
+            const prof = getActiveProfileObj();
+            const sumEl = document.getElementById('settingsProfileSummary');
+            const icoEl = document.getElementById('settingsProfileIcon');
+            if (sumEl && prof) {
+                const userTag = prof.username ? `@${prof.username}` : 'Usuário pendente';
+                sumEl.textContent = `${prof.name} • ${userTag}`;
+            }
+            if (icoEl && prof) {
+                icoEl.className = `fa-solid ${prof.icon || 'fa-wallet'}`;
+            }
+        }
+
+        function openUserProfileModal(isFirstAccessPrompt = false) {
+            const currentProf = getActiveProfileObj();
+            tempSelectedUserIcon = currentProf?.icon || 'fa-wallet';
+            const usernameInput = document.getElementById('cfgUserProfileUsername');
+            const nameInput = document.getElementById('cfgUserProfileName');
+            const pwdInput = document.getElementById('cfgUserProfilePassword');
+            const recInput = document.getElementById('cfgUserProfileRecovery');
+            const noticeBox = document.getElementById('firstAccessUsernameNotice');
+
+            if (usernameInput) usernameInput.value = currentProf ? (currentProf.username || '') : '';
+            if (nameInput) nameInput.value = currentProf ? (currentProf.name || 'João Carlos') : 'João Carlos';
+            if (pwdInput) pwdInput.value = currentProf ? (currentProf.password || '') : '';
+            if (recInput) recInput.value = currentProf ? (currentProf.recoveryHint || '') : '';
+            if (noticeBox) noticeBox.classList.toggle('hidden', !isFirstAccessPrompt);
+
+            renderUserProfileIconsGrid();
+            openModal('modalUserProfile');
+            if (isFirstAccessPrompt && usernameInput) {
+                setTimeout(() => { usernameInput.focus(); usernameInput.select(); }, 90);
+            }
+        }
+
+        function renderUserProfileIconsGrid() {
+            const grid = document.getElementById('userProfileIconsGrid');
+            const previewIcon = document.getElementById('modalUserProfilePreviewIcon');
+            if (previewIcon) previewIcon.className = `fa-solid ${tempSelectedUserIcon}`;
+            if (!grid) return;
+
+            grid.innerHTML = USER_PROFILE_ICONS.map(ico => {
+                const active = tempSelectedUserIcon === ico;
+                return `
+                    <button type="button" onclick="selectUserProfileIcon('${ico}')"
+                        class="h-10 rounded-xl border flex items-center justify-center text-sm transition-all ${active
+                            ? 'border-slate-900 dark:border-white bg-slate-100 dark:bg-slate-800 theme-text ring-2 ring-emerald-500/40 scale-105'
+                            : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-300'}">
+                        <i class="fa-solid ${ico}"></i>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectUserProfileIcon(ico) {
+            tempSelectedUserIcon = ico;
+            renderUserProfileIconsGrid();
+        }
+
+        function handleSaveUserProfile(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('cfgUserProfileUsername');
+            const nameInput = document.getElementById('cfgUserProfileName');
+            const pwdInput = document.getElementById('cfgUserProfilePassword');
+            const recInput = document.getElementById('cfgUserProfileRecovery');
+
+            const newUsername = (usernameInput?.value || '').trim();
+            const newName = (nameInput?.value || '').trim();
+            const newPwd = pwdInput ? pwdInput.value : '';
+            const newRec = (recInput?.value || '').trim();
+
+            if (!newUsername) {
+                toast('Informe um usuário de login.');
+                if (usernameInput) usernameInput.focus();
+                return;
+            }
+
+            const existingOther = getProfiles().find(p =>
+                p.id !== (appState.activeProfileId || 'default') &&
+                (p.username || '').toLowerCase() === newUsername.toLowerCase()
+            );
+            if (existingOther) {
+                toast('Este usuário já está em uso em outro perfil.');
+                if (usernameInput) { usernameInput.focus(); usernameInput.select(); }
+                return;
+            }
+
+            const finalName = newName || 'João Carlos';
+            const finalIcon = tempSelectedUserIcon || 'fa-wallet';
+            try {
+                localStorage.setItem(getStorageKey('orcamento_user_name'), finalName);
+                localStorage.setItem(getStorageKey('orcamento_user_icon'), finalIcon);
+                if ((appState.activeProfileId || 'default') === 'default') {
+                    localStorage.setItem('orcamento_user_name', finalName);
+                    localStorage.setItem('orcamento_user_icon', finalIcon);
+                }
+            } catch (err) {}
+
+            updateActiveProfileMetadata({
+                username: newUsername,
+                name: finalName,
+                icon: finalIcon,
+                password: newPwd,
+                recoveryHint: newRec
+            });
+
+            const headerNameEl = document.getElementById('headerProfileName');
+            const headerIconEl = document.getElementById('headerProfileIcon');
+            if (headerNameEl) headerNameEl.textContent = finalName;
+            if (headerIconEl) headerIconEl.className = `fa-solid ${finalIcon}`;
+            updateSettingsProfileSummary();
+            if (appState.activeTab === 'dashboard') renderDashboard();
+
+            closeModal('modalUserProfile');
+            toast('Usuário, perfil e senha salvos!');
+
+            if (appState.appsScriptUrl) {
+                syncSaveToCloud();
+            }
+        }
+
+        function findProfileByLoginIdentifier(identifier) {
+            const q = String(identifier || '').trim().toLowerCase();
+            if (!q) return null;
+            const list = getProfiles();
+            let found = list.find(p => p.username && p.username.trim().toLowerCase() === q);
+            if (!found) {
+                found = list.find(p => !p.username && p.name && p.name.trim().toLowerCase() === q);
+            }
+            if (!found) {
+                found = list.find(p => p.name && p.name.trim().toLowerCase() === q);
+            }
+            return found || null;
+        }
+
+        function updateAuthScriptStatusLabel() {
+            const lbl = document.getElementById('authScriptStatusLabel');
+            if (lbl) lbl.textContent = appState.appsScriptUrl ? 'Script Conectado ✓' : 'Link Google Script';
+        }
+
+        function setAuthLoadingProgress(pct, title, desc) {
+            const bar = document.getElementById('authLoadingProgressBar');
+            const tEl = document.getElementById('authLoadingStatusTitle');
+            const dEl = document.getElementById('authLoadingStatusDesc');
+            if (bar) bar.style.width = `${pct}%`;
+            if (tEl && title) tEl.textContent = title;
+            if (dEl && desc) dEl.textContent = desc;
+        }
+
+        function revealAuthLoginScreen() {
+            const loadingStep = document.getElementById('authLoadingStep');
+            const loginForm = document.getElementById('authLoginForm');
+            const createForm = document.getElementById('authCreateProfileForm');
+            const resetForm = document.getElementById('authResetPasswordForm');
+            const badge = document.getElementById('authLoadingBadge');
+            const subtitle = document.getElementById('authGateSubtitle');
+
+            if (loadingStep) loadingStep.classList.add('hidden');
+            if (createForm) createForm.classList.add('hidden');
+            if (resetForm) resetForm.classList.add('hidden');
+            if (loginForm) loginForm.classList.remove('hidden');
+            if (badge) badge.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Seguro';
+            if (subtitle) subtitle.textContent = 'Informe seu usuário (ou nome no 1º acesso) e senha.';
+
+            updateAuthScriptStatusLabel();
+            const userInp = document.getElementById('authUsernameInput');
+            const activeProf = getActiveProfileObj();
+            if (userInp && !userInp.value && activeProf) {
+                userInp.value = activeProf.username || activeProf.name || '';
+            }
+            onAuthUsernameInputChange();
+        }
+
+        function openProfileSwitchLockModal() {
+            saveState();
+            const overlay = document.getElementById('authGateOverlay');
+            const userInp = document.getElementById('authUsernameInput');
+            const pwdInput = document.getElementById('authPasswordInput');
+            const errBox = document.getElementById('authLoginErrorBox');
+            if (userInp) userInp.value = '';
+            if (pwdInput) pwdInput.value = '';
+            if (errBox) errBox.classList.add('hidden');
+            if (overlay) overlay.classList.remove('auth-gate-hidden');
+            revealAuthLoginScreen();
+            if (userInp) setTimeout(() => userInp.focus(), 60);
+        }
+
+        function onAuthUsernameInputChange() {
+            const userInp = document.getElementById('authUsernameInput');
+            const pwdInput = document.getElementById('authPasswordInput');
+            const noPwdHint = document.getElementById('authNoPasswordHint');
+            const errBox = document.getElementById('authLoginErrorBox');
+            const headerIcon = document.getElementById('authGateHeaderIcon');
+            const badge = document.getElementById('authMatchedProfileBadge');
+            const badgeText = document.getElementById('authMatchedProfileText');
+            const badgeTag = document.getElementById('authMatchedProfileTag');
+            const forgotBtn = document.getElementById('btnForgotProfilePwd');
+            if (!userInp) return;
+
+            if (errBox) errBox.classList.add('hidden');
+            const typed = userInp.value.trim();
+            const prof = findProfileByLoginIdentifier(typed);
+
+            if (prof) {
+                if (headerIcon) headerIcon.className = `fa-solid ${prof.icon || 'fa-wallet'}`;
+                const hasPwd = Boolean(prof.password && prof.password.length > 0);
+                if (noPwdHint) noPwdHint.classList.toggle('hidden', hasPwd);
+                if (forgotBtn) forgotBtn.classList.toggle('hidden', !hasPwd);
+                if (pwdInput) {
+                    pwdInput.placeholder = hasPwd ? 'Digite sua senha...' : 'Sem senha (toque em Entrar)';
+                }
+                if (badge && badgeText && badgeTag) {
+                    badge.classList.remove('hidden');
+                    badgeText.textContent = `${prof.name}${prof.username ? ' (@' + prof.username + ')' : ''}`;
+                    badgeTag.textContent = prof.username ? 'Ativo' : '1º Acesso';
+                }
+            } else {
+                if (headerIcon) headerIcon.className = 'fa-solid fa-wallet';
+                if (noPwdHint) noPwdHint.classList.add('hidden');
+                if (forgotBtn) forgotBtn.classList.toggle('hidden', !typed);
+                if (pwdInput) pwdInput.placeholder = 'Digite sua senha...';
+                if (badge) badge.classList.add('hidden');
+            }
+        }
+
+        function toggleAuthPasswordVisibility(inputId, iconId) {
+            const inp = document.getElementById(inputId);
+            const ico = document.getElementById(iconId);
+            if (!inp) return;
+            const isPwd = inp.type === 'password';
+            inp.type = isPwd ? 'text' : 'password';
+            if (ico) ico.className = isPwd ? 'fa-regular fa-eye-slash text-sm' : 'fa-regular fa-eye text-sm';
+        }
+
+        function setAuthLoginLoadingState(isLoading) {
+            const btn = document.getElementById('btnAuthLoginSubmit');
+            const ico = document.getElementById('btnAuthLoginIcon');
+            const txt = document.getElementById('btnAuthLoginText');
+            if (btn) btn.disabled = isLoading;
+            if (ico) ico.className = isLoading ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-right-to-bracket';
+            if (txt) txt.textContent = isLoading ? 'Autenticando no Google Drive...' : 'Entrar no Sistema';
+        }
+
+        async function handleProfileLoginSubmit(e) {
+            e.preventDefault();
+            const userInp = document.getElementById('authUsernameInput');
+            const pwdInput = document.getElementById('authPasswordInput');
+            const errBox = document.getElementById('authLoginErrorBox');
+            const errText = document.getElementById('authLoginErrorText');
+
+            const identifier = (userInp?.value || '').trim();
+            const enteredPwd = pwdInput ? pwdInput.value : '';
+
+            if (!identifier) {
+                if (errText) errText.textContent = 'Digite seu usuário ou nome para acessar.';
+                if (errBox) errBox.classList.remove('hidden');
+                if (userInp) userInp.focus();
+                return;
+            }
+
+            if (errBox) errBox.classList.add('hidden');
+            let syncedFromDrive = false;
+
+            if (appState.appsScriptUrl) {
+                setAuthLoginLoadingState(true);
+                try {
+                    const checkUrl = appState.appsScriptUrl + (appState.appsScriptUrl.includes('?') ? '&' : '?') + 'checkVersion=1&profileId=' + encodeURIComponent(appState.activeProfileId || 'default');
+                    const res = await fetch(checkUrl);
+                    const remoteData = await res.json();
+                    if (remoteData && Array.isArray(remoteData.profiles) && remoteData.profiles.length > 0) {
+                        mergeRemoteProfiles(remoteData.profiles);
+                        syncedFromDrive = true;
+                    }
+                } catch (err) {
+                    console.warn('Falha ao consultar autenticação no Google Drive:', err);
+                } finally {
+                    setAuthLoginLoadingState(false);
+                }
+            }
+
+            const prof = findProfileByLoginIdentifier(identifier);
+            if (!prof) {
+                if (errText) {
+                    errText.textContent = appState.appsScriptUrl
+                        ? `Usuário "${identifier}" não encontrado localmente nem no Google Drive.`
+                        : `Usuário "${identifier}" não encontrado. Configure o Link Google Script se seu cadastro estiver na nuvem.`;
+                }
+                if (errBox) errBox.classList.remove('hidden');
+                if (userInp) { userInp.focus(); userInp.select(); }
+                return;
+            }
+
+            if (prof.password && prof.password !== enteredPwd) {
+                if (errText) errText.textContent = 'Senha incorreta. Verifique e tente novamente.';
+                if (errBox) errBox.classList.remove('hidden');
+                if (pwdInput) {
+                    pwdInput.focus();
+                    pwdInput.select();
+                }
+                return;
+            }
+
+            if (appState.activeProfileId !== prof.id) {
+                loadProfileData(prof.id);
+            }
+
+            const hasLocalSavedTxs = localStorage.getItem(getStorageKey('orcamento_transactions_v10', prof.id)) !== null;
+            if (syncedFromDrive && appState.appsScriptUrl && !hasLocalSavedTxs) {
+                try {
+                    await syncRestoreFromCloud();
+                } catch (err) {}
+            }
+
+            const overlay = document.getElementById('authGateOverlay');
+            if (overlay) overlay.classList.add('auth-gate-hidden');
+            toast(`Bem-vindo(a), ${prof.name}!`);
+
+            if (!prof.username || !prof.username.trim()) {
+                setTimeout(() => {
+                    openUserProfileModal(true);
+                }, 280);
+            }
+        }
+
+        function toggleAuthCreateProfileMode(showCreate) {
+            const loginForm = document.getElementById('authLoginForm');
+            const createForm = document.getElementById('authCreateProfileForm');
+            const resetForm = document.getElementById('authResetPasswordForm');
+            const subtitle = document.getElementById('authGateSubtitle');
+            const errBox = document.getElementById('authCreateErrorBox');
+
+            if (errBox) errBox.classList.add('hidden');
+            if (resetForm) resetForm.classList.add('hidden');
+
+            if (showCreate) {
+                if (loginForm) loginForm.classList.add('hidden');
+                if (createForm) createForm.classList.remove('hidden');
+                if (subtitle) subtitle.textContent = 'Novo perfil independente com dados zerados';
+                tempNewProfileIcon = 'fa-user';
+                const uInp = document.getElementById('newProfileUsernameInput');
+                const nInp = document.getElementById('newProfileNameInput');
+                const p1 = document.getElementById('newProfilePasswordInput');
+                const p2 = document.getElementById('newProfilePasswordConfirmInput');
+                const rInp = document.getElementById('newProfileRecoveryHintInput');
+                if (uInp) uInp.value = '';
+                if (nInp) nInp.value = '';
+                if (p1) p1.value = '';
+                if (p2) p2.value = '';
+                if (rInp) rInp.value = '';
+                renderNewProfileIconsGrid();
+                if (uInp) setTimeout(() => uInp.focus(), 60);
+            } else {
+                if (createForm) createForm.classList.add('hidden');
+                if (loginForm) loginForm.classList.remove('hidden');
+                if (subtitle) subtitle.textContent = 'Informe seu usuário (ou nome no 1º acesso) e senha.';
+                onAuthUsernameInputChange();
+            }
+        }
+
+        function renderNewProfileIconsGrid() {
+            const grid = document.getElementById('newProfileIconsGrid');
+            if (!grid) return;
+            grid.innerHTML = USER_PROFILE_ICONS.map(ico => {
+                const active = tempNewProfileIcon === ico;
+                return `
+                    <button type="button" onclick="selectNewProfileIcon('${ico}')"
+                        class="h-9 rounded-xl border flex items-center justify-center text-sm transition-all ${active
+                            ? 'border-slate-900 dark:border-white bg-slate-100 dark:bg-slate-800 theme-text ring-2 ring-emerald-500/40 scale-105'
+                            : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-300'}">
+                        <i class="fa-solid ${ico}"></i>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectNewProfileIcon(ico) {
+            tempNewProfileIcon = ico;
+            renderNewProfileIconsGrid();
+        }
+
+        function handleCreateNewProfileSubmit(e) {
+            e.preventDefault();
+            const uInp = document.getElementById('newProfileUsernameInput');
+            const nInp = document.getElementById('newProfileNameInput');
+            const p1Inp = document.getElementById('newProfilePasswordInput');
+            const p2Inp = document.getElementById('newProfilePasswordConfirmInput');
+            const rInp = document.getElementById('newProfileRecoveryHintInput');
+            const errBox = document.getElementById('authCreateErrorBox');
+            const errText = document.getElementById('authCreateErrorText');
+
+            const username = (uInp?.value || '').trim();
+            const name = (nInp?.value || '').trim();
+            const pwd1 = p1Inp ? p1Inp.value : '';
+            const pwd2 = p2Inp ? p2Inp.value : '';
+            const recoveryHint = (rInp?.value || '').trim();
+
+            if (!username) {
+                if (errText) errText.textContent = 'Informe um usuário de login.';
+                if (errBox) errBox.classList.remove('hidden');
+                return;
+            }
+            if (!name) {
+                if (errText) errText.textContent = 'Informe o seu nome.';
+                if (errBox) errBox.classList.remove('hidden');
+                return;
+            }
+            if (getProfiles().some(p => (p.username || '').toLowerCase() === username.toLowerCase())) {
+                if (errText) errText.textContent = 'Este usuário já está cadastrado.';
+                if (errBox) errBox.classList.remove('hidden');
+                return;
+            }
+            if (pwd1 !== pwd2) {
+                if (errText) errText.textContent = 'As senhas não coincidem.';
+                if (errBox) errBox.classList.remove('hidden');
+                return;
+            }
+
+            if (errBox) errBox.classList.add('hidden');
+            const newId = 'prof_' + Date.now();
+            const newProfile = {
+                id: newId,
+                username,
+                name,
+                icon: tempNewProfileIcon || 'fa-user',
+                password: pwd1,
+                recoveryHint,
+                createdAt: new Date().toISOString()
+            };
+
+            const list = getProfiles();
+            list.push(newProfile);
+            saveProfilesList(list);
+
+            try {
+                localStorage.setItem(getStorageKey('orcamento_user_name', newId), newProfile.name);
+                localStorage.setItem(getStorageKey('orcamento_user_icon', newId), newProfile.icon);
+                localStorage.setItem(getStorageKey('orcamento_transactions_v10', newId), JSON.stringify([]));
+                localStorage.setItem(getStorageKey('orcamento_categories_v10', newId), JSON.stringify(DEFAULT_CATEGORIES));
+                localStorage.setItem(getStorageKey('orcamento_cards_v10', newId), JSON.stringify([]));
+                localStorage.setItem(getStorageKey('orcamento_wallet_balance_v10', newId), '0');
+            } catch (err) {}
+
+            loadProfileData(newId);
+            const overlay = document.getElementById('authGateOverlay');
+            if (overlay) overlay.classList.add('auth-gate-hidden');
+            toast(`Perfil "${newProfile.name}" criado!`);
+
+            if (appState.appsScriptUrl) {
+                syncSaveToCloud();
+            }
+        }
+
+        function toggleAuthResetPasswordMode(showReset) {
+            const loginForm = document.getElementById('authLoginForm');
+            const createForm = document.getElementById('authCreateProfileForm');
+            const resetForm = document.getElementById('authResetPasswordForm');
+            const subtitle = document.getElementById('authGateSubtitle');
+            const errBox = document.getElementById('authResetErrorBox');
+            const loginErrBox = document.getElementById('authLoginErrorBox');
+            const loginErrText = document.getElementById('authLoginErrorText');
+
+            if (errBox) errBox.classList.add('hidden');
+
+            if (showReset) {
+                const typed = (document.getElementById('authUsernameInput')?.value || '').trim();
+                const prof = findProfileByLoginIdentifier(typed) || getActiveProfileObj();
+                if (!prof) {
+                    if (loginErrText) loginErrText.textContent = 'Informe primeiro seu usuário ou nome.';
+                    if (loginErrBox) loginErrBox.classList.remove('hidden');
+                    return;
+                }
+
+                if (loginForm) loginForm.classList.add('hidden');
+                if (createForm) createForm.classList.add('hidden');
+                if (resetForm) resetForm.classList.remove('hidden');
+                if (subtitle) subtitle.textContent = 'Redefina a senha do seu perfil';
+
+                const nameLbl = document.getElementById('resetPwdProfileNameLabel');
+                const recBox = document.getElementById('resetRecoveryQuestionBox');
+                const recLbl = document.getElementById('resetRecoveryPromptLabel');
+                const recAns = document.getElementById('resetRecoveryAnswerInput');
+                const p1 = document.getElementById('resetNewPasswordInput');
+                const p2 = document.getElementById('resetNewPasswordConfirmInput');
+
+                if (nameLbl) {
+                    nameLbl.textContent = prof.username ? `${prof.name} (@${prof.username})` : prof.name;
+                    nameLbl.dataset.profileId = prof.id;
+                }
+                if (recAns) recAns.value = '';
+                if (p1) p1.value = '';
+                if (p2) p2.value = '';
+
+                if (prof.recoveryHint) {
+                    if (recBox) recBox.classList.remove('hidden');
+                    if (recLbl) recLbl.textContent = `Palavra de Recuperação para "${prof.name}":`;
+                } else {
+                    if (recBox) recBox.classList.add('hidden');
+                }
+            } else {
+                if (resetForm) resetForm.classList.add('hidden');
+                if (loginForm) loginForm.classList.remove('hidden');
+                if (subtitle) subtitle.textContent = 'Informe seu usuário (ou nome no 1º acesso) e senha.';
+                onAuthUsernameInputChange();
+            }
+        }
+
+        function handleResetProfilePasswordSubmit(e) {
+            e.preventDefault();
+            const nameLbl = document.getElementById('resetPwdProfileNameLabel');
+            const selectedId = nameLbl?.dataset?.profileId || (appState.activeProfileId || 'default');
+            const list = getProfiles();
+            const idx = list.findIndex(p => p.id === selectedId);
+            if (idx === -1) return;
+
+            const prof = list[idx];
+            const recAns = (document.getElementById('resetRecoveryAnswerInput')?.value || '').trim();
+            const p1 = document.getElementById('resetNewPasswordInput')?.value || '';
+            const p2 = document.getElementById('resetNewPasswordConfirmInput')?.value || '';
+            const errBox = document.getElementById('authResetErrorBox');
+            const errText = document.getElementById('authResetErrorText');
+
+            if (prof.recoveryHint && prof.recoveryHint.toLowerCase() !== recAns.toLowerCase()) {
+                if (errText) errText.textContent = 'A palavra de recuperação não confere.';
+                if (errBox) errBox.classList.remove('hidden');
+                return;
+            }
+            if (p1 !== p2) {
+                if (errText) errText.textContent = 'As senhas não coincidem.';
+                if (errBox) errBox.classList.remove('hidden');
+                return;
+            }
+
+            if (errBox) errBox.classList.add('hidden');
+            list[idx] = { ...prof, password: p1 };
+            saveProfilesList(list);
+
+            if (appState.activeProfileId !== prof.id) {
+                loadProfileData(prof.id);
+            }
+
+            const overlay = document.getElementById('authGateOverlay');
+            if (overlay) overlay.classList.add('auth-gate-hidden');
+            toast(p1 ? 'Senha redefinida com sucesso!' : 'Senha removida!');
+
+            if (appState.appsScriptUrl) {
+                syncSaveToCloud();
+            }
         }
 
         function loadProfileData(pid) {
@@ -4163,9 +5166,9 @@ function doGet(e) {
                     <div onclick="openCategoryTransactionsModal('${c.id}')" class="app-card p-4 space-y-2.5 cursor-pointer active:scale-[0.99] ${c.hidden ? 'opacity-65 border-dashed' : ''}">
                         <div class="flex items-start justify-between gap-2.5">
                             <div class="flex items-start gap-3 min-w-0">
-                                <span class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm shrink-0 mt-0.5" style="background:${c.color}">
+                                <button type="button" onclick="event.stopPropagation(); openCategoryManagerModal('${c.id}')" title="Editar categoria ${c.name}" class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm shrink-0 mt-0.5 active:scale-95 transition-transform" style="background:${c.color}">
                                     <i class="fa-solid ${c.icon || 'fa-tag'}"></i>
-                                </span>
+                                </button>
                                 <div class="min-w-0">
                                     <h3 class="text-sm sm:text-base font-extrabold truncate">${c.name}</h3>
                                     <strong class="block text-base sm:text-lg font-black mt-0.5">${fmtBRL(spent)}</strong>
@@ -4299,12 +5302,24 @@ function doGet(e) {
             renderCategoryColorAndIconPickers();
         }
 
+        function resetCategoryManagerModalScroll() {
+            const modal = document.getElementById('modalCategoryManager');
+            if (!modal) return;
+            modal.scrollTop = 0;
+            const bodyScroll = modal.querySelector('.p-4.space-y-4');
+            if (bodyScroll) bodyScroll.scrollTop = 0;
+            const iconsGrid = document.getElementById('catIconsPaletteGrid');
+            if (iconsGrid) iconsGrid.scrollTop = 0;
+        }
+
         function openCategoryManagerModal(preselectCatId = null) {
             document.getElementById('editCatId').value = '';
             document.getElementById('catNameInput').value = '';
+            document.getElementById('catTypeInput').value = 'expense';
             document.getElementById('catBudgetInput').value = '';
             document.getElementById('catColorInput').value = '#10b981';
             document.getElementById('catIconInput').value = 'fa-tag';
+            resetSubcategoryForm();
             document.getElementById('subParentCatSelect').innerHTML = appState.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
             renderCategoryColorAndIconPickers();
             renderCatManagerList();
@@ -4313,6 +5328,8 @@ function doGet(e) {
                 document.getElementById('subParentCatSelect').value = preselectCatId;
             }
             openModal('modalCategoryManager');
+            resetCategoryManagerModalScroll();
+            requestAnimationFrame(resetCategoryManagerModalScroll);
         }
 
         function renderCatManagerList() {
@@ -4522,6 +5539,7 @@ function doGet(e) {
         function saveAppsScriptUrl() {
             appState.appsScriptUrl = document.getElementById('appsScriptUrlInput').value.trim();
             localStorage.setItem('orcamento_appscript_url', appState.appsScriptUrl);
+            updateAuthScriptStatusLabel();
             closeModal('modalAppsScript');
             toast('URL do Google Apps Script salva!');
         }
@@ -4578,6 +5596,7 @@ function doGet(e) {
                 const res = await fetch(url);
                 const data = await res.json();
                 if (data.status === 'success') {
+                    if (Array.isArray(data.profiles)) mergeRemoteProfiles(data.profiles);
                     if (Array.isArray(data.categories)) appState.categories = data.categories;
                     if (Array.isArray(data.creditCards)) appState.creditCards = data.creditCards;
                     if (Array.isArray(data.transactions)) appState.transactions = data.transactions;
@@ -4676,8 +5695,27 @@ function doGet(e) {
             document.getElementById('globalYearSelect').value = String(appState.selectedYear);
             document.getElementById('globalMonthSelect').value = String(appState.selectedMonth);
 
-            const savedPid = localStorage.getItem('orcamento_active_profile_id_v1') || 'default';
-            loadProfileData(savedPid);
+            const profiles = getProfiles();
+            const savedPid = localStorage.getItem('orcamento_active_profile_id_v1');
+            const targetPid = (savedPid && profiles.some(p => p.id === savedPid)) ? savedPid : profiles[0].id;
+
+            setAuthLoadingProgress(45, 'Carregando lançamentos e categorias...', 'Preparando o ambiente em segundo plano');
+            setTimeout(() => {
+                loadProfileData(targetPid);
+                updateSettingsProfileSummary();
+
+                if (appState.appsScriptUrl) {
+                    const checkUrl = appState.appsScriptUrl + (appState.appsScriptUrl.includes('?') ? '&' : '?') + 'checkVersion=1&profileId=' + encodeURIComponent(targetPid);
+                    fetch(checkUrl).then(r => r.json()).then(d => {
+                        if (d && Array.isArray(d.profiles)) mergeRemoteProfiles(d.profiles);
+                    }).catch(() => {});
+                }
+
+                setAuthLoadingProgress(100, 'Tudo pronto!', 'Exibindo acesso seguro');
+                setTimeout(() => {
+                    revealAuthLoginScreen();
+                }, 220);
+            }, 140);
         });
     </script>
 </body>
