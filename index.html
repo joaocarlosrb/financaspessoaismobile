@@ -265,6 +265,213 @@
             background: rgba(255, 255, 255, 0.12);
             pointer-events: none;
         }
+
+        /* Transição suave entre abas */
+        .tab-screen-enter {
+            animation: tabScreenSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes tabScreenSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px) scale(0.992);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Efeito fumaça deslizante atrás do nome da aba ativa na barra inferior */
+        #navSmokePill {
+            position: absolute;
+            top: 4px;
+            bottom: 2px;
+            left: 0;
+            width: 20%;
+            pointer-events: none;
+            transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+            z-index: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #navSmokePill::before {
+            content: "";
+            width: 68px;
+            height: 44px;
+            border-radius: 999px;
+            background: radial-gradient(ellipse at center, color-mix(in srgb, var(--theme-secondary) 38%, transparent) 0%, color-mix(in srgb, var(--theme-primary) 16%, transparent) 55%, transparent 78%);
+            filter: blur(5px);
+        }
+        .dark #navSmokePill::before {
+            background: radial-gradient(ellipse at center, color-mix(in srgb, var(--theme-secondary) 46%, transparent) 0%, color-mix(in srgb, var(--theme-primary) 22%, transparent) 55%, transparent 78%);
+        }
+
+        /* Transição suave ao filtrar lançamentos */
+        .tx-list-fade {
+            animation: txListFadeAnim 0.24s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes txListFadeAnim {
+            from {
+                opacity: 0.25;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Sombra padrão dos cards aplicada aos gráficos e banner de boas-vindas */
+        .card-elevation {
+            box-shadow: 0 6px 18px -2px rgba(15, 23, 42, 0.14), 0 3px 8px -2px rgba(15, 23, 42, 0.08) !important;
+        }
+        .dark .card-elevation {
+            box-shadow: 0 8px 22px -2px rgba(0, 0, 0, 0.62), 0 4px 10px -2px rgba(0, 0, 0, 0.45) !important;
+        }
+
+        /* Botões de filtro estilizados (substituindo selects rústicos) */
+        .pretty-filter-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            padding: 7px 12px;
+            border-radius: 14px;
+            background-color: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            font-size: 12px;
+            font-weight: 700;
+            color: #1e293b;
+            white-space: nowrap;
+            transition: all 0.18s ease;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+        }
+        .pretty-filter-btn:active {
+            transform: scale(0.97);
+        }
+        .dark .pretty-filter-btn {
+            background-color: #1e293b;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+        .pretty-filter-btn.is-active {
+            border-color: var(--theme-secondary);
+            background-color: color-mix(in srgb, var(--theme-secondary) 12%, #ffffff);
+            color: var(--theme-primary);
+        }
+        .dark .pretty-filter-btn.is-active {
+            border-color: var(--theme-secondary);
+            background-color: color-mix(in srgb, var(--theme-secondary) 20%, #0f172a);
+            color: #ffffff;
+        }
+
+        /* Modal Nova Transação ajustado à altura da tela sem barra de rolagem */
+        #modalTransaction .modal-sheet {
+            max-height: 94vh;
+        }
+        #modalTransaction #txForm {
+            overflow-y: visible;
+            padding: 12px 14px;
+            gap: 0;
+        }
+        #modalTransaction #txForm > * + * {
+            margin-top: 8px !important;
+        }
+        #modalTransaction #txForm input:not([type="checkbox"]),
+        #modalTransaction #txForm button.pretty-select-trigger,
+        #modalTransaction #txForm textarea {
+            padding-top: 7px !important;
+            padding-bottom: 7px !important;
+            font-size: 14px !important;
+        }
+        @media (max-height: 680px) {
+            #modalTransaction #txForm {
+                overflow-y: auto;
+            }
+        }
+
+        /* Ajuste suave de tamanho no modal Nova Transação ao trocar o tipo */
+        #modalTransaction .modal-sheet {
+            transition: height 0.28s cubic-bezier(0.22, 1, 0.36, 1), max-height 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .tx-form-section-anim {
+            animation: txSectionPop 0.24s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes txSectionPop {
+            from {
+                opacity: 0;
+                transform: translateY(-6px) scale(0.985);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Transição suave ao fechar a mensagem de boas-vindas */
+        #heroWelcomeBanner {
+            overflow: hidden;
+            max-height: 460px;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            transition: opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+                        max-height 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+                        margin 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+                        padding 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #heroWelcomeBanner.banner-closing {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.97);
+            max-height: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            pointer-events: none;
+        }
+
+        /* Transição suave no card Situação de Vencimentos */
+        #dueTogglePill {
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            left: 4px;
+            width: calc(50% - 4px);
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+            transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+            z-index: 0;
+        }
+        .dark #dueTogglePill {
+            background-color: #334155;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+        }
+        .due-grid-fade {
+            animation: dueGridFadeAnim 0.24s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes dueGridFadeAnim {
+            from {
+                opacity: 0.25;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Efeito de sombra nos gráficos de círculos da aba Início */
+        #categoryPieChart,
+        #modalityPieChart {
+            filter: drop-shadow(0 8px 14px rgba(15, 23, 42, 0.16));
+        }
+        .dark #categoryPieChart,
+        .dark #modalityPieChart {
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.55));
+        }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-full flex flex-col">
@@ -475,37 +682,19 @@
                 </div>
             </button>
 
-            <!-- Seletor Rápido Mês/Ano -->
+            <!-- Seletor Estilizado Mês/Ano -->
             <div class="flex items-center gap-1.5">
-                <select id="globalMonthSelect" onchange="changePeriod()" aria-label="Mês" class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-100">
-                    <option value="ALL">Todos</option>
-                    <option value="0">Jan</option>
-                    <option value="1">Fev</option>
-                    <option value="2">Mar</option>
-                    <option value="3">Abr</option>
-                    <option value="4">Mai</option>
-                    <option value="5">Jun</option>
-                    <option value="6">Jul</option>
-                    <option value="7">Ago</option>
-                    <option value="8">Set</option>
-                    <option value="9">Out</option>
-                    <option value="10">Nov</option>
-                    <option value="11">Dez</option>
-                </select>
-                <select id="globalYearSelect" onchange="changePeriod()" aria-label="Ano" class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-100">
-                    <option value="2024">2024</option>
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
-                    <option value="2027">2027</option>
-                    <option value="2028">2028</option>
-                    <option value="2029">2029</option>
-                    <option value="2030">2030</option>
-                    <option value="2031">2031</option>
-                    <option value="2032">2032</option>
-                    <option value="2033">2033</option>
-                    <option value="2034">2034</option>
-                    <option value="2035">2035</option>
-                </select>
+                <input type="hidden" id="globalMonthSelect" value="0">
+                <input type="hidden" id="globalYearSelect" value="2026">
+                <button type="button" onclick="openOptionPicker('globalMonth')" class="pretty-filter-btn px-2.5 py-1.5">
+                    <i class="fa-regular fa-calendar text-[11px] theme-text"></i>
+                    <span id="globalMonthLabel">Jan</span>
+                    <i class="fa-solid fa-chevron-down text-[9px] opacity-60"></i>
+                </button>
+                <button type="button" onclick="openOptionPicker('globalYear')" class="pretty-filter-btn px-2.5 py-1.5">
+                    <span id="globalYearLabel">2026</span>
+                    <i class="fa-solid fa-chevron-down text-[9px] opacity-60"></i>
+                </button>
             </div>
 
             <!-- Privacidade & Tema -->
@@ -573,15 +762,20 @@
         <!-- ==================== ABA 1: INÍCIO (VISÃO GERAL) ==================== -->
         <div id="tab-dashboard" class="space-y-4">
             <!-- Banner Boas-Vindas & Assistente IA -->
-            <div class="theme-gradient rounded-2xl p-4 sm:p-5 text-white shadow-md space-y-3.5">
+            <div id="heroWelcomeBanner" class="theme-gradient card-elevation rounded-2xl p-4 sm:p-5 text-white space-y-3.5 transition-all duration-200">
                 <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <h2 id="heroGreeting" class="text-lg sm:text-xl font-extrabold">Olá, João Carlos</h2>
-                        <p id="heroDate" class="text-xs sm:text-sm text-white/85"></p>
+                    <div class="min-w-0">
+                        <h2 id="heroGreeting" class="text-lg sm:text-xl font-extrabold truncate">Olá, João Carlos</h2>
+                        <p id="heroDate" class="text-xs sm:text-sm text-white/85 truncate"></p>
                     </div>
-                    <span id="aiScoreBadge" class="px-3 py-1 rounded-full text-xs font-extrabold bg-white/20 shrink-0">
-                        Saúde: 80/100
-                    </span>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <span id="aiScoreBadge" class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-white/20">
+                            Saúde: 80/100
+                        </span>
+                        <button type="button" onclick="closeHeroWelcomeBanner()" title="Fechar mensagem de boas-vindas" aria-label="Fechar mensagem de boas-vindas" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-xs text-white active:scale-90 transition-transform">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="p-3.5 rounded-xl bg-black/15 border border-white/15 space-y-2.5">
@@ -653,13 +847,14 @@
                         <h3 class="text-base font-extrabold">Situação de Vencimentos</h3>
                         <p id="duePeriodSubtitle" class="text-xs text-slate-500 dark:text-slate-400">Período ativo</p>
                     </div>
-                    <div class="flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">
-                        <button type="button" id="btnDueExp" onclick="setDueType('expense')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 text-rose-600 shadow-sm">Despesas</button>
-                        <button type="button" id="btnDueInc" onclick="setDueType('income')" class="px-3 py-1.5 rounded-lg text-slate-500">Receitas</button>
+                    <div class="relative grid grid-cols-2 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-extrabold select-none">
+                        <span id="dueTogglePill" aria-hidden="true" style="transform: translateX(0%);"></span>
+                        <button type="button" id="btnDueExp" onclick="setDueType('expense')" class="relative z-10 px-3 py-1.5 rounded-lg text-rose-600 transition-colors duration-200">Despesas</button>
+                        <button type="button" id="btnDueInc" onclick="setDueType('income')" class="relative z-10 px-3 py-1.5 rounded-lg text-slate-500 transition-colors duration-200">Receitas</button>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2.5">
+                <div id="dueStatusCardsGrid" class="grid grid-cols-2 gap-2.5">
                     <button type="button" onclick="goToFilteredTransactions({ type: appState.dueFilterType, status: 'pending' })" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-left">
                         <div class="flex items-center justify-between text-slate-600 dark:text-slate-300 text-xs sm:text-sm font-bold">
                             <span>Em Aberto</span>
@@ -726,23 +921,28 @@
                 <div id="dashCardsList" class="space-y-2.5"></div>
             </div>
 
-            <!-- Gráfico: Evolução Mensal -->
-            <div class="app-card p-4 sm:p-5 space-y-3.5">
-                <div>
-                    <h3 class="text-base font-extrabold">Evolução Mensal (Receitas vs Despesas)</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Consolidado do ano selecionado</p>
+            <!-- Gráfico: Evolução Mensal (Toque para filtrar Ano / Mês) -->
+            <div onclick="openMonthlyChartModal()" class="app-card card-elevation p-4 sm:p-5 space-y-3.5 cursor-pointer active:scale-[0.99] transition-transform">
+                <div class="flex items-start justify-between gap-2">
+                    <div>
+                        <h3 id="monthlyChartTitle" class="text-base font-extrabold">Evolução Mensal (Receitas vs Despesas)</h3>
+                        <p id="monthlyChartSubtitle" class="text-xs text-slate-500 dark:text-slate-400">Consolidado do ano • Toque para filtrar Ano/Mês</p>
+                    </div>
+                    <span id="monthlyChartModeBadge" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-[11px] font-extrabold theme-text shrink-0 flex items-center gap-1">
+                        <i class="fa-solid fa-sliders text-[10px]"></i><span>Ano</span>
+                    </span>
                 </div>
                 <div class="grid grid-cols-3 gap-2 text-center">
                     <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">
-                        <span class="text-xs font-bold text-slate-500 block">Receitas</span>
+                        <span id="chartMetric1Label" class="text-xs font-bold text-slate-500 block">Receitas</span>
                         <strong id="chartYearInc" class="text-sm sm:text-base font-black text-emerald-600">R$ 0,00</strong>
                     </div>
                     <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">
-                        <span class="text-xs font-bold text-slate-500 block">Despesas</span>
+                        <span id="chartMetric2Label" class="text-xs font-bold text-slate-500 block">Despesas</span>
                         <strong id="chartYearExp" class="text-sm sm:text-base font-black text-rose-600">R$ 0,00</strong>
                     </div>
                     <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">
-                        <span class="text-xs font-bold text-slate-500 block">Saldo Ano</span>
+                        <span id="chartMetric3Label" class="text-xs font-bold text-slate-500 block">Saldo Ano</span>
                         <strong id="chartYearBal" class="text-sm sm:text-base font-black">R$ 0,00</strong>
                     </div>
                 </div>
@@ -752,7 +952,7 @@
             </div>
 
             <!-- Gráfico: Despesas por Categoria -->
-            <div class="app-card p-4 sm:p-5 space-y-3.5">
+            <div class="app-card card-elevation p-4 sm:p-5 space-y-3.5">
                 <div>
                     <h3 class="text-base font-extrabold">Despesas por Categoria</h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400">Toque na categoria para filtrar lançamentos</p>
@@ -764,7 +964,7 @@
             </div>
 
             <!-- Gráfico: Fixas, Parceladas e Variáveis -->
-            <div class="app-card p-4 sm:p-5 space-y-3.5">
+            <div class="app-card card-elevation p-4 sm:p-5 space-y-3.5">
                 <div>
                     <h3 class="text-base font-extrabold">Fixas, Parceladas e Variáveis</h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400">Distribuição das despesas no período</p>
@@ -778,56 +978,105 @@
 
         <!-- ==================== ABA 2: LANÇAMENTOS ==================== -->
         <div id="tab-transactions" class="hidden space-y-3.5">
+            <!-- 4 Cards de Tipo em uma única linha (Despesas=Vermelho, Receitas=Verde, Investimentos=Azul, Transferências=Roxo) -->
+            <div class="grid grid-cols-4 gap-2 sm:gap-2.5">
+                <button type="button" id="txTypeCard-expense" onclick="toggleTxTypeCard('expense')" class="app-card p-3 sm:p-3.5 min-h-[84px] text-left flex flex-col justify-between transition-all active:scale-95">
+                    <div class="flex items-center justify-between gap-1 w-full">
+                        <span class="text-[11px] sm:text-xs font-extrabold text-rose-700 dark:text-rose-300 truncate">Despesas</span>
+                        <span class="w-5 h-5 rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-300 flex items-center justify-center text-[10px] shrink-0">
+                            <i class="fa-solid fa-arrow-trend-down"></i>
+                        </span>
+                    </div>
+                    <div class="mt-1.5 w-full">
+                        <strong id="txCardSum-expense" class="block text-xs sm:text-base font-black text-rose-700 dark:text-rose-300 truncate">R$ 0,00</strong>
+                        <span id="txCardCnt-expense" class="block text-[10px] sm:text-[11px] font-bold text-rose-600/80 dark:text-rose-300/80 mt-0.5 truncate">0 itens</span>
+                    </div>
+                </button>
+
+                <button type="button" id="txTypeCard-income" onclick="toggleTxTypeCard('income')" class="app-card p-3 sm:p-3.5 min-h-[84px] text-left flex flex-col justify-between transition-all active:scale-95">
+                    <div class="flex items-center justify-between gap-1 w-full">
+                        <span class="text-[11px] sm:text-xs font-extrabold text-emerald-700 dark:text-emerald-300 truncate">Receitas</span>
+                        <span class="w-5 h-5 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 flex items-center justify-center text-[10px] shrink-0">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                        </span>
+                    </div>
+                    <div class="mt-1.5 w-full">
+                        <strong id="txCardSum-income" class="block text-xs sm:text-base font-black text-emerald-700 dark:text-emerald-300 truncate">R$ 0,00</strong>
+                        <span id="txCardCnt-income" class="block text-[10px] sm:text-[11px] font-bold text-emerald-600/80 dark:text-emerald-300/80 mt-0.5 truncate">0 itens</span>
+                    </div>
+                </button>
+
+                <button type="button" id="txTypeCard-investment" onclick="toggleTxTypeCard('investment')" class="app-card p-3 sm:p-3.5 min-h-[84px] text-left flex flex-col justify-between transition-all active:scale-95">
+                    <div class="flex items-center justify-between gap-1 w-full">
+                        <span class="text-[11px] sm:text-xs font-extrabold text-blue-700 dark:text-blue-300 truncate">Invest.</span>
+                        <span class="w-5 h-5 rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-300 flex items-center justify-center text-[10px] shrink-0">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </span>
+                    </div>
+                    <div class="mt-1.5 w-full">
+                        <strong id="txCardSum-investment" class="block text-xs sm:text-base font-black text-blue-700 dark:text-blue-300 truncate">R$ 0,00</strong>
+                        <span id="txCardCnt-investment" class="block text-[10px] sm:text-[11px] font-bold text-blue-600/80 dark:text-blue-300/80 mt-0.5 truncate">0 itens</span>
+                    </div>
+                </button>
+
+                <button type="button" id="txTypeCard-transfer" onclick="toggleTxTypeCard('transfer')" class="app-card p-3 sm:p-3.5 min-h-[84px] text-left flex flex-col justify-between transition-all active:scale-95">
+                    <div class="flex items-center justify-between gap-1 w-full">
+                        <span class="text-[11px] sm:text-xs font-extrabold text-purple-700 dark:text-purple-300 truncate">Transf.</span>
+                        <span class="w-5 h-5 rounded-lg bg-purple-500/15 text-purple-600 dark:text-purple-300 flex items-center justify-center text-[10px] shrink-0">
+                            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                        </span>
+                    </div>
+                    <div class="mt-1.5 w-full">
+                        <strong id="txCardSum-transfer" class="block text-xs sm:text-base font-black text-purple-700 dark:text-purple-300 truncate">R$ 0,00</strong>
+                        <span id="txCardCnt-transfer" class="block text-[10px] sm:text-[11px] font-bold text-purple-600/80 dark:text-purple-300/80 mt-0.5 truncate">0 itens</span>
+                    </div>
+                </button>
+            </div>
+
             <div class="app-card p-4 space-y-3">
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                    <input type="text" id="txSearchInput" oninput="renderTransactionsTab()" placeholder="Buscar por descrição ou observação..." class="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+                    <input type="text" id="txSearchInput" oninput="renderTransactionsTab(true)" placeholder="Buscar por descrição ou observação..." class="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
                 </div>
 
-                <!-- Filtros horizontais deslizáveis -->
+                <input type="hidden" id="txFilterType" value="ALL">
+                <input type="hidden" id="txFilterStatus" value="ALL">
+                <input type="hidden" id="txFilterMethod" value="ALL">
+                <input type="hidden" id="txFilterCategory" value="ALL">
+                <input type="hidden" id="txFilterSubcategory" value="ALL">
+                <input type="hidden" id="txFilterRecurrence" value="ALL">
+
+                <!-- Filtros estilizados horizontais -->
                 <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                    <select id="txFilterType" onchange="onTxFilterTypeChange()" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold shrink-0">
-                        <option value="ALL">Todos os Tipos</option>
-                        <option value="expense">Despesas</option>
-                        <option value="income">Receitas / Estornos</option>
-                        <option value="investment">Investimentos</option>
-                        <option value="transfer">Transferências</option>
-                    </select>
+                    <button type="button" id="btnFilterStatus" onclick="openOptionPicker('txStatus')" class="pretty-filter-btn shrink-0">
+                        <span id="lblFilterStatus">Todos Status</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                    </button>
 
-                    <select id="txFilterStatus" onchange="renderTransactionsTab()" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold shrink-0">
-                        <option value="ALL">Todos Status</option>
-                        <option value="pending">Em Aberto</option>
-                        <option value="due_soon">A Vencer (3d)</option>
-                        <option value="overdue">Vencidas</option>
-                        <option value="paid">Quitados</option>
-                    </select>
+                    <button type="button" id="btnFilterMethod" onclick="openOptionPicker('txMethod')" class="pretty-filter-btn shrink-0">
+                        <span id="lblFilterMethod">Todas Formas</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                    </button>
 
-                    <select id="txFilterMethod" onchange="renderTransactionsTab()" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold shrink-0">
-                        <option value="ALL">Todas Formas</option>
-                        <option value="bank">Conta Corrente</option>
-                        <option value="card">Cartão de Crédito</option>
-                        <option value="wallet">Carteira</option>
-                    </select>
+                    <button type="button" id="btnFilterCategory" onclick="openOptionPicker('txCategory')" class="pretty-filter-btn shrink-0">
+                        <span id="lblFilterCategory">Todas Categorias</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                    </button>
 
-                    <select id="txFilterCategory" onchange="onTxFilterCategoryChange()" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold shrink-0">
-                        <option value="ALL">Todas Categorias</option>
-                    </select>
+                    <button type="button" id="btnFilterSubcategory" onclick="openOptionPicker('txSubcategory')" class="pretty-filter-btn shrink-0">
+                        <span id="lblFilterSubcategory">Todas Subcategorias</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                    </button>
 
-                    <select id="txFilterSubcategory" onchange="renderTransactionsTab()" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold shrink-0">
-                        <option value="ALL">Todas Subcategorias</option>
-                    </select>
-
-                    <select id="txFilterRecurrence" onchange="renderTransactionsTab()" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold shrink-0">
-                        <option value="ALL">Todas Recorrências</option>
-                        <option value="fixed">Fixas</option>
-                        <option value="installment">Parceladas</option>
-                        <option value="variable">Variáveis</option>
-                    </select>
+                    <button type="button" id="btnFilterRecurrence" onclick="openOptionPicker('txRecurrence')" class="pretty-filter-btn shrink-0">
+                        <span id="lblFilterRecurrence">Todas Recorrências</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                    </button>
                 </div>
 
                 <div class="flex items-center justify-between text-xs text-slate-500 pt-1.5 border-t border-slate-100 dark:border-slate-800">
                     <span id="txCountLabel" class="font-semibold">0 registros</span>
-                    <button type="button" onclick="resetTransactionFilters()" class="font-bold theme-text">Limpar Filtros</button>
+                    <button type="button" id="btnResetTxFilters" onclick="resetTransactionFilters()" class="font-bold text-slate-400 opacity-50 transition-all">Limpar Filtros</button>
                 </div>
             </div>
 
@@ -962,17 +1211,17 @@
             </div>
 
             <div class="grid grid-cols-3 gap-2.5 text-center">
-                <div class="app-card p-3.5">
-                    <span class="text-xs font-bold text-slate-500 block">Patrimônio</span>
-                    <strong id="invKpiTotal" class="text-sm sm:text-base font-black text-indigo-700 dark:text-indigo-300 mt-0.5 block">R$ 0,00</strong>
+                <div class="app-card p-3.5 sm:p-4">
+                    <span class="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 block">Patrimônio</span>
+                    <strong id="invKpiTotal" class="text-base sm:text-xl font-black text-indigo-700 dark:text-indigo-300 mt-1 block truncate">R$ 0,00</strong>
                 </div>
-                <div class="app-card p-3.5">
-                    <span class="text-xs font-bold text-slate-500 block">Aportes Ano</span>
-                    <strong id="invKpiContrib" class="text-sm sm:text-base font-black text-emerald-600 mt-0.5 block">R$ 0,00</strong>
+                <div class="app-card p-3.5 sm:p-4">
+                    <span class="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 block">Aportes Ano</span>
+                    <strong id="invKpiContrib" class="text-base sm:text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1 block truncate">R$ 0,00</strong>
                 </div>
-                <div class="app-card p-3.5">
-                    <span class="text-xs font-bold text-slate-500 block">Rendimentos</span>
-                    <strong id="invKpiYield" class="text-sm sm:text-base font-black text-purple-600 mt-0.5 block">R$ 0,00</strong>
+                <div class="app-card p-3.5 sm:p-4">
+                    <span class="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 block">Rendimentos</span>
+                    <strong id="invKpiYield" class="text-base sm:text-xl font-black text-purple-600 dark:text-purple-400 mt-1 block truncate">R$ 0,00</strong>
                 </div>
             </div>
 
@@ -1179,19 +1428,22 @@
 
     <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA (5 ABAS MOBILE) -->
     <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
-        <div class="max-w-5xl mx-auto px-2 pt-1.5 pb-1 grid grid-cols-5 items-center text-center">
-            <button type="button" id="bnav-dashboard" onclick="switchTab('dashboard')" class="flex flex-col items-center py-1 theme-text">
+        <div class="max-w-5xl mx-auto px-2 pt-1.5 pb-1 grid grid-cols-5 items-center text-center relative">
+            <!-- Efeito Fumaça Deslizante sob a Aba Ativa -->
+            <div id="navSmokePill" aria-hidden="true" style="transform: translateX(0%);"></div>
+
+            <button type="button" id="bnav-dashboard" onclick="switchTab('dashboard')" class="relative z-10 flex flex-col items-center py-1 theme-text transition-colors duration-200">
                 <i class="fa-solid fa-chart-pie text-lg"></i>
                 <span class="text-[11px] font-bold mt-0.5">Início</span>
             </button>
 
-            <button type="button" id="bnav-transactions" onclick="switchTab('transactions')" class="flex flex-col items-center py-1 text-slate-400">
+            <button type="button" id="bnav-transactions" onclick="switchTab('transactions')" class="relative z-10 flex flex-col items-center py-1 text-slate-400 transition-colors duration-200">
                 <i class="fa-solid fa-list-check text-lg"></i>
                 <span class="text-[11px] font-bold mt-0.5">Lançamentos</span>
             </button>
 
             <!-- Botão Central Flutuante Redondo "+" -->
-            <div class="flex justify-center">
+            <div class="relative z-10 flex justify-center">
                 <button type="button" onclick="openNewTxModal('expense')" aria-label="Nova Transação"
                     style="box-shadow: 0 12px 24px -4px rgba(15, 23, 42, 0.38), 0 6px 12px -2px rgba(16, 185, 129, 0.45);"
                     class="-mt-8 w-14 h-14 rounded-full theme-btn border-4 border-white dark:border-slate-900 flex items-center justify-center text-2xl active:scale-95 transition-transform">
@@ -1199,12 +1451,12 @@
                 </button>
             </div>
 
-            <button type="button" id="bnav-cards" onclick="switchTab('cards')" class="flex flex-col items-center py-1 text-slate-400">
+            <button type="button" id="bnav-cards" onclick="switchTab('cards')" class="relative z-10 flex flex-col items-center py-1 text-slate-400 transition-colors duration-200">
                 <i class="fa-solid fa-credit-card text-lg"></i>
                 <span class="text-[11px] font-bold mt-0.5">Cartões</span>
             </button>
 
-            <button type="button" id="bnav-more" onclick="openMoreMenuModal()" class="flex flex-col items-center py-1 text-slate-400">
+            <button type="button" id="bnav-more" onclick="openMoreMenuModal()" class="relative z-10 flex flex-col items-center py-1 text-slate-400 transition-colors duration-200">
                 <i class="fa-solid fa-bars text-lg"></i>
                 <span class="text-[11px] font-bold mt-0.5">Menu</span>
             </button>
@@ -1380,150 +1632,208 @@
         </div>
     </div>
 
-    <!-- ==================== MODAL: NOVA / EDITAR TRANSAÇÃO ==================== -->
-    <div id="modalTransaction" onclick="if(event.target===this) closeModal('modalTransaction')" class="modal-backdrop hidden z-[90]">
-        <div class="modal-sheet">
-            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
-                <h3 id="txModalTitle" class="text-base font-extrabold">Nova Transação</h3>
-                <button type="button" onclick="closeModal('modalTransaction')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
-                    <i class="fa-solid fa-xmark"></i>
+    <!-- ==================== MODAL: NOVA / EDITAR TRANSAÇÃO (COMPACTO SEM ROLAGEM) ==================== -->
+    <div id="modalTransaction" onclick="if(event.target===this) closeModal('modalTransaction')" class="modal-backdrop hidden z-[90] p-2.5 sm:p-4">
+        <div class="modal-sheet max-h-[96vh]">
+            <div class="theme-gradient px-4 py-3 text-white flex items-center justify-between shrink-0">
+                <h3 id="txModalTitle" class="text-sm sm:text-base font-extrabold">Nova Transação</h3>
+                <button type="button" onclick="closeModal('modalTransaction')" class="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
             </div>
 
-            <form id="txForm" onsubmit="handleSaveTransaction(event)" class="p-4 space-y-3.5 overflow-y-auto flex-1">
+            <form id="txForm" onsubmit="handleSaveTransaction(event)" class="px-3.5 py-2.5 space-y-2 flex-1">
                 <input type="hidden" id="txId">
                 <input type="hidden" id="txType" value="expense">
                 <input type="hidden" id="txMethod" value="bank">
+                <input type="hidden" id="txTransferDir" value="bank_to_invest">
+                <input type="hidden" id="txCardSelect" value="">
+                <input type="hidden" id="txRecurrenceSelect" value="none">
+                <input type="hidden" id="txCatSelect" value="">
+                <input type="hidden" id="txSubSelect" value="">
 
                 <!-- Tipo de Operação -->
-                <div class="grid grid-cols-4 gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-extrabold">
-                    <button type="button" id="btnTxExp" onclick="setFormTxType('expense')" class="py-2 rounded-lg bg-white dark:bg-slate-700 text-rose-600 shadow-sm">Despesa</button>
-                    <button type="button" id="btnTxInc" onclick="setFormTxType('income')" class="py-2 rounded-lg text-slate-500">Receita</button>
-                    <button type="button" id="btnTxInv" onclick="setFormTxType('investment')" class="py-2 rounded-lg text-slate-500">Invest.</button>
-                    <button type="button" id="btnTxTrf" onclick="setFormTxType('transfer')" class="py-2 rounded-lg text-slate-500">Transf.</button>
+                <div class="grid grid-cols-4 gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-[11px] sm:text-xs font-extrabold">
+                    <button type="button" id="btnTxExp" onclick="setFormTxType('expense')" class="py-1.5 rounded-lg bg-white dark:bg-slate-700 text-rose-600 shadow-sm">Despesa</button>
+                    <button type="button" id="btnTxInc" onclick="setFormTxType('income')" class="py-1.5 rounded-lg text-slate-500">Receita</button>
+                    <button type="button" id="btnTxInv" onclick="setFormTxType('investment')" class="py-1.5 rounded-lg text-slate-500">Invest.</button>
+                    <button type="button" id="btnTxTrf" onclick="setFormTxType('transfer')" class="py-1.5 rounded-lg text-slate-500">Transf.</button>
                 </div>
 
                 <!-- Sentido Transferência -->
-                <div id="txTransferBox" class="hidden space-y-1">
-                    <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Sentido da Transferência</label>
-                    <select id="txTransferDir" onchange="onTransferDirChange()" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
-                        <option value="bank_to_invest">Conta Corrente → Investimentos (Aporte)</option>
-                        <option value="invest_to_bank">Investimentos → Conta Corrente (Resgate)</option>
-                    </select>
+                <div id="txTransferBox" class="hidden">
+                    <button type="button" onclick="openOptionPicker('formTransferDir')" class="pretty-select-trigger w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center justify-between gap-2 text-left">
+                        <span id="lblFormTransferDir" class="truncate">Conta Corrente → Investimentos (Aporte)</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] opacity-60 shrink-0"></i>
+                    </button>
                 </div>
 
                 <!-- Forma de Pagamento -->
-                <div id="txMethodBox" class="space-y-1">
-                    <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Forma de Pagamento</label>
-                    <div class="grid grid-cols-3 gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">
-                        <button type="button" id="btnPayBank" onclick="setFormPayMethod('bank')" class="py-2 rounded-lg bg-white dark:bg-slate-700 shadow-sm">Conta</button>
-                        <button type="button" id="btnPayCard" onclick="setFormPayMethod('card')" class="py-2 rounded-lg text-slate-500">Cartão</button>
-                        <button type="button" id="btnPayWallet" onclick="setFormPayMethod('wallet')" class="py-2 rounded-lg text-slate-500">Carteira</button>
+                <div id="txMethodBox">
+                    <div class="grid grid-cols-3 gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-[11px] sm:text-xs font-bold">
+                        <button type="button" id="btnPayBank" onclick="setFormPayMethod('bank')" class="py-1.5 rounded-lg bg-white dark:bg-slate-700 shadow-sm">Conta</button>
+                        <button type="button" id="btnPayCard" onclick="setFormPayMethod('card')" class="py-1.5 rounded-lg text-slate-500">Cartão</button>
+                        <button type="button" id="btnPayWallet" onclick="setFormPayMethod('wallet')" class="py-1.5 rounded-lg text-slate-500">Carteira</button>
                     </div>
                 </div>
 
-                <!-- Cartão Específico -->
-                <div id="txCardBox" class="hidden space-y-2 p-3 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800">
-                    <div>
-                        <label class="block text-xs font-bold text-purple-900 dark:text-purple-200 mb-1">Cartão de Crédito</label>
-                        <select id="txCardSelect" onchange="onTxCardChange()" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-700 font-bold"></select>
-                    </div>
-                    <label class="flex items-center gap-2 text-xs font-bold text-purple-800 dark:text-purple-300">
+                <!-- Cartão Específico (1 linha compacta) -->
+                <div id="txCardBox" class="hidden flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800">
+                    <button type="button" onclick="openOptionPicker('formCard')" class="pretty-select-trigger flex-1 min-w-0 px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-700 text-xs font-bold flex items-center justify-between gap-1.5 text-left">
+                        <span id="lblFormCard" class="truncate">Cartão</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] opacity-60 shrink-0"></i>
+                    </button>
+                    <label class="flex items-center gap-1.5 text-[11px] font-bold text-purple-800 dark:text-purple-300 shrink-0">
                         <input type="checkbox" id="txIsRefund" onchange="onRefundToggle()" class="w-4 h-4 rounded">
-                        <span>Estorno / Crédito na Fatura</span>
+                        <span>Estorno</span>
                     </label>
                 </div>
 
                 <!-- Descrição -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Descrição</label>
-                    <input type="text" id="txDescInput" required placeholder="Ex: Supermercado, Salário, Aluguel..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                    <input type="text" id="txDescInput" required placeholder="Descrição (Ex: Supermercado, Salário...)" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
                 </div>
 
-                <!-- Valores -->
-                <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-2.5">
-                    <div class="grid grid-cols-2 gap-2.5">
+                <!-- Valores (Compacto) -->
+                <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-1.5">
+                    <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Valor (R$)</label>
-                            <input type="number" step="0.01" min="0.01" id="txOrigInput" oninput="calcFormTotal()" required placeholder="0,00" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-extrabold">
+                            <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">Valor (R$)</label>
+                            <input type="number" step="0.01" min="0.01" id="txOrigInput" oninput="calcFormTotal()" required placeholder="0,00" class="w-full px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-extrabold">
                         </div>
                         <div id="txInterestBox">
-                            <label class="block text-xs font-bold text-rose-600 mb-1">Juros / Multa (R$)</label>
-                            <input type="number" step="0.01" min="0" id="txInterestInput" oninput="calcFormTotal()" placeholder="0,00" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-bold text-rose-600">
+                            <label class="block text-[11px] font-bold text-rose-600 mb-0.5">Juros / Multa (R$)</label>
+                            <input type="number" step="0.01" min="0" id="txInterestInput" oninput="calcFormTotal()" placeholder="0,00" class="w-full px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-bold text-rose-600">
                         </div>
                         <div id="txTaxBox" class="hidden">
-                            <label class="block text-xs font-bold text-amber-600 mb-1">Impostos / IR (R$)</label>
-                            <input type="number" step="0.01" min="0" id="txTaxInput" oninput="calcFormTotal()" placeholder="0,00" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-bold text-amber-600">
+                            <label class="block text-[11px] font-bold text-amber-600 mb-0.5">Impostos / IR (R$)</label>
+                            <input type="number" step="0.01" min="0" id="txTaxInput" oninput="calcFormTotal()" placeholder="0,00" class="w-full px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-bold text-amber-600">
                         </div>
                     </div>
-                    <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-200 dark:border-slate-700">
+                    <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-200/80 dark:border-slate-700">
                         <span class="font-bold text-slate-500">Total da Operação:</span>
-                        <strong id="txTotalPreview" class="text-base font-black">R$ 0,00</strong>
+                        <strong id="txTotalPreview" class="text-sm font-black">R$ 0,00</strong>
                     </div>
                 </div>
 
                 <!-- Datas -->
-                <div class="grid grid-cols-2 gap-2.5">
+                <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Data Operação</label>
-                        <input type="date" id="txOpDateInput" required class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                        <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">Data Operação</label>
+                        <input type="date" id="txOpDateInput" required class="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Vencimento</label>
-                        <input type="date" id="txDueDateInput" required class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                        <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">Vencimento</label>
+                        <input type="date" id="txDueDateInput" required class="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
                     </div>
                 </div>
 
                 <!-- Recorrência -->
-                <div id="txRecurrenceBox" class="space-y-2">
-                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300">Repetição</label>
-                    <select id="txRecurrenceSelect" onchange="onRecurrenceChange()" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
-                        <option value="none">Não se repete (Única)</option>
-                        <option value="fixed">Fixa Mensal (até Dezembro)</option>
-                        <option value="installment">Parcelada</option>
-                    </select>
+                <div id="txRecurrenceBox" class="space-y-1.5">
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="openOptionPicker('formRecurrence')" class="pretty-select-trigger flex-1 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center justify-between gap-2 text-left">
+                            <span id="lblFormRecurrence" class="truncate">Repetição: Única</span>
+                            <i class="fa-solid fa-chevron-down text-[10px] opacity-60 shrink-0"></i>
+                        </button>
+                    </div>
 
-                    <div id="txInstallmentsFields" class="hidden grid grid-cols-2 gap-2.5 pt-1">
+                    <div id="txInstallmentsFields" class="hidden grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Parcela Atual</label>
-                            <input type="number" min="1" max="120" value="1" id="txCurInstInput" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold">
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Parcela Atual</label>
+                            <input type="number" min="1" max="120" value="1" id="txCurInstInput" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Total Parcelas</label>
-                            <input type="number" min="2" max="120" value="2" id="txTotInstInput" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold">
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Total Parcelas</label>
+                            <input type="number" min="2" max="120" value="2" id="txTotInstInput" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold">
                         </div>
                     </div>
                 </div>
 
                 <!-- Categoria e Subcategoria -->
-                <div id="txCategoryBox" class="grid grid-cols-2 gap-2.5">
+                <div id="txCategoryBox" class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Categoria</label>
-                        <select id="txCatSelect" onchange="onFormCatChange()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold"></select>
+                        <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">Categoria</label>
+                        <button type="button" onclick="openOptionPicker('formCat')" class="pretty-select-trigger w-full px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center justify-between gap-1 text-left">
+                            <span id="lblFormCat" class="truncate">Selecionar</span>
+                            <i class="fa-solid fa-chevron-down text-[10px] opacity-60 shrink-0"></i>
+                        </button>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Subcategoria</label>
-                        <select id="txSubSelect" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold"></select>
+                        <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">Subcategoria</label>
+                        <button type="button" onclick="openOptionPicker('formSub')" class="pretty-select-trigger w-full px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center justify-between gap-1 text-left">
+                            <span id="lblFormSub" class="truncate">Geral</span>
+                            <i class="fa-solid fa-chevron-down text-[10px] opacity-60 shrink-0"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Status Quitado -->
-                <label class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-                    <span class="text-sm font-bold">Marcar como Quitado / Pago</span>
-                    <input type="checkbox" id="txPaidCheckbox" class="w-5 h-5 rounded accent-emerald-600">
-                </label>
-
-                <!-- Observações -->
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Observações (opcional)</label>
-                    <textarea id="txNotesInput" rows="2" placeholder="Detalhes adicionais..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"></textarea>
+                <!-- Status Quitado + Observações Compactos -->
+                <div class="grid grid-cols-1 gap-1.5">
+                    <label class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+                        <span class="text-xs font-bold">Marcar como Quitado / Pago</span>
+                        <input type="checkbox" id="txPaidCheckbox" class="w-4 h-4 rounded accent-emerald-600">
+                    </label>
+                    <input type="text" id="txNotesInput" placeholder="Observações (opcional)..." class="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
                 </div>
 
-                <div class="pt-2 flex gap-2">
-                    <button type="button" onclick="closeModal('modalTransaction')" class="flex-1 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 font-bold text-sm">Cancelar</button>
-                    <button type="submit" class="flex-1 py-3 rounded-xl theme-btn font-bold text-sm">Salvar Lançamento</button>
+                <div class="pt-1 flex gap-2">
+                    <button type="button" onclick="closeModal('modalTransaction')" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 font-bold text-xs sm:text-sm">Cancelar</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl theme-btn font-bold text-xs sm:text-sm">Salvar Lançamento</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: SELETOR DE OPÇÕES ESTILIZADO (PARA FILTROS & FORMULÁRIOS) ==================== -->
+    <div id="modalOptionPicker" onclick="if(event.target===this) closeModal('modalOptionPicker')" class="modal-backdrop hidden z-[120]">
+        <div class="modal-sheet max-w-sm">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <h3 id="optionPickerTitle" class="text-base font-extrabold">Selecionar Opção</h3>
+                <button type="button" onclick="closeModal('modalOptionPicker')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="optionPickerList" class="p-3 space-y-1.5 overflow-y-auto flex-1"></div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: GRÁFICO EVOLUÇÃO MENSAL / DIÁRIA ==================== -->
+    <div id="modalMonthlyChartFilter" onclick="if(event.target===this) closeModal('modalMonthlyChartFilter')" class="modal-backdrop hidden z-[85]">
+        <div class="modal-sheet max-w-sm">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-chart-column text-base"></i>
+                    <h3 class="text-base font-extrabold">Visualização do Gráfico</h3>
+                </div>
+                <button type="button" onclick="closeModal('modalMonthlyChartFilter')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4 space-y-4">
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-extrabold text-slate-600 dark:text-slate-300">Modo de Exibição</label>
+                    <div class="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-extrabold">
+                        <button type="button" id="btnChartModeYear" onclick="setMonthlyChartMode('year')" class="py-2.5 rounded-lg bg-white dark:bg-slate-700 theme-text shadow-sm">
+                            Ano (Meses)
+                        </button>
+                        <button type="button" id="btnChartModeMonth" onclick="setMonthlyChartMode('month')" class="py-2.5 rounded-lg text-slate-500">
+                            Mês (Dias Venc.)
+                        </button>
+                    </div>
+                </div>
+
+                <div id="chartMonthPickerGroup" class="hidden space-y-1.5">
+                    <label class="block text-xs font-extrabold text-slate-600 dark:text-slate-300">Escolha o Mês para Analisar Vencimentos</label>
+                    <div id="chartMonthsGrid" class="grid grid-cols-4 gap-1.5"></div>
+                </div>
+
+                <p id="chartModeHelperText" class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Exibindo comparativo anual de Receitas vs Despesas de Janeiro a Dezembro.
+                </p>
+            </div>
+            <div class="p-3.5 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" onclick="closeModal('modalMonthlyChartFilter')" class="w-full py-2.5 rounded-xl theme-btn text-sm font-bold">Aplicar & Fechar</button>
+            </div>
         </div>
     </div>
 
@@ -1606,9 +1916,9 @@
             </div>
 
             <div class="p-4 space-y-3.5 overflow-y-auto flex-1">
-                <!-- 3 Cards de Ação: Extrato, Exportar e IA -->
-                <div class="grid grid-cols-3 gap-2">
-                    <button type="button" id="btnOvCardExtract" class="p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200/80 dark:border-purple-800/70 flex flex-col items-center text-center gap-1.5 active:scale-95 transition-transform">
+                <!-- 3 Cards de Ação (Extrato, Análise IA, Exportar) com sombra de card -->
+                <div class="grid grid-cols-3 gap-2.5">
+                    <button type="button" id="btnOvCardExtract" class="card-elevation p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200/80 dark:border-purple-800/70 flex flex-col items-center text-center gap-1.5 active:scale-95 transition-transform">
                         <span class="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center text-sm shadow-sm">
                             <i class="fa-solid fa-file-invoice-dollar"></i>
                         </span>
@@ -1616,20 +1926,20 @@
                         <span class="text-[10px] text-purple-600 dark:text-purple-400 leading-tight">Ver Fatura</span>
                     </button>
 
-                    <button type="button" id="btnOvCardExport" class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/70 flex flex-col items-center text-center gap-1.5 active:scale-95 transition-transform">
-                        <span class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm shadow-sm">
-                            <i class="fa-solid fa-file-excel"></i>
-                        </span>
-                        <strong class="text-xs font-extrabold text-emerald-900 dark:text-emerald-200">Exportar</strong>
-                        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 leading-tight">Planilha Excel</span>
-                    </button>
-
-                    <button type="button" id="btnOvCardAi" class="p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-800/70 flex flex-col items-center text-center gap-1.5 active:scale-95 transition-transform">
+                    <button type="button" id="btnOvCardAi" class="card-elevation p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-800/70 flex flex-col items-center text-center gap-1.5 active:scale-95 transition-transform">
                         <span class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-sm shadow-sm">
                             <i class="fa-solid fa-wand-magic-sparkles"></i>
                         </span>
                         <strong class="text-xs font-extrabold text-indigo-900 dark:text-indigo-200">Análise IA</strong>
                         <span class="text-[10px] text-indigo-600 dark:text-indigo-400 leading-tight">Dicas & Futuro</span>
+                    </button>
+
+                    <button type="button" id="btnOvCardExport" class="card-elevation p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/70 flex flex-col items-center text-center gap-1.5 active:scale-95 transition-transform">
+                        <span class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm shadow-sm">
+                            <i class="fa-solid fa-file-excel"></i>
+                        </span>
+                        <strong class="text-xs font-extrabold text-emerald-900 dark:text-emerald-200">Exportar</strong>
+                        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 leading-tight">Planilha Excel</span>
                     </button>
                 </div>
 
@@ -2433,7 +2743,9 @@ function doGet(e) {
             darkMode: false,
             colorTheme: 'emerald',
             appsScriptUrl: '',
-            lastSyncTime: ''
+            lastSyncTime: '',
+            monthlyChartMode: 'year',
+            monthlyChartMonth: new Date().getMonth()
         };
 
         let aiTips = [];
@@ -2903,6 +3215,7 @@ function doGet(e) {
 
             const overlay = document.getElementById('authGateOverlay');
             if (overlay) overlay.classList.add('auth-gate-hidden');
+            showHeroWelcomeBanner();
             toast(`Bem-vindo(a), ${prof.name}!`);
 
             if (!prof.username || !prof.username.trim()) {
@@ -3033,6 +3346,7 @@ function doGet(e) {
             loadProfileData(newId);
             const overlay = document.getElementById('authGateOverlay');
             if (overlay) overlay.classList.add('auth-gate-hidden');
+            showHeroWelcomeBanner();
             toast(`Perfil "${newProfile.name}" criado!`);
 
             if (appState.appsScriptUrl) {
@@ -3188,34 +3502,83 @@ function doGet(e) {
         }
 
         // ==================== NAVEGAÇÃO & FILTROS GLOBAIS ====================
+        function updateNavSmokePosition(tab) {
+            const smoke = document.getElementById('navSmokePill');
+            if (!smoke) return;
+            const slotMap = { dashboard: 0, transactions: 1, cards: 3 };
+            const slotIndex = slotMap[tab] !== undefined ? slotMap[tab] : 4;
+            smoke.style.transform = `translateX(${slotIndex * 100}%)`;
+        }
+
         function switchTab(tab) {
             appState.activeTab = tab;
             const allTabs = ['dashboard', 'transactions', 'cards', 'accounts', 'investments', 'matrix', 'calendar', 'budgets', 'settings'];
             allTabs.forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
-                if (el) el.classList.toggle('hidden', t !== tab);
+                if (!el) return;
+                if (t === tab) {
+                    el.classList.remove('hidden', 'tab-screen-enter');
+                    void el.offsetWidth;
+                    el.classList.add('tab-screen-enter');
+                } else {
+                    el.classList.add('hidden');
+                    el.classList.remove('tab-screen-enter');
+                }
             });
 
             ['dashboard', 'transactions', 'cards', 'more'].forEach(b => {
                 const btn = document.getElementById(`bnav-${b}`);
                 if (!btn) return;
                 const isActive = (b === tab) || (b === 'more' && !['dashboard', 'transactions', 'cards'].includes(tab));
-                btn.className = isActive ? 'flex flex-col items-center py-1 theme-text' : 'flex flex-col items-center py-1 text-slate-400';
+                btn.className = isActive
+                    ? 'relative z-10 flex flex-col items-center py-1 theme-text transition-colors duration-200'
+                    : 'relative z-10 flex flex-col items-center py-1 text-slate-400 transition-colors duration-200';
             });
 
+            updateNavSmokePosition(tab);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             refreshAll();
+        }
+
+        function closeHeroWelcomeBanner() {
+            const banner = document.getElementById('heroWelcomeBanner');
+            if (!banner || banner.classList.contains('hidden')) return;
+            banner.classList.add('banner-closing');
+            clearTimeout(banner._hideTimer);
+            banner._hideTimer = setTimeout(() => {
+                banner.classList.add('hidden');
+                banner.classList.remove('banner-closing');
+            }, 310);
+        }
+
+        function showHeroWelcomeBanner() {
+            const banner = document.getElementById('heroWelcomeBanner');
+            if (!banner) return;
+            clearTimeout(banner._hideTimer);
+            banner.classList.remove('hidden', 'banner-closing');
         }
 
         function openMoreMenuModal() {
             openModal('modalMoreMenu');
         }
 
+        function syncPeriodLabels() {
+            const mVal = String(appState.selectedMonth);
+            const mLbl = document.getElementById('globalMonthLabel');
+            const yLbl = document.getElementById('globalYearLabel');
+            if (mLbl) mLbl.textContent = mVal === 'ALL' ? 'Todos' : MONTHS[Number(mVal)].slice(0, 3);
+            if (yLbl) yLbl.textContent = String(appState.selectedYear);
+        }
+
         function changePeriod() {
             appState.selectedYear = Number(document.getElementById('globalYearSelect').value);
             appState.selectedMonth = document.getElementById('globalMonthSelect').value;
             appState.calYear = appState.selectedYear;
-            if (appState.selectedMonth !== 'ALL') appState.calMonth = Number(appState.selectedMonth);
+            if (appState.selectedMonth !== 'ALL') {
+                appState.calMonth = Number(appState.selectedMonth);
+                appState.monthlyChartMonth = Number(appState.selectedMonth);
+            }
+            syncPeriodLabels();
             refreshAll();
         }
 
@@ -3542,8 +3905,20 @@ function doGet(e) {
 
         function setDueType(type) {
             appState.dueFilterType = type;
-            document.getElementById('btnDueExp').className = type === 'expense' ? 'px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 text-rose-600 shadow-sm' : 'px-3 py-1.5 rounded-lg text-slate-500';
-            document.getElementById('btnDueInc').className = type === 'income' ? 'px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 text-emerald-600 shadow-sm' : 'px-3 py-1.5 rounded-lg text-slate-500';
+            const pill = document.getElementById('dueTogglePill');
+            if (pill) pill.style.transform = type === 'income' ? 'translateX(100%)' : 'translateX(0%)';
+            document.getElementById('btnDueExp').className = type === 'expense'
+                ? 'relative z-10 px-3 py-1.5 rounded-lg text-rose-600 transition-colors duration-200'
+                : 'relative z-10 px-3 py-1.5 rounded-lg text-slate-500 transition-colors duration-200';
+            document.getElementById('btnDueInc').className = type === 'income'
+                ? 'relative z-10 px-3 py-1.5 rounded-lg text-emerald-600 transition-colors duration-200'
+                : 'relative z-10 px-3 py-1.5 rounded-lg text-slate-500 transition-colors duration-200';
+            const grid = document.getElementById('dueStatusCardsGrid');
+            if (grid) {
+                grid.classList.remove('due-grid-fade');
+                void grid.offsetWidth;
+                grid.classList.add('due-grid-fade');
+            }
             renderDueStatus();
         }
 
@@ -3621,22 +3996,48 @@ function doGet(e) {
             document.getElementById('dashCardAvail').textContent = fmtBRL(avail);
             document.getElementById('dashCardBar').style.width = `${pct}%`;
 
+            const isDark = appState.darkMode;
             const listEl = document.getElementById('dashCardsList');
             listEl.innerHTML = appState.creditCards.map(c => {
                 const inv = Math.max(0, perCardInv[c.id] || 0);
                 const cAvail = Math.max(0, (Number(c.limit) || 0) - (committedMap[c.id] || 0));
+
+                const hex = (c.color || '#820ad1').replace('#', '');
+                const fullHex = hex.length === 3 ? hex.split('').map(ch => ch + ch).join('') : hex;
+                const rCol = parseInt(fullHex.substring(0, 2), 16) || 0;
+                const gCol = parseInt(fullHex.substring(2, 4), 16) || 0;
+                const bCol = parseInt(fullHex.substring(4, 6), 16) || 0;
+                const luminance = (0.299 * rCol + 0.587 * gCol + 0.114 * bCol) / 255;
+                const isBlackCard = luminance < 0.22;
+
+                let rowStyle = '';
+                if (isBlackCard) {
+                    rowStyle = isDark
+                        ? 'background: linear-gradient(135deg, #18181b 0%, #09090b 100%); border-color: #3f3f46;'
+                        : 'background: linear-gradient(135deg, #27272a 0%, #18181b 100%); border-color: #3f3f46;';
+                } else {
+                    rowStyle = isDark
+                        ? `background-color: color-mix(in srgb, ${c.color} 16%, #111827); border-color: color-mix(in srgb, ${c.color} 40%, #1f2937);`
+                        : `background-color: color-mix(in srgb, ${c.color} 11%, #ffffff); border-color: color-mix(in srgb, ${c.color} 30%, #e2e8f0);`;
+                }
+
+                const nameCls = isBlackCard ? 'text-white' : 'text-slate-900 dark:text-white';
+                const subCls = isBlackCard ? 'text-white/85' : 'text-slate-600 dark:text-slate-300';
+                const amtCls = isBlackCard ? 'text-white' : 'text-purple-700 dark:text-purple-300';
+                const linkCls = isBlackCard ? 'text-white/80' : 'text-slate-500 dark:text-slate-400';
+
                 return `
-                    <button type="button" onclick="openCardInvoiceModal('${c.id}')" class="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 flex items-center justify-between text-left">
+                    <button type="button" onclick="openCardInvoiceModal('${c.id}')" style="${rowStyle}" class="w-full p-3.5 rounded-2xl border flex items-center justify-between text-left transition-transform active:scale-[0.99]">
                         <div class="flex items-center gap-3 min-w-0">
-                            <span class="w-3.5 h-3.5 rounded-full shrink-0" style="background:${c.color}"></span>
+                            <span class="w-3.5 h-3.5 rounded-full shrink-0 border border-white/40" style="background:${c.color}"></span>
                             <div class="min-w-0">
-                                <strong class="block text-sm font-extrabold truncate">${c.name}</strong>
-                                <span class="text-xs text-slate-500 dark:text-slate-400">Disp: ${fmtBRL(cAvail)} • Vence dia ${c.dueDay}</span>
+                                <strong class="block text-sm font-extrabold truncate ${nameCls}">${c.name}</strong>
+                                <span class="text-xs font-semibold ${subCls}">Disp: ${fmtBRL(cAvail)} • Vence dia ${c.dueDay}</span>
                             </div>
                         </div>
                         <div class="text-right shrink-0">
-                            <strong class="block text-base font-black text-purple-700 dark:text-purple-300">${fmtBRL(inv)}</strong>
-                            <span class="text-xs text-slate-400 font-semibold">Ver fatura ›</span>
+                            <strong class="block text-base font-black ${amtCls}">${fmtBRL(inv)}</strong>
+                            <span class="text-xs font-semibold ${linkCls}">Ver fatura ›</span>
                         </div>
                     </button>
                 `;
@@ -3650,48 +4051,130 @@ function doGet(e) {
             const shell = document.getElementById('appShell');
             const primary = (shell ? getComputedStyle(shell).getPropertyValue('--theme-primary').trim() : '') || '#0f766e';
 
-            // 1. Evolução Mensal
+            // 1. Evolução Mensal (Modo Ano) ou Vencimentos Diários de Despesas (Modo Mês)
             const yTxs = getYearTxs();
-            const mInc = new Array(12).fill(0);
-            const mExp = new Array(12).fill(0);
-            yTxs.forEach(t => {
-                const m = Number(t.month);
-                const amt = Number(t.amount) || 0;
-                if (m >= 0 && m < 12) {
-                    if (t.type === 'income' || isWithdrawal(t)) mInc[m] += amt;
-                    else if (t.type === 'expense') mExp[m] += amt;
-                }
-            });
-
-            const totInc = mInc.reduce((a, b) => a + b, 0);
-            const totExp = mExp.reduce((a, b) => a + b, 0);
-            document.getElementById('chartYearInc').textContent = fmtBRL(totInc);
-            document.getElementById('chartYearExp').textContent = fmtBRL(totExp);
-            document.getElementById('chartYearBal').textContent = fmtBRL(totInc - totExp);
-
             const ctxM = document.getElementById('monthlyChart');
-            if (ctxM) {
-                if (chartMonthly) chartMonthly.destroy();
-                chartMonthly = new Chart(ctxM, {
-                    type: 'bar',
-                    data: {
-                        labels: MONTHS.map(m => m.slice(0, 3)),
-                        datasets: [
-                            { label: 'Receitas', data: mInc, backgroundColor: primary, borderRadius: 5 },
-                            { label: 'Despesas', data: mExp, backgroundColor: '#f43f5e', borderRadius: 5 }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        animation: false,
-                        plugins: { legend: { labels: { color: txtColor, boxWidth: 12, font: { size: 12, weight: 'bold' } } } },
-                        scales: {
-                            y: { ticks: { color: txtColor, font: { size: 11 } }, grid: { color: gridColor } },
-                            x: { ticks: { color: txtColor, font: { size: 11 } }, grid: { display: false } }
+            const titleEl = document.getElementById('monthlyChartTitle');
+            const subEl = document.getElementById('monthlyChartSubtitle');
+            const badgeEl = document.getElementById('monthlyChartModeBadge');
+            const m1Lbl = document.getElementById('chartMetric1Label');
+            const m2Lbl = document.getElementById('chartMetric2Label');
+            const m3Lbl = document.getElementById('chartMetric3Label');
+
+            if (appState.monthlyChartMode === 'month') {
+                const targetMonth = Number(appState.monthlyChartMonth ?? (appState.selectedMonth !== 'ALL' ? Number(appState.selectedMonth) : new Date().getMonth()));
+                const targetYear = Number(appState.selectedYear);
+                const daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+                const dayLabels = Array.from({ length: daysInMonth }, (_, i) => String(i + 1));
+                const dayExp = new Array(daysInMonth).fill(0);
+                let monthInc = 0, monthExp = 0, peakDay = 1, peakVal = 0;
+
+                yTxs.forEach(t => {
+                    if (Number(t.month) !== targetMonth) return;
+                    const amt = Number(t.amount) || 0;
+                    if (t.type === 'income' || isWithdrawal(t)) {
+                        monthInc += amt;
+                    } else if (t.type === 'expense') {
+                        monthExp += amt;
+                        let dayNum = 1;
+                        if (t.dueDate && t.dueDate.includes('-')) {
+                            dayNum = Number(t.dueDate.split('-')[2]) || 1;
                         }
+                        const dIdx = Math.max(0, Math.min(daysInMonth - 1, dayNum - 1));
+                        dayExp[dIdx] += amt;
                     }
                 });
+
+                dayExp.forEach((v, idx) => {
+                    if (v > peakVal) { peakVal = v; peakDay = idx + 1; }
+                });
+
+                if (titleEl) titleEl.textContent = `Vencimentos por Dia • ${MONTHS[targetMonth]}`;
+                if (subEl) subEl.textContent = `Dias de maior vencimento de despesas • Toque para alterar`;
+                if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-sliders text-[10px]"></i><span>${MONTHS[targetMonth].slice(0, 3)}</span>`;
+                if (m1Lbl) m1Lbl.textContent = 'Receitas Mês';
+                if (m2Lbl) m2Lbl.textContent = 'Despesas Mês';
+                if (m3Lbl) m3Lbl.textContent = peakVal > 0 ? `Pico Dia ${peakDay}` : 'Dia Pico';
+
+                document.getElementById('chartYearInc').textContent = fmtBRL(monthInc);
+                document.getElementById('chartYearExp').textContent = fmtBRL(monthExp);
+                document.getElementById('chartYearBal').textContent = peakVal > 0 ? fmtBRL(peakVal) : 'R$ 0,00';
+
+                if (ctxM) {
+                    if (chartMonthly) chartMonthly.destroy();
+                    chartMonthly = new Chart(ctxM, {
+                        type: 'bar',
+                        data: {
+                            labels: dayLabels,
+                            datasets: [
+                                {
+                                    label: 'Despesas no Vencimento',
+                                    data: dayExp,
+                                    backgroundColor: dayExp.map(v => (v > 0 && v === peakVal) ? '#e11d48' : '#fb7185'),
+                                    borderRadius: 4
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: false,
+                            plugins: { legend: { labels: { color: txtColor, boxWidth: 12, font: { size: 12, weight: 'bold' } } } },
+                            scales: {
+                                y: { ticks: { color: txtColor, font: { size: 11 } }, grid: { color: gridColor } },
+                                x: { ticks: { color: txtColor, font: { size: 10 }, maxRotation: 0 }, grid: { display: false } }
+                            }
+                        }
+                    });
+                }
+            } else {
+                const mInc = new Array(12).fill(0);
+                const mExp = new Array(12).fill(0);
+                yTxs.forEach(t => {
+                    const m = Number(t.month);
+                    const amt = Number(t.amount) || 0;
+                    if (m >= 0 && m < 12) {
+                        if (t.type === 'income' || isWithdrawal(t)) mInc[m] += amt;
+                        else if (t.type === 'expense') mExp[m] += amt;
+                    }
+                });
+
+                const totInc = mInc.reduce((a, b) => a + b, 0);
+                const totExp = mExp.reduce((a, b) => a + b, 0);
+                if (titleEl) titleEl.textContent = 'Evolução Mensal (Receitas vs Despesas)';
+                if (subEl) subEl.textContent = 'Consolidado do ano • Toque para filtrar Ano/Mês';
+                if (badgeEl) badgeEl.innerHTML = '<i class="fa-solid fa-sliders text-[10px]"></i><span>Ano</span>';
+                if (m1Lbl) m1Lbl.textContent = 'Receitas';
+                if (m2Lbl) m2Lbl.textContent = 'Despesas';
+                if (m3Lbl) m3Lbl.textContent = 'Saldo Ano';
+
+                document.getElementById('chartYearInc').textContent = fmtBRL(totInc);
+                document.getElementById('chartYearExp').textContent = fmtBRL(totExp);
+                document.getElementById('chartYearBal').textContent = fmtBRL(totInc - totExp);
+
+                if (ctxM) {
+                    if (chartMonthly) chartMonthly.destroy();
+                    chartMonthly = new Chart(ctxM, {
+                        type: 'bar',
+                        data: {
+                            labels: MONTHS.map(m => m.slice(0, 3)),
+                            datasets: [
+                                { label: 'Receitas', data: mInc, backgroundColor: primary, borderRadius: 5 },
+                                { label: 'Despesas', data: mExp, backgroundColor: '#f43f5e', borderRadius: 5 }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: false,
+                            plugins: { legend: { labels: { color: txtColor, boxWidth: 12, font: { size: 12, weight: 'bold' } } } },
+                            scales: {
+                                y: { ticks: { color: txtColor, font: { size: 11 } }, grid: { color: gridColor } },
+                                x: { ticks: { color: txtColor, font: { size: 11 } }, grid: { display: false } }
+                            }
+                        }
+                    });
+                }
             }
 
             // 2. Despesas por Categoria
@@ -3793,19 +4276,93 @@ function doGet(e) {
             `;
         }
 
-        // ==================== HISTÓRICO DE TRANSAÇÕES ====================
+        // ==================== HISTÓRICO DE TRANSAÇÕES & SELETORES ESTILIZADOS ====================
+        const TX_STATUS_LABELS = { ALL: 'Todos Status', pending: 'Em Aberto', due_soon: 'A Vencer (3d)', overdue: 'Vencidas', paid: 'Quitados' };
+        const TX_METHOD_LABELS = { ALL: 'Todas Formas', bank: 'Conta Corrente', card: 'Cartão de Crédito', wallet: 'Carteira' };
+        const TX_RECURRENCE_LABELS = { ALL: 'Todas Recorrências', fixed: 'Fixas', installment: 'Parceladas', variable: 'Variáveis' };
+        const FORM_TRANSFER_LABELS = { bank_to_invest: 'Conta Corrente → Investimentos (Aporte)', invest_to_bank: 'Investimentos → Conta Corrente (Resgate)' };
+        const FORM_RECURRENCE_LABELS = { none: 'Repetição: Única', fixed: 'Repetição: Fixa Mensal (até Dez)', installment: 'Repetição: Parcelada' };
+
+        function syncTransactionFilterUI() {
+            const fType = document.getElementById('txFilterType')?.value || 'ALL';
+            const fStatus = document.getElementById('txFilterStatus')?.value || 'ALL';
+            const fMethod = document.getElementById('txFilterMethod')?.value || 'ALL';
+            const fCat = document.getElementById('txFilterCategory')?.value || 'ALL';
+            const fSub = document.getElementById('txFilterSubcategory')?.value || 'ALL';
+            const fRec = document.getElementById('txFilterRecurrence')?.value || 'ALL';
+            const search = (document.getElementById('txSearchInput')?.value || '').trim();
+
+            const lblSt = document.getElementById('lblFilterStatus');
+            const lblMt = document.getElementById('lblFilterMethod');
+            const lblCt = document.getElementById('lblFilterCategory');
+            const lblSb = document.getElementById('lblFilterSubcategory');
+            const lblRc = document.getElementById('lblFilterRecurrence');
+
+            if (lblSt) lblSt.textContent = TX_STATUS_LABELS[fStatus] || 'Todos Status';
+            if (lblMt) lblMt.textContent = TX_METHOD_LABELS[fMethod] || 'Todas Formas';
+            if (lblRc) lblRc.textContent = TX_RECURRENCE_LABELS[fRec] || 'Todas Recorrências';
+
+            const catObj = appState.categories.find(c => c.id === fCat);
+            if (lblCt) lblCt.textContent = catObj ? catObj.name : 'Todas Categorias';
+            const subObj = catObj && catObj.subcategories ? catObj.subcategories.find(s => s.id === fSub) : null;
+            if (lblSb) lblSb.textContent = subObj ? subObj.name : 'Todas Subcategorias';
+
+            document.getElementById('btnFilterStatus')?.classList.toggle('is-active', fStatus !== 'ALL');
+            document.getElementById('btnFilterMethod')?.classList.toggle('is-active', fMethod !== 'ALL');
+            document.getElementById('btnFilterCategory')?.classList.toggle('is-active', fCat !== 'ALL');
+            document.getElementById('btnFilterSubcategory')?.classList.toggle('is-active', fSub !== 'ALL');
+            document.getElementById('btnFilterRecurrence')?.classList.toggle('is-active', fRec !== 'ALL');
+
+            // Estilo colorido claro nos 4 cards de tipo (seguindo o mesmo padrão dos cards de cartões)
+            const isDark = appState.darkMode;
+            const typeColorMap = {
+                expense: { hex: '#ef4444', ring: 'ring-2 ring-rose-500 scale-[1.02]' },
+                income: { hex: '#10b981', ring: 'ring-2 ring-emerald-500 scale-[1.02]' },
+                investment: { hex: '#3b82f6', ring: 'ring-2 ring-blue-500 scale-[1.02]' },
+                transfer: { hex: '#8b5cf6', ring: 'ring-2 ring-purple-500 scale-[1.02]' }
+            };
+            Object.entries(typeColorMap).forEach(([tp, cfg]) => {
+                const cardEl = document.getElementById(`txTypeCard-${tp}`);
+                if (!cardEl) return;
+                const active = fType === tp;
+                cardEl.style.backgroundColor = isDark
+                    ? `color-mix(in srgb, ${cfg.hex} ${active ? '24%' : '15%'}, #111827)`
+                    : `color-mix(in srgb, ${cfg.hex} ${active ? '18%' : '11%'}, #ffffff)`;
+                cardEl.style.borderColor = isDark
+                    ? `color-mix(in srgb, ${cfg.hex} ${active ? '60%' : '38%'}, #1f2937)`
+                    : `color-mix(in srgb, ${cfg.hex} ${active ? '55%' : '30%'}, #e2e8f0)`;
+                cardEl.className = `app-card p-3 sm:p-3.5 min-h-[84px] text-left flex flex-col justify-between transition-all active:scale-95 ${active ? cfg.ring : ''}`;
+            });
+
+            // Botão Limpar Filtros: fraco quando todos estão padrão, forte quando algum filtro está ativo
+            const hasAnyFilter = Boolean(search) || fType !== 'ALL' || fStatus !== 'ALL' || fMethod !== 'ALL' || fCat !== 'ALL' || fSub !== 'ALL' || fRec !== 'ALL';
+            const resetBtn = document.getElementById('btnResetTxFilters');
+            if (resetBtn) {
+                resetBtn.className = hasAnyFilter
+                    ? 'font-extrabold theme-text opacity-100 transition-all cursor-pointer'
+                    : 'font-bold text-slate-400 opacity-45 transition-all';
+            }
+        }
+
+        function toggleTxTypeCard(type) {
+            const inp = document.getElementById('txFilterType');
+            if (!inp) return;
+            inp.value = inp.value === type ? 'ALL' : type;
+            onTxFilterTypeChange(true);
+        }
+
         function goToFilteredTransactions(filters) {
             switchTab('transactions');
             document.getElementById('txSearchInput').value = '';
             document.getElementById('txFilterType').value = filters.type || 'ALL';
             document.getElementById('txFilterStatus').value = filters.status || 'ALL';
             document.getElementById('txFilterMethod').value = filters.method || 'ALL';
-            onTxFilterTypeChange();
+            onTxFilterTypeChange(false);
             if (filters.categoryId) {
                 document.getElementById('txFilterCategory').value = filters.categoryId;
-                onTxFilterCategoryChange();
+                onTxFilterCategoryChange(false);
             }
-            renderTransactionsTab();
+            renderTransactionsTab(true);
         }
 
         function resetTransactionFilters() {
@@ -3816,27 +4373,33 @@ function doGet(e) {
             document.getElementById('txFilterCategory').value = 'ALL';
             document.getElementById('txFilterSubcategory').value = 'ALL';
             document.getElementById('txFilterRecurrence').value = 'ALL';
-            renderTransactionsTab();
+            renderTransactionsTab(true);
         }
 
-        function onTxFilterTypeChange() {
+        function onTxFilterTypeChange(animate = true) {
             const type = document.getElementById('txFilterType').value;
-            const catSel = document.getElementById('txFilterCategory');
+            const curCat = document.getElementById('txFilterCategory').value;
             const cats = type === 'ALL' ? appState.categories : appState.categories.filter(c => c.type === type);
-            catSel.innerHTML = '<option value="ALL">Todas Categorias</option>' + cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            onTxFilterCategoryChange();
+            if (curCat !== 'ALL' && !cats.some(c => c.id === curCat)) {
+                document.getElementById('txFilterCategory').value = 'ALL';
+                document.getElementById('txFilterSubcategory').value = 'ALL';
+            }
+            onTxFilterCategoryChange(animate);
         }
 
-        function onTxFilterCategoryChange() {
+        function onTxFilterCategoryChange(animate = true) {
             const cid = document.getElementById('txFilterCategory').value;
-            const subSel = document.getElementById('txFilterSubcategory');
+            const curSub = document.getElementById('txFilterSubcategory').value;
             const cat = appState.categories.find(c => c.id === cid);
-            subSel.innerHTML = '<option value="ALL">Todas Subcategorias</option>' +
-                (cat && cat.subcategories ? cat.subcategories.map(s => `<option value="${s.id}">${s.name}</option>`).join('') : '');
-            renderTransactionsTab();
+            if (!cat || !cat.subcategories || !cat.subcategories.some(s => s.id === curSub)) {
+                document.getElementById('txFilterSubcategory').value = 'ALL';
+            }
+            renderTransactionsTab(animate);
         }
 
-        function renderTransactionsTab() {
+        function renderTransactionsTab(animate = false) {
+            syncTransactionFilterUI();
+
             const search = (document.getElementById('txSearchInput').value || '').toLowerCase();
             const fType = document.getElementById('txFilterType').value;
             const fStatus = document.getElementById('txFilterStatus').value;
@@ -3848,7 +4411,36 @@ function doGet(e) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
-            const list = getPeriodTxs().filter(t => {
+            const periodTxs = getPeriodTxs();
+
+            // Atualiza totais e quantidades dos 4 cards de tipo no período
+            let sumExpCard = 0, sumIncCard = 0, sumInvCard = 0, sumTrfCard = 0;
+            let cntExpCard = 0, cntIncCard = 0, cntInvCard = 0, cntTrfCard = 0;
+            periodTxs.forEach(t => {
+                const amt = Number(t.amount) || 0;
+                if (t.type === 'expense') { sumExpCard += amt; cntExpCard++; }
+                else if (t.type === 'income' || isWithdrawal(t) || t.isRefund) { sumIncCard += amt; cntIncCard++; }
+                else if (t.type === 'investment') { sumInvCard += amt; cntInvCard++; }
+                else if (t.type === 'transfer') { sumTrfCard += amt; cntTrfCard++; }
+            });
+            const elExpC = document.getElementById('txCardSum-expense');
+            const elIncC = document.getElementById('txCardSum-income');
+            const elInvC = document.getElementById('txCardSum-investment');
+            const elTrfC = document.getElementById('txCardSum-transfer');
+            if (elExpC) elExpC.textContent = fmtBRL(sumExpCard);
+            if (elIncC) elIncC.textContent = fmtBRL(sumIncCard);
+            if (elInvC) elInvC.textContent = fmtBRL(sumInvCard);
+            if (elTrfC) elTrfC.textContent = fmtBRL(sumTrfCard);
+            const cExpEl = document.getElementById('txCardCnt-expense');
+            const cIncEl = document.getElementById('txCardCnt-income');
+            const cInvEl = document.getElementById('txCardCnt-investment');
+            const cTrfEl = document.getElementById('txCardCnt-transfer');
+            if (cExpEl) cExpEl.textContent = `${cntExpCard} ${cntExpCard === 1 ? 'item' : 'itens'}`;
+            if (cIncEl) cIncEl.textContent = `${cntIncCard} ${cntIncCard === 1 ? 'item' : 'itens'}`;
+            if (cInvEl) cInvEl.textContent = `${cntInvCard} ${cntInvCard === 1 ? 'item' : 'itens'}`;
+            if (cTrfEl) cTrfEl.textContent = `${cntTrfCard} ${cntTrfCard === 1 ? 'item' : 'itens'}`;
+
+            const list = periodTxs.filter(t => {
                 if (search && !(t.description || '').toLowerCase().includes(search) && !(t.notes || '').toLowerCase().includes(search)) return false;
                 if (fType !== 'ALL') {
                     if (fType === 'income' && !(t.type === 'income' || isWithdrawal(t) || t.isRefund)) return false;
@@ -3881,17 +4473,32 @@ function doGet(e) {
 
             document.getElementById('txCountLabel').textContent = `${list.length} lançamento(s)`;
 
-            let sumNet = 0;
+            let sumFiltered = 0;
             list.forEach(t => {
                 const amt = Number(t.amount) || 0;
-                if (t.type === 'income' || isWithdrawal(t) || t.isRefund) sumNet += amt;
-                else if (t.type === 'expense') sumNet -= amt;
+                if (fType !== 'ALL') {
+                    sumFiltered += amt;
+                } else {
+                    if (t.type === 'income' || isWithdrawal(t) || t.isRefund) sumFiltered += amt;
+                    else if (t.type === 'expense') sumFiltered -= amt;
+                }
             });
             const totEl = document.getElementById('txFilteredTotal');
-            totEl.textContent = fmtBRL(sumNet);
-            totEl.className = `text-base sm:text-lg font-black ${sumNet >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
+            totEl.textContent = fmtBRL(sumFiltered);
+            const totColorCls = fType === 'expense' ? 'text-rose-600'
+                : (fType === 'income' ? 'text-emerald-600'
+                : (fType === 'investment' ? 'text-indigo-600'
+                : (fType === 'transfer' ? 'text-sky-600'
+                : (sumFiltered >= 0 ? 'text-emerald-600' : 'text-rose-600'))));
+            totEl.className = `text-base sm:text-lg font-black ${totColorCls}`;
 
             const container = document.getElementById('transactionsCardsList');
+            if (animate && container) {
+                container.classList.remove('tx-list-fade');
+                void container.offsetWidth;
+                container.classList.add('tx-list-fade');
+            }
+
             if (list.length === 0) {
                 container.innerHTML = '<div class="app-card p-8 text-center text-sm text-slate-400">Nenhum lançamento encontrado.</div>';
                 return;
@@ -3904,6 +4511,7 @@ function doGet(e) {
                 const dueFmt = t.dueDate ? t.dueDate.split('-').reverse().join('/') : '-';
                 const cardObj = t.paymentMethod === 'card' ? appState.creditCards.find(c => c.id === t.cardId) : null;
                 const methodTxt = t.paymentMethod === 'card' ? (cardObj ? cardObj.name : 'Cartão') : (t.paymentMethod === 'wallet' ? 'Carteira' : 'Conta');
+                const valColorCls = t.type === 'investment' ? 'text-indigo-600' : (t.type === 'transfer' ? 'text-sky-600' : (isPos ? 'text-emerald-600' : 'text-rose-600'));
 
                 return `
                     <div onclick="openTxDetailsModal('${t.id}')" class="app-card p-4 space-y-2.5 cursor-pointer active:scale-[0.99] ${t.paid ? 'opacity-45 bg-white/60 dark:bg-slate-900/50' : ''}">
@@ -3918,8 +4526,8 @@ function doGet(e) {
                                 </div>
                             </div>
                             <div class="text-right shrink-0">
-                                <strong class="block text-base sm:text-lg font-black ${isPos ? 'text-emerald-600' : 'text-rose-600'}">
-                                    ${isPos ? '+ ' : '- '}${fmtBRL(t.amount)}
+                                <strong class="block text-base sm:text-lg font-black ${valColorCls}">
+                                    ${fmtBRL(t.amount)}
                                 </strong>
                                 <span class="text-xs text-slate-400 font-medium">${dueFmt}</span>
                             </div>
@@ -4164,7 +4772,8 @@ function doGet(e) {
             populateCardSelect();
             setFormTxType(tx.type || 'expense');
             setFormPayMethod(tx.paymentMethod || 'bank');
-            if (tx.cardId) document.getElementById('txCardSelect').value = tx.cardId;
+            if (tx.cardId) { document.getElementById('txCardSelect').value = tx.cardId; onTxCardChange(); }
+            if (tx.transferDirection) { document.getElementById('txTransferDir').value = tx.transferDirection; onTransferDirChange(); }
 
             if (tx.isFixed) document.getElementById('txRecurrenceSelect').value = 'fixed';
             else if ((Number(tx.totalInstallments) || 1) > 1) {
@@ -4184,32 +4793,71 @@ function doGet(e) {
             openModal('modalTransaction');
         }
 
-        function setFormTxType(type) {
-            document.getElementById('txType').value = type;
-            const btns = { expense: 'btnTxExp', income: 'btnTxInc', investment: 'btnTxInv', transfer: 'btnTxTrf' };
-            Object.entries(btns).forEach(([k, id]) => {
-                const el = document.getElementById(id);
-                el.className = k === type ? 'py-2 rounded-lg bg-white dark:bg-slate-700 theme-text shadow-sm' : 'py-2 rounded-lg text-slate-500';
-            });
-
-            const isTrf = type === 'transfer';
-            document.getElementById('txTransferBox').classList.toggle('hidden', !isTrf);
-            document.getElementById('txMethodBox').classList.toggle('hidden', isTrf);
-            document.getElementById('txCategoryBox').classList.toggle('hidden', isTrf);
-            document.getElementById('txRecurrenceBox').classList.toggle('hidden', isTrf || type === 'investment');
-
-            if (!isTrf) {
-                const catSel = document.getElementById('txCatSelect');
-                const filteredCats = appState.categories.filter(c => c.type === type || (type === 'expense' && c.type === 'investment'));
-                catSel.innerHTML = filteredCats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-                onFormCatChange();
-            } else {
-                onTransferDirChange();
+        function animateTxModalResize(mutatorFn) {
+            const modal = document.getElementById('modalTransaction');
+            const sheet = modal ? modal.querySelector('.modal-sheet') : null;
+            if (!sheet || modal.classList.contains('hidden')) {
+                mutatorFn();
+                return;
             }
+            const startH = sheet.offsetHeight;
+            sheet.style.height = `${startH}px`;
+            mutatorFn();
+            sheet.style.height = 'auto';
+            const endH = sheet.offsetHeight;
+            sheet.style.height = `${startH}px`;
+            void sheet.offsetHeight;
+            sheet.style.height = `${endH}px`;
+            clearTimeout(sheet._resizeTimer);
+            sheet._resizeTimer = setTimeout(() => {
+                sheet.style.height = '';
+            }, 300);
+        }
+
+        function setFormTxType(type) {
+            animateTxModalResize(() => {
+                document.getElementById('txType').value = type;
+                const btns = { expense: 'btnTxExp', income: 'btnTxInc', investment: 'btnTxInv', transfer: 'btnTxTrf' };
+                Object.entries(btns).forEach(([k, id]) => {
+                    const el = document.getElementById(id);
+                    el.className = k === type ? 'py-1.5 rounded-lg bg-white dark:bg-slate-700 theme-text shadow-sm transition-all' : 'py-1.5 rounded-lg text-slate-500 transition-all';
+                });
+
+                const isTrf = type === 'transfer';
+                const trfBox = document.getElementById('txTransferBox');
+                const mthBox = document.getElementById('txMethodBox');
+                const catBox = document.getElementById('txCategoryBox');
+                const recBox = document.getElementById('txRecurrenceBox');
+
+                trfBox.classList.toggle('hidden', !isTrf);
+                mthBox.classList.toggle('hidden', isTrf);
+                catBox.classList.toggle('hidden', isTrf);
+                recBox.classList.toggle('hidden', isTrf || type === 'investment');
+
+                [trfBox, mthBox, catBox, recBox].forEach(el => {
+                    if (el && !el.classList.contains('hidden')) {
+                        el.classList.remove('tx-form-section-anim');
+                        void el.offsetWidth;
+                        el.classList.add('tx-form-section-anim');
+                    }
+                });
+
+                if (!isTrf) {
+                    const filteredCats = appState.categories.filter(c => c.type === type || (type === 'expense' && c.type === 'investment'));
+                    const curCat = document.getElementById('txCatSelect').value;
+                    const chosenCat = filteredCats.find(c => c.id === curCat) || filteredCats[0];
+                    document.getElementById('txCatSelect').value = chosenCat ? chosenCat.id : '';
+                    onFormCatChange();
+                } else {
+                    onTransferDirChange();
+                }
+            });
         }
 
         function onTransferDirChange() {
             const dir = document.getElementById('txTransferDir').value;
+            const lbl = document.getElementById('lblFormTransferDir');
+            if (lbl) lbl.textContent = FORM_TRANSFER_LABELS[dir] || FORM_TRANSFER_LABELS.bank_to_invest;
             document.getElementById('txTaxBox').classList.toggle('hidden', dir !== 'invest_to_bank');
             document.getElementById('txInterestBox').classList.toggle('hidden', dir === 'invest_to_bank');
             calcFormTotal();
@@ -4219,22 +4867,29 @@ function doGet(e) {
             document.getElementById('txMethod').value = method;
             const map = { bank: 'btnPayBank', card: 'btnPayCard', wallet: 'btnPayWallet' };
             Object.entries(map).forEach(([k, id]) => {
-                document.getElementById(id).className = k === method ? 'py-2 rounded-lg bg-white dark:bg-slate-700 theme-text shadow-sm' : 'py-2 rounded-lg text-slate-500';
+                document.getElementById(id).className = k === method ? 'py-1.5 rounded-lg bg-white dark:bg-slate-700 theme-text shadow-sm' : 'py-1.5 rounded-lg text-slate-500';
             });
             document.getElementById('txCardBox').classList.toggle('hidden', method !== 'card');
             if (method === 'card') onTxCardChange();
         }
 
         function populateCardSelect() {
-            const sel = document.getElementById('txCardSelect');
-            sel.innerHTML = appState.creditCards.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            const inp = document.getElementById('txCardSelect');
+            const firstCard = appState.creditCards[0];
+            if (inp && (!inp.value || !appState.creditCards.some(c => c.id === inp.value))) {
+                inp.value = firstCard ? firstCard.id : '';
+            }
+            const chosen = appState.creditCards.find(c => c.id === inp?.value) || firstCard;
+            const lbl = document.getElementById('lblFormCard');
+            if (lbl) lbl.textContent = chosen ? chosen.name : 'Sem cartão';
         }
 
         function onTxCardChange() {
-            if (document.getElementById('txMethod').value !== 'card') return;
             const cid = document.getElementById('txCardSelect').value;
             const card = appState.creditCards.find(c => c.id === cid);
-            if (!card) return;
+            const lbl = document.getElementById('lblFormCard');
+            if (lbl) lbl.textContent = card ? card.name : 'Cartão';
+            if (document.getElementById('txMethod').value !== 'card' || !card) return;
             const now = new Date();
             let y = now.getFullYear();
             let m = now.getMonth();
@@ -4255,15 +4910,222 @@ function doGet(e) {
 
         function onRecurrenceChange() {
             const val = document.getElementById('txRecurrenceSelect').value;
+            const lbl = document.getElementById('lblFormRecurrence');
+            if (lbl) lbl.textContent = FORM_RECURRENCE_LABELS[val] || FORM_RECURRENCE_LABELS.none;
             document.getElementById('txInstallmentsFields').classList.toggle('hidden', val !== 'installment');
         }
 
         function onFormCatChange() {
             const cid = document.getElementById('txCatSelect').value;
-            const subSel = document.getElementById('txSubSelect');
             const cat = appState.categories.find(c => c.id === cid);
-            subSel.innerHTML = '<option value="">Geral</option>' +
-                (cat && cat.subcategories ? cat.subcategories.filter(s => !s.hidden).map(s => `<option value="${s.id}">${s.name}</option>`).join('') : '');
+            const lblCat = document.getElementById('lblFormCat');
+            if (lblCat) lblCat.textContent = cat ? cat.name : 'Selecionar';
+
+            const subInp = document.getElementById('txSubSelect');
+            const validSubs = cat && cat.subcategories ? cat.subcategories.filter(s => !s.hidden) : [];
+            if (subInp && subInp.value && !validSubs.some(s => s.id === subInp.value)) {
+                subInp.value = '';
+            }
+            const subObj = validSubs.find(s => s.id === subInp?.value);
+            const lblSub = document.getElementById('lblFormSub');
+            if (lblSub) lblSub.textContent = subObj ? subObj.name : 'Geral';
+        }
+
+        // ==================== SELETOR ESTILIZADO UNIVERSAL (MODAIS DE OPÇÕES) ====================
+        function openOptionPicker(kind) {
+            const titleEl = document.getElementById('optionPickerTitle');
+            const listEl = document.getElementById('optionPickerList');
+            if (!titleEl || !listEl) return;
+
+            let title = 'Selecionar Opção';
+            let currentVal = '';
+            let options = [];
+            let onSelect = () => {};
+
+            if (kind === 'globalMonth') {
+                title = 'Filtrar Mês';
+                currentVal = String(appState.selectedMonth);
+                options = [{ value: 'ALL', label: 'Todos os Meses', icon: 'fa-calendar' }, ...MONTHS.map((m, i) => ({ value: String(i), label: m, icon: 'fa-calendar-day' }))];
+                onSelect = val => {
+                    document.getElementById('globalMonthSelect').value = val;
+                    changePeriod();
+                };
+            } else if (kind === 'globalYear') {
+                title = 'Filtrar Ano';
+                currentVal = String(appState.selectedYear);
+                options = Array.from({ length: 12 }, (_, i) => String(2024 + i)).map(y => ({ value: y, label: y, icon: 'fa-calendar-check' }));
+                onSelect = val => {
+                    document.getElementById('globalYearSelect').value = val;
+                    changePeriod();
+                };
+            } else if (kind === 'txStatus') {
+                title = 'Filtrar por Situação';
+                currentVal = document.getElementById('txFilterStatus').value;
+                options = Object.entries(TX_STATUS_LABELS).map(([value, label]) => ({ value, label }));
+                onSelect = val => {
+                    document.getElementById('txFilterStatus').value = val;
+                    renderTransactionsTab(true);
+                };
+            } else if (kind === 'txMethod') {
+                title = 'Forma de Pagamento';
+                currentVal = document.getElementById('txFilterMethod').value;
+                options = Object.entries(TX_METHOD_LABELS).map(([value, label]) => ({ value, label }));
+                onSelect = val => {
+                    document.getElementById('txFilterMethod').value = val;
+                    renderTransactionsTab(true);
+                };
+            } else if (kind === 'txCategory') {
+                title = 'Filtrar por Categoria';
+                currentVal = document.getElementById('txFilterCategory').value;
+                const fType = document.getElementById('txFilterType').value;
+                const cats = fType === 'ALL' ? appState.categories : appState.categories.filter(c => c.type === fType);
+                options = [{ value: 'ALL', label: 'Todas Categorias' }, ...cats.map(c => ({ value: c.id, label: c.name, color: c.color, icon: c.icon }))];
+                onSelect = val => {
+                    document.getElementById('txFilterCategory').value = val;
+                    onTxFilterCategoryChange(true);
+                };
+            } else if (kind === 'txSubcategory') {
+                title = 'Filtrar por Subcategoria';
+                currentVal = document.getElementById('txFilterSubcategory').value;
+                const cid = document.getElementById('txFilterCategory').value;
+                const cat = appState.categories.find(c => c.id === cid);
+                options = [{ value: 'ALL', label: 'Todas Subcategorias' }, ...(cat && cat.subcategories ? cat.subcategories.map(s => ({ value: s.id, label: s.name })) : [])];
+                onSelect = val => {
+                    document.getElementById('txFilterSubcategory').value = val;
+                    renderTransactionsTab(true);
+                };
+            } else if (kind === 'txRecurrence') {
+                title = 'Filtrar por Recorrência';
+                currentVal = document.getElementById('txFilterRecurrence').value;
+                options = Object.entries(TX_RECURRENCE_LABELS).map(([value, label]) => ({ value, label }));
+                onSelect = val => {
+                    document.getElementById('txFilterRecurrence').value = val;
+                    renderTransactionsTab(true);
+                };
+            } else if (kind === 'formTransferDir') {
+                title = 'Sentido da Transferência';
+                currentVal = document.getElementById('txTransferDir').value;
+                options = Object.entries(FORM_TRANSFER_LABELS).map(([value, label]) => ({ value, label }));
+                onSelect = val => {
+                    document.getElementById('txTransferDir').value = val;
+                    onTransferDirChange();
+                };
+            } else if (kind === 'formCard') {
+                title = 'Selecionar Cartão';
+                currentVal = document.getElementById('txCardSelect').value;
+                options = appState.creditCards.map(c => ({ value: c.id, label: c.name, color: c.color, icon: 'fa-credit-card' }));
+                onSelect = val => {
+                    document.getElementById('txCardSelect').value = val;
+                    onTxCardChange();
+                };
+            } else if (kind === 'formRecurrence') {
+                title = 'Repetição do Lançamento';
+                currentVal = document.getElementById('txRecurrenceSelect').value;
+                options = Object.entries(FORM_RECURRENCE_LABELS).map(([value, label]) => ({ value, label }));
+                onSelect = val => {
+                    document.getElementById('txRecurrenceSelect').value = val;
+                    onRecurrenceChange();
+                };
+            } else if (kind === 'formCat') {
+                title = 'Selecionar Categoria';
+                currentVal = document.getElementById('txCatSelect').value;
+                const type = document.getElementById('txType').value;
+                const filteredCats = appState.categories.filter(c => c.type === type || (type === 'expense' && c.type === 'investment'));
+                options = filteredCats.map(c => ({ value: c.id, label: c.name, color: c.color, icon: c.icon }));
+                onSelect = val => {
+                    document.getElementById('txCatSelect').value = val;
+                    onFormCatChange();
+                };
+            } else if (kind === 'formSub') {
+                title = 'Selecionar Subcategoria';
+                currentVal = document.getElementById('txSubSelect').value;
+                const cid = document.getElementById('txCatSelect').value;
+                const cat = appState.categories.find(c => c.id === cid);
+                const validSubs = cat && cat.subcategories ? cat.subcategories.filter(s => !s.hidden) : [];
+                options = [{ value: '', label: 'Geral' }, ...validSubs.map(s => ({ value: s.id, label: s.name }))];
+                onSelect = val => {
+                    document.getElementById('txSubSelect').value = val;
+                    onFormCatChange();
+                };
+            }
+
+            titleEl.textContent = title;
+            listEl.innerHTML = options.map((opt, idx) => {
+                const active = String(opt.value) === String(currentVal);
+                return `
+                    <button type="button" data-opt-idx="${idx}"
+                        class="w-full px-3.5 py-3 rounded-2xl text-left text-xs sm:text-sm font-bold flex items-center justify-between gap-2.5 transition-all ${active
+                            ? 'theme-btn shadow-sm'
+                            : 'bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100'}">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            ${opt.color ? `<span class="w-6 h-6 rounded-lg flex items-center justify-center text-white text-[11px] shrink-0" style="background:${opt.color}"><i class="fa-solid ${opt.icon || 'fa-tag'}"></i></span>` : (opt.icon ? `<i class="fa-solid ${opt.icon} text-xs opacity-80 shrink-0"></i>` : '')}
+                            <span class="truncate">${opt.label}</span>
+                        </div>
+                        ${active ? '<i class="fa-solid fa-circle-check text-sm shrink-0"></i>' : ''}
+                    </button>
+                `;
+            }).join('');
+
+            listEl.querySelectorAll('button[data-opt-idx]').forEach(btn => {
+                btn.onclick = () => {
+                    const chosen = options[Number(btn.dataset.optIdx)];
+                    closeModal('modalOptionPicker');
+                    if (chosen) onSelect(chosen.value);
+                };
+            });
+
+            openModal('modalOptionPicker');
+        }
+
+        // ==================== MODAL DO GRÁFICO EVOLUÇÃO MENSAL / DIÁRIA ====================
+        function openMonthlyChartModal() {
+            if (appState.selectedMonth !== 'ALL' && appState.monthlyChartMode === 'year') {
+                appState.monthlyChartMonth = Number(appState.selectedMonth);
+            }
+            syncMonthlyChartModalUI();
+            openModal('modalMonthlyChartFilter');
+        }
+
+        function setMonthlyChartMode(mode) {
+            appState.monthlyChartMode = mode;
+            syncMonthlyChartModalUI();
+            renderDashboardCharts();
+        }
+
+        function selectMonthlyChartMonth(mIdx) {
+            appState.monthlyChartMonth = Number(mIdx);
+            appState.monthlyChartMode = 'month';
+            syncMonthlyChartModalUI();
+            renderDashboardCharts();
+        }
+
+        function syncMonthlyChartModalUI() {
+            const isMonth = appState.monthlyChartMode === 'month';
+            const btnYear = document.getElementById('btnChartModeYear');
+            const btnMonth = document.getElementById('btnChartModeMonth');
+            const group = document.getElementById('chartMonthPickerGroup');
+            const helper = document.getElementById('chartModeHelperText');
+            const grid = document.getElementById('chartMonthsGrid');
+
+            if (btnYear) btnYear.className = !isMonth ? 'py-2.5 rounded-lg bg-white dark:bg-slate-700 theme-text shadow-sm' : 'py-2.5 rounded-lg text-slate-500';
+            if (btnMonth) btnMonth.className = isMonth ? 'py-2.5 rounded-lg bg-white dark:bg-slate-700 theme-text shadow-sm' : 'py-2.5 rounded-lg text-slate-500';
+            if (group) group.classList.toggle('hidden', !isMonth);
+            if (helper) {
+                helper.textContent = isMonth
+                    ? 'Exibindo os dias do mês selecionado com os maiores vencimentos de despesas em destaque.'
+                    : 'Exibindo comparativo anual de Receitas vs Despesas de Janeiro a Dezembro.';
+            }
+            if (grid) {
+                const curM = Number(appState.monthlyChartMonth ?? 0);
+                grid.innerHTML = MONTHS.map((m, i) => `
+                    <button type="button" onclick="selectMonthlyChartMonth(${i})"
+                        class="py-2 rounded-xl text-xs font-extrabold transition-all ${curM === i
+                            ? 'theme-btn shadow-sm'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200'}">
+                        ${m.slice(0, 3)}
+                    </button>
+                `).join('');
+            }
         }
 
         function calcFormTotal() {
@@ -4656,27 +5518,41 @@ function doGet(e) {
 
             const listEl = document.getElementById('ovCardRecentList');
             if (recent.length === 0) {
-                listEl.innerHTML = '<div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 text-center text-xs text-slate-400">Nenhuma transação registrada neste cartão.</div>';
+                listEl.innerHTML = '<div class="app-card p-6 text-center text-xs text-slate-400">Nenhuma transação registrada neste cartão.</div>';
             } else {
                 listEl.innerHTML = recent.map(t => {
                     const cat = appState.categories.find(c => c.id === t.categoryId);
-                    const dtFmt = (t.operationDate || t.dueDate) ? (t.operationDate || t.dueDate).split('-').reverse().join('/') : '-';
+                    const sub = cat && cat.subcategories ? cat.subcategories.find(s => s.id === t.subcategoryId) : null;
+                    const dtFmt = (t.dueDate || t.operationDate) ? (t.dueDate || t.operationDate).split('-').reverse().join('/') : '-';
+                    const isPos = t.isRefund || t.type === 'income';
                     return `
-                        <div onclick="closeModal('modalCardOverview'); openTxDetailsModal('${t.id}')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 flex items-center justify-between gap-2 cursor-pointer">
-                            <div class="flex items-center gap-2.5 min-w-0">
-                                <span class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs shrink-0" style="background:${cat ? cat.color : '#8b5cf6'}">
-                                    <i class="fa-solid ${cat ? (cat.icon || 'fa-credit-card') : 'fa-credit-card'}"></i>
-                                </span>
-                                <div class="min-w-0">
-                                    <strong class="block text-xs sm:text-sm font-extrabold truncate">${t.description}</strong>
-                                    <span class="text-[11px] text-slate-400">${dtFmt} • ${cat ? cat.name : 'Geral'}${(Number(t.totalInstallments) || 1) > 1 ? ` (${t.currentInstallment}/${t.totalInstallments})` : ''}</span>
+                        <div onclick="closeModal('modalCardOverview'); openTxDetailsModal('${t.id}')" class="app-card p-3.5 space-y-2 cursor-pointer active:scale-[0.99] ${t.paid ? 'opacity-55' : ''}">
+                            <div class="flex items-start justify-between gap-2.5">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <span class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs shrink-0" style="background:${cat ? cat.color : '#8b5cf6'}">
+                                        <i class="fa-solid ${cat ? (cat.icon || 'fa-credit-card') : 'fa-credit-card'}"></i>
+                                    </span>
+                                    <div class="min-w-0">
+                                        <h4 class="text-xs sm:text-sm font-extrabold truncate ${t.paid ? 'line-through text-slate-400' : ''}">${t.description}</h4>
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">${cat ? cat.name : 'Geral'}${sub ? ' › ' + sub.name : ''}</p>
+                                    </div>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <strong class="block text-sm sm:text-base font-black ${isPos ? 'text-emerald-600' : 'text-rose-600'}">
+                                        ${fmtBRL(t.amount)}
+                                    </strong>
+                                    <span class="text-[11px] text-slate-400 font-medium">${dtFmt}</span>
                                 </div>
                             </div>
-                            <div class="text-right shrink-0">
-                                <strong class="block text-xs sm:text-sm font-black ${t.isRefund ? 'text-emerald-600' : 'text-purple-700 dark:text-purple-300'}">
-                                    ${t.isRefund ? '+ ' : ''}${fmtBRL(t.amount)}
-                                </strong>
-                                <span class="text-[10px] font-bold ${t.paid ? 'text-emerald-600' : 'text-amber-600'}">${t.paid ? 'Quitado' : 'Aberto'}</span>
+                            <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px]">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold">${card.name}</span>
+                                    ${t.isFixed ? '<span class="px-2 py-0.5 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-bold">Fixa</span>' : ''}
+                                    ${(Number(t.totalInstallments) || 1) > 1 ? `<span class="px-2 py-0.5 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold">${t.currentInstallment}/${t.totalInstallments}</span>` : ''}
+                                </div>
+                                <span class="px-2.5 py-0.5 rounded-lg font-bold ${t.paid ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300' : 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300'}">
+                                    ${t.paid ? 'Quitado' : 'Aberto'}
+                                </span>
                             </div>
                         </div>
                     `;
@@ -5912,6 +6788,8 @@ function doGet(e) {
 
             document.getElementById('globalYearSelect').value = String(appState.selectedYear);
             document.getElementById('globalMonthSelect').value = String(appState.selectedMonth);
+            syncPeriodLabels();
+            updateNavSmokePosition('dashboard');
 
             const profiles = getProfiles();
             const savedPid = localStorage.getItem('orcamento_active_profile_id_v1');
