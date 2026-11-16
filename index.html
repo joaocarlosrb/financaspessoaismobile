@@ -1609,32 +1609,41 @@
                 </div>
 
                 <div class="divide-y divide-slate-200/70 dark:divide-slate-800/80 text-xs sm:text-sm">
-                    <div class="py-2.5 flex items-center justify-between gap-2">
+                    <button type="button" onclick="openCalendarCategoryModal('income')" class="w-full py-2.5 px-1.5 rounded-xl hover:bg-slate-200/50 dark:hover:bg-slate-800/70 active:scale-[0.99] transition-all flex items-center justify-between gap-2 text-left">
                         <div class="flex items-center gap-2.5 min-w-0">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
                             <span class="font-bold text-slate-700 dark:text-slate-200">Receitas</span>
                             <span id="calTodayIncomeCnt" class="text-[11px] text-slate-400">(0)</span>
                         </div>
-                        <strong id="calTodayIncome" class="font-black text-emerald-600 dark:text-emerald-400 shrink-0">R$ 0,00</strong>
-                    </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <strong id="calTodayIncome" class="font-black text-emerald-600 dark:text-emerald-400">R$ 0,00</strong>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                        </div>
+                    </button>
 
-                    <div class="py-2.5 flex items-center justify-between gap-2">
+                    <button type="button" onclick="openCalendarCategoryModal('expense')" class="w-full py-2.5 px-1.5 rounded-xl hover:bg-slate-200/50 dark:hover:bg-slate-800/70 active:scale-[0.99] transition-all flex items-center justify-between gap-2 text-left">
                         <div class="flex items-center gap-2.5 min-w-0">
                             <span class="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0"></span>
                             <span class="font-bold text-slate-700 dark:text-slate-200">Despesas</span>
                             <span id="calTodayExpenseCnt" class="text-[11px] text-slate-400">(0)</span>
                         </div>
-                        <strong id="calTodayExpense" class="font-black text-rose-600 dark:text-rose-400 shrink-0">R$ 0,00</strong>
-                    </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <strong id="calTodayExpense" class="font-black text-rose-600 dark:text-rose-400">R$ 0,00</strong>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                        </div>
+                    </button>
 
-                    <div class="py-2.5 flex items-center justify-between gap-2">
+                    <button type="button" onclick="openCalendarCategoryModal('cards')" class="w-full py-2.5 px-1.5 rounded-xl hover:bg-slate-200/50 dark:hover:bg-slate-800/70 active:scale-[0.99] transition-all flex items-center justify-between gap-2 text-left">
                         <div class="flex items-center gap-2.5 min-w-0">
                             <span class="w-2.5 h-2.5 rounded-full bg-purple-500 shrink-0"></span>
                             <span class="font-bold text-slate-700 dark:text-slate-200">Cartões de Crédito</span>
                             <span id="calTodayCardsCnt" class="text-[11px] text-slate-400">(0)</span>
                         </div>
-                        <strong id="calTodayCards" class="font-black text-purple-600 dark:text-purple-400 shrink-0">R$ 0,00</strong>
-                    </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <strong id="calTodayCards" class="font-black text-purple-600 dark:text-purple-400">R$ 0,00</strong>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                        </div>
+                    </button>
 
                     <div class="pt-3 pb-1 flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2 min-w-0">
@@ -2065,11 +2074,25 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">Data Operação</label>
-                        <input type="date" id="txOpDateInput" required class="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                        <input type="hidden" id="txOpDateInput" required>
+                        <button type="button" onclick="openAppDatePicker('txOpDateInput', 'Data da Operação')" class="pretty-select-trigger w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-extrabold flex items-center justify-between gap-2 text-left">
+                            <span class="flex items-center gap-2 min-w-0">
+                                <i class="fa-regular fa-calendar theme-text text-xs shrink-0"></i>
+                                <span id="lblTxOpDate" class="truncate">--/--/----</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down text-[10px] opacity-60 shrink-0"></i>
+                        </button>
                     </div>
                     <div>
                         <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">Vencimento</label>
-                        <input type="date" id="txDueDateInput" required class="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">
+                        <input type="hidden" id="txDueDateInput" required>
+                        <button type="button" onclick="openAppDatePicker('txDueDateInput', 'Data de Vencimento')" class="pretty-select-trigger w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-extrabold flex items-center justify-between gap-2 text-left">
+                            <span class="flex items-center gap-2 min-w-0">
+                                <i class="fa-regular fa-calendar-check theme-text text-xs shrink-0"></i>
+                                <span id="lblTxDueDate" class="truncate">--/--/----</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down text-[10px] opacity-60 shrink-0"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -2114,9 +2137,9 @@
 
                 <!-- Status Quitado + Observações Compactos -->
                 <div class="grid grid-cols-1 gap-1.5">
-                    <label class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+                    <label id="txPaidRowLabel" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
                         <span class="text-xs font-bold">Marcar como Quitado / Pago</span>
-                        <input type="checkbox" id="txPaidCheckbox" class="w-4 h-4 rounded accent-emerald-600">
+                        <input type="checkbox" id="txPaidCheckbox" class="w-4 h-4 rounded accent-emerald-600 shrink-0">
                     </label>
                     <input type="text" id="txNotesInput" placeholder="Observações (opcional)..." class="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
                 </div>
@@ -2142,6 +2165,54 @@
                 </button>
             </div>
             <div id="optionPickerList" class="p-3 space-y-1.5 overflow-y-auto flex-1"></div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: SELETOR DE DATA PADRÃO DO APLICATIVO ==================== -->
+    <div id="modalAppDatePicker" onclick="if(event.target===this) closeModal('modalAppDatePicker')" class="modal-backdrop hidden z-[125]">
+        <div class="modal-sheet max-w-sm">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div class="min-w-0">
+                    <h3 id="appDatePickerTitle" class="text-base font-extrabold truncate">Selecionar Data</h3>
+                    <p id="appDatePickerSubtitle" class="text-xs text-white/85 truncate">Toque no dia desejado</p>
+                </div>
+                <button type="button" onclick="closeModal('modalAppDatePicker')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <button type="button" onclick="shiftAppDatePickerMonth(-1)" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center active:scale-95 transition-transform">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </button>
+                    <strong id="appDatePickerMonthTitle" class="text-sm sm:text-base font-extrabold">Novembro / 2026</strong>
+                    <button type="button" onclick="shiftAppDatePickerMonth(1)" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center active:scale-95 transition-transform">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-7 text-center text-[11px] font-bold text-slate-400">
+                    <span class="text-rose-500">Dom</span>
+                    <span>Seg</span>
+                    <span>Ter</span>
+                    <span>Qua</span>
+                    <span>Qui</span>
+                    <span>Sex</span>
+                    <span>Sáb</span>
+                </div>
+
+                <div id="appDatePickerDaysGrid" class="grid grid-cols-7 gap-1.5"></div>
+
+                <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                    <button type="button" onclick="selectAppDatePickerToday()" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-extrabold theme-text">
+                        Hoje
+                    </button>
+                    <button type="button" onclick="closeModal('modalAppDatePicker')" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold">
+                        Fechar
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -3810,7 +3881,6 @@ function doGet(e) {
             shouldAnimateInitialKpis = true;
             refreshAll();
             showHeroWelcomeBanner();
-            toast(`Bem-vindo(a), ${prof.name}!`);
 
             if (!prof.username || !prof.username.trim()) {
                 setTimeout(() => {
@@ -5450,7 +5520,11 @@ function doGet(e) {
             }
             const dayModal = document.getElementById('modalDayDetails');
             if (dayModal && !dayModal.classList.contains('hidden') && activeDayModalInfo) {
-                openDayModal(activeDayModalInfo.day, activeDayModalInfo.dIso);
+                if (activeDayModalInfo.mode === 'today_kind') {
+                    openCalendarCategoryModal(activeDayModalInfo.kind);
+                } else {
+                    openDayModal(activeDayModalInfo.day, activeDayModalInfo.dIso);
+                }
             }
             const ovModal = document.getElementById('modalCardOverview');
             if (ovModal && !ovModal.classList.contains('hidden') && activeOverviewCardId) {
@@ -5465,6 +5539,7 @@ function doGet(e) {
             tx.paid = !!paidState;
             saveState({ autoBackup: true });
             refreshAll();
+            syncOpenStackedModals();
             syncOpenStackedModals();
             openTxDetailsModal(activeDetailTxId);
             toast(tx.paid ? 'Conta quitada!' : 'Conta marcada como em aberto!');
@@ -5491,6 +5566,7 @@ function doGet(e) {
                 appState.transactions = appState.transactions.filter(t => t.id !== id);
                 saveState({ autoBackup: true });
                 refreshAll();
+                syncOpenStackedModals();
                 toast('Lançamento excluído.');
             }
         }
@@ -5636,8 +5712,8 @@ function doGet(e) {
             const maxDay = new Date(y, m + 1, 0).getDate();
             const defaultPeriodIso = `${y}-${String(m + 1).padStart(2, '0')}-${String(Math.min(now.getDate(), maxDay)).padStart(2, '0')}`;
 
-            document.getElementById('txOpDateInput').value = customDate ? todayIso : defaultPeriodIso;
-            document.getElementById('txDueDateInput').value = customDate || defaultPeriodIso;
+            setTxDateFieldValue('txOpDateInput', customDate ? todayIso : defaultPeriodIso);
+            setTxDateFieldValue('txDueDateInput', customDate || defaultPeriodIso);
 
             populateCardSelect();
             setFormTxType(type);
@@ -5661,8 +5737,8 @@ function doGet(e) {
             document.getElementById('txInterestInput').value = tx.interestPenalty || '';
             document.getElementById('txTaxInput').value = tx.taxes || '';
             document.getElementById('txNotesInput').value = tx.notes || '';
-            document.getElementById('txOpDateInput').value = tx.operationDate || tx.dueDate;
-            document.getElementById('txDueDateInput').value = tx.dueDate;
+            setTxDateFieldValue('txOpDateInput', tx.operationDate || tx.dueDate);
+            setTxDateFieldValue('txDueDateInput', tx.dueDate);
             document.getElementById('txPaidCheckbox').checked = !!tx.paid;
             document.getElementById('txIsRefund').checked = !!tx.isRefund;
 
@@ -5746,6 +5822,7 @@ function doGet(e) {
                     document.getElementById('txCatSelect').value = chosenCat ? chosenCat.id : '';
                     onFormCatChange();
                 } else {
+                    updatePaidCheckboxStateForMethod('bank');
                     onTransferDirChange();
                 }
             });
@@ -5758,6 +5835,128 @@ function doGet(e) {
             document.getElementById('txTaxBox').classList.toggle('hidden', dir !== 'invest_to_bank');
             document.getElementById('txInterestBox').classList.toggle('hidden', dir === 'invest_to_bank');
             calcFormTotal();
+        }
+
+        let appDatePickerState = {
+            targetInputId: 'txOpDateInput',
+            year: new Date().getFullYear(),
+            month: new Date().getMonth(),
+            selectedIso: ''
+        };
+
+        function formatIsoDateLabel(isoStr) {
+            if (!isoStr || !isoStr.includes('-')) return '--/--/----';
+            const [y, m, d] = isoStr.split('-');
+            return `${d.padStart(2, '0')}/${m.padStart(2, '0')}/${y}`;
+        }
+
+        function setTxDateFieldValue(inputId, isoStr) {
+            const inp = document.getElementById(inputId);
+            if (inp) inp.value = isoStr || '';
+            const lblId = inputId === 'txOpDateInput' ? 'lblTxOpDate' : (inputId === 'txDueDateInput' ? 'lblTxDueDate' : '');
+            if (lblId) {
+                const lbl = document.getElementById(lblId);
+                if (lbl) lbl.textContent = formatIsoDateLabel(isoStr);
+            }
+        }
+
+        function openAppDatePicker(targetInputId, titleText) {
+            const inp = document.getElementById(targetInputId);
+            const curIso = (inp && inp.value && inp.value.includes('-')) ? inp.value : '';
+            const now = new Date();
+            let y = now.getFullYear();
+            let m = now.getMonth();
+            if (curIso) {
+                const parts = curIso.split('-').map(Number);
+                if (parts[0] && parts[1]) {
+                    y = parts[0];
+                    m = parts[1] - 1;
+                }
+            }
+            appDatePickerState = {
+                targetInputId,
+                year: y,
+                month: m,
+                selectedIso: curIso
+            };
+            const titleEl = document.getElementById('appDatePickerTitle');
+            const subEl = document.getElementById('appDatePickerSubtitle');
+            if (titleEl) titleEl.textContent = titleText || 'Selecionar Data';
+            if (subEl) subEl.textContent = curIso ? `Selecionado: ${formatIsoDateLabel(curIso)}` : 'Toque no dia desejado';
+            renderAppDatePickerGrid();
+            openModal('modalAppDatePicker');
+        }
+
+        function shiftAppDatePickerMonth(dir) {
+            appDatePickerState.month += dir;
+            if (appDatePickerState.month > 11) {
+                appDatePickerState.month = 0;
+                appDatePickerState.year++;
+            } else if (appDatePickerState.month < 0) {
+                appDatePickerState.month = 11;
+                appDatePickerState.year--;
+            }
+            renderAppDatePickerGrid();
+        }
+
+        function selectAppDatePickerDay(isoStr) {
+            setTxDateFieldValue(appDatePickerState.targetInputId, isoStr);
+            closeModal('modalAppDatePicker');
+        }
+
+        function selectAppDatePickerToday() {
+            const now = new Date();
+            const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            selectAppDatePickerDay(todayIso);
+        }
+
+        function renderAppDatePickerGrid() {
+            const { year, month, selectedIso } = appDatePickerState;
+            const titleEl = document.getElementById('appDatePickerMonthTitle');
+            if (titleEl) titleEl.textContent = `${MONTHS[month]} / ${year}`;
+
+            const now = new Date();
+            const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDow = new Date(year, month, 1).getDay();
+
+            let cells = '';
+            for (let i = 0; i < firstDow; i++) {
+                cells += '<div class="aspect-square rounded-xl bg-slate-50/40 dark:bg-slate-900/30"></div>';
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dIso = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const isSelected = dIso === selectedIso;
+                const isToday = dIso === todayIso;
+                let btnCls = 'aspect-square rounded-xl flex items-center justify-center text-xs sm:text-sm font-extrabold transition-all active:scale-95 ';
+                if (isSelected) {
+                    btnCls += 'theme-btn shadow-md scale-[1.03]';
+                } else if (isToday) {
+                    btnCls += 'bg-slate-100 dark:bg-slate-800 border-2 border-emerald-500 theme-text';
+                } else {
+                    btnCls += 'bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200/70 dark:border-slate-700/70';
+                }
+                cells += `<button type="button" onclick="selectAppDatePickerDay('${dIso}')" class="${btnCls}">${d}</button>`;
+            }
+
+            const gridEl = document.getElementById('appDatePickerDaysGrid');
+            if (gridEl) gridEl.innerHTML = cells;
+        }
+
+        function updatePaidCheckboxStateForMethod(method) {
+            const paidCb = document.getElementById('txPaidCheckbox');
+            const paidLbl = document.getElementById('txPaidRowLabel');
+            if (!paidCb) return;
+
+            if (method === 'card') {
+                paidCb.checked = false;
+                paidCb.disabled = true;
+                if (paidLbl) paidLbl.classList.add('hidden');
+            } else {
+                paidCb.disabled = false;
+                if (paidLbl) paidLbl.classList.remove('hidden');
+            }
         }
 
         function setFormPayMethod(method) {
@@ -5777,6 +5976,7 @@ function doGet(e) {
                     cardBox.classList.add('tx-form-section-anim');
                     onTxCardChange();
                 }
+                updatePaidCheckboxStateForMethod(method);
             });
         }
 
@@ -5806,7 +6006,7 @@ function doGet(e) {
             }
             const maxD = new Date(y, m + 1, 0).getDate();
             const safeD = Math.min(Number(card.dueDay) || 10, maxD);
-            document.getElementById('txDueDateInput').value = `${y}-${String(m + 1).padStart(2, '0')}-${String(safeD).padStart(2, '0')}`;
+            setTxDateFieldValue('txDueDateInput', `${y}-${String(m + 1).padStart(2, '0')}-${String(safeD).padStart(2, '0')}`);
         }
 
         function onRefundToggle() {
@@ -6262,8 +6462,8 @@ function doGet(e) {
                             onTxCardChange();
                         }
                     }
-                    if (prevOpDate) document.getElementById('txOpDateInput').value = prevOpDate;
-                    if (prevDueDate) document.getElementById('txDueDateInput').value = prevDueDate;
+                    if (prevOpDate) setTxDateFieldValue('txOpDateInput', prevOpDate);
+                    if (prevDueDate) setTxDateFieldValue('txDueDateInput', prevDueDate);
                     setTimeout(() => document.getElementById('txDescInput')?.focus(), 80);
                 }, 220);
             } else {
@@ -6309,6 +6509,7 @@ function doGet(e) {
             pendingSeriesAction = null;
             saveState({ autoBackup: true });
             refreshAll();
+            syncOpenStackedModals();
             closeModal('modalSeriesScope');
         }
 
@@ -7371,17 +7572,15 @@ function doGet(e) {
 
         let activeDayModalInfo = null;
 
-        function openDayModal(day, dIso) {
-            activeDayModalInfo = { day, dIso };
-            document.getElementById('dayModalTitle').textContent = `Dia ${dIso.split('-').reverse().join('/')}`;
-            const items = appState.transactions.filter(t => t.dueDate === dIso);
+        function renderDayModalItemsList(items, emptyMsg) {
             document.getElementById('dayModalSub').textContent = `${items.length} lançamento(s)`;
-
             document.getElementById('dayModalList').innerHTML = items.length === 0
-                ? '<p class="text-center text-sm text-slate-400 py-6">Nenhum vencimento neste dia.</p>'
+                ? `<p class="text-center text-sm text-slate-400 py-6">${emptyMsg}</p>`
                 : items.map(t => {
                     const cat = appState.categories.find(c => c.id === t.categoryId);
                     const isPos = t.type === 'income' || isWithdrawal(t) || t.isRefund;
+                    const cardObj = t.paymentMethod === 'card' ? appState.creditCards.find(c => c.id === t.cardId) : null;
+                    const extraInfo = cardObj ? ` • ${cardObj.name}` : '';
                     return `
                         <div onclick="openTxDetailsModal('${t.id}')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-between gap-2 text-sm cursor-pointer active:scale-[0.99] ${t.paid ? 'opacity-60' : ''}">
                             <div class="flex items-center gap-2.5 min-w-0">
@@ -7390,17 +7589,64 @@ function doGet(e) {
                                 </span>
                                 <div class="min-w-0">
                                     <strong class="block truncate ${t.paid ? 'line-through text-slate-400' : ''}">${t.description}</strong>
-                                    <span class="text-[11px] text-slate-400">${cat ? cat.name : 'Geral'} • ${t.paid ? 'Quitado' : 'Em aberto'}</span>
+                                    <span class="text-[11px] text-slate-400">${cat ? cat.name : 'Geral'}${extraInfo} • ${t.paid ? 'Quitado' : 'Em aberto'}</span>
                                 </div>
                             </div>
                             <strong class="${isPos ? 'text-emerald-600' : 'text-rose-600'} shrink-0">${isPos ? '+ ' : '- '}${fmtBRL(t.amount)}</strong>
                         </div>
                     `;
                 }).join('');
+        }
+
+        function openDayModal(day, dIso) {
+            activeDayModalInfo = { mode: 'day', day, dIso };
+            document.getElementById('dayModalTitle').textContent = `Dia ${dIso.split('-').reverse().join('/')}`;
+            const items = appState.transactions.filter(t => t.dueDate === dIso);
+            renderDayModalItemsList(items, 'Nenhum vencimento neste dia.');
 
             document.getElementById('btnAddTxOnDay').onclick = () => {
                 closeModal('modalDayDetails');
                 openNewTxModal('expense', dIso);
+            };
+            openModal('modalDayDetails');
+        }
+
+        function openCalendarCategoryModal(kind) {
+            const now = new Date();
+            const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            activeDayModalInfo = { mode: 'today_kind', kind, dIso: todayIso };
+
+            const todayTxs = appState.transactions.filter(t => t.dueDate === todayIso || t.operationDate === todayIso);
+            let filtered = [];
+            let title = '';
+            let emptyMsg = '';
+            let defaultNewType = 'expense';
+            let defaultNewMethod = 'bank';
+
+            if (kind === 'income') {
+                title = `Receitas de Hoje (${todayIso.split('-').reverse().join('/')})`;
+                emptyMsg = 'Nenhuma receita lançada ou vencendo hoje.';
+                defaultNewType = 'income';
+                filtered = todayTxs.filter(t => t.type === 'income' || isWithdrawal(t));
+            } else if (kind === 'expense') {
+                title = `Despesas de Hoje (${todayIso.split('-').reverse().join('/')})`;
+                emptyMsg = 'Nenhuma despesa lançada ou vencendo hoje.';
+                defaultNewType = 'expense';
+                filtered = todayTxs.filter(t => t.type === 'expense');
+            } else if (kind === 'cards') {
+                title = `Cartões de Crédito Hoje (${todayIso.split('-').reverse().join('/')})`;
+                emptyMsg = 'Nenhuma compra ou fatura de cartão hoje.';
+                defaultNewType = 'expense';
+                defaultNewMethod = 'card';
+                filtered = todayTxs.filter(t => t.type === 'expense' && t.paymentMethod === 'card');
+            }
+
+            document.getElementById('dayModalTitle').textContent = title;
+            renderDayModalItemsList(filtered, emptyMsg);
+
+            document.getElementById('btnAddTxOnDay').onclick = () => {
+                closeModal('modalDayDetails');
+                openNewTxModal(defaultNewType, todayIso, defaultNewMethod);
             };
             openModal('modalDayDetails');
         }
