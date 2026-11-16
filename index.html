@@ -2121,9 +2121,12 @@
                     <input type="text" id="txNotesInput" placeholder="Observações (opcional)..." class="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
                 </div>
 
-                <div class="pt-1 flex gap-2">
-                    <button type="button" onclick="closeModal('modalTransaction')" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 font-bold text-xs sm:text-sm">Cancelar</button>
-                    <button type="submit" class="flex-1 py-2.5 rounded-xl theme-btn font-bold text-xs sm:text-sm">Salvar Lançamento</button>
+                <div class="pt-1 flex flex-wrap gap-2">
+                    <button type="button" onclick="closeModal('modalTransaction')" class="py-2.5 px-3.5 rounded-xl bg-slate-200 dark:bg-slate-800 font-bold text-xs sm:text-sm">Cancelar</button>
+                    <button type="submit" onclick="saveAndContinueMode = false" class="flex-1 py-2.5 px-3 rounded-xl theme-btn font-bold text-xs sm:text-sm">Salvar Registro</button>
+                    <button type="button" id="btnSaveAndContinueTx" onclick="submitTransactionAndContinue()" class="flex-1 py-2.5 px-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-plus text-[11px]"></i><span>Salvar e Continuar</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -5596,9 +5599,24 @@ function doGet(e) {
             }
         }
 
+        let saveAndContinueMode = false;
+
+        function submitTransactionAndContinue() {
+            const form = document.getElementById('txForm');
+            if (!form) return;
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            saveAndContinueMode = true;
+            form.requestSubmit();
+        }
+
         function openNewTxModal(type = 'expense', customDate = null, payMethod = 'bank') {
             txUserManuallyPickedCat = false;
             txUserManuallyPickedSub = false;
+            const btnCont = document.getElementById('btnSaveAndContinueTx');
+            if (btnCont) btnCont.classList.remove('hidden');
             document.getElementById('txId').value = '';
             document.getElementById('txModalTitle').textContent = 'Nova Transação';
             document.getElementById('txDescInput').value = '';
@@ -5633,6 +5651,8 @@ function doGet(e) {
         function openEditTxModal(id) {
             const tx = appState.transactions.find(t => t.id === id);
             if (!tx) return;
+            const btnCont = document.getElementById('btnSaveAndContinueTx');
+            if (btnCont) btnCont.classList.add('hidden');
 
             document.getElementById('txId').value = tx.id;
             document.getElementById('txModalTitle').textContent = 'Editar Lançamento';
@@ -6222,8 +6242,35 @@ function doGet(e) {
 
             saveState({ autoBackup: true });
             refreshAll();
-            closeModal('modalTransaction');
-            toast('Lançamento salvo!');
+
+            if (saveAndContinueMode && !id) {
+                saveAndContinueMode = false;
+                const prevType = type || 'expense';
+                const prevMethod = method || 'bank';
+                const prevCardId = payload.cardId || '';
+                const prevOpDate = opStr || '';
+                const prevDueDate = dueStr || '';
+
+                closeModal('modalTransaction');
+                toast('Lançamento salvo! Pronto para o próximo.');
+                setTimeout(() => {
+                    openNewTxModal(prevType, prevDueDate || null, prevMethod);
+                    if (prevMethod === 'card' && prevCardId) {
+                        const cardSel = document.getElementById('txCardSelect');
+                        if (cardSel) {
+                            cardSel.value = prevCardId;
+                            onTxCardChange();
+                        }
+                    }
+                    if (prevOpDate) document.getElementById('txOpDateInput').value = prevOpDate;
+                    if (prevDueDate) document.getElementById('txDueDateInput').value = prevDueDate;
+                    setTimeout(() => document.getElementById('txDescInput')?.focus(), 80);
+                }, 220);
+            } else {
+                saveAndContinueMode = false;
+                closeModal('modalTransaction');
+                toast('Lançamento salvo!');
+            }
         }
 
         function confirmSeriesScope(scope) {
