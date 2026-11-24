@@ -1750,12 +1750,12 @@
             <!-- Efeito Fumaça Deslizante sob a Aba Ativa -->
             <div id="navSmokePill" aria-hidden="true"></div>
 
-            <button type="button" id="bnav-dashboard" onclick="switchTab('dashboard')" class="relative z-10 flex flex-col items-center py-1 theme-text transition-colors duration-200">
+            <button type="button" id="bnav-dashboard" onclick="switchTab('dashboard')" class="relative z-10 flex flex-col items-center py-1 theme-text dark:text-white transition-colors duration-200">
                 <i class="fa-solid fa-chart-pie text-lg"></i>
                 <span class="text-[11px] font-bold mt-0.5">Início</span>
             </button>
 
-            <button type="button" id="bnav-transactions" onclick="switchTab('transactions')" class="relative z-10 flex flex-col items-center py-1 text-slate-400 transition-colors duration-200">
+            <button type="button" id="bnav-transactions" onclick="switchTab('transactions')" class="relative z-10 flex flex-col items-center py-1 text-slate-500 dark:text-slate-200 transition-colors duration-200">
                 <i class="fa-solid fa-list-check text-lg"></i>
                 <span class="text-[11px] font-bold mt-0.5">Lançamentos</span>
             </button>
@@ -1769,12 +1769,12 @@
                 </button>
             </div>
 
-            <button type="button" id="bnav-cards" onclick="switchTab('cards')" class="relative z-10 flex flex-col items-center py-1 text-slate-400 transition-colors duration-200">
+            <button type="button" id="bnav-cards" onclick="switchTab('cards')" class="relative z-10 flex flex-col items-center py-1 text-slate-500 dark:text-slate-200 transition-colors duration-200">
                 <i class="fa-solid fa-credit-card text-lg"></i>
                 <span class="text-[11px] font-bold mt-0.5">Cartões</span>
             </button>
 
-            <button type="button" id="bnav-more" onclick="openMoreMenuModal()" class="relative z-10 flex flex-col items-center py-1 text-slate-400 transition-colors duration-200">
+            <button type="button" id="bnav-more" onclick="openMoreMenuModal()" class="relative z-10 flex flex-col items-center py-1 text-slate-500 dark:text-slate-200 transition-colors duration-200">
                 <i class="fa-solid fa-bars text-lg"></i>
                 <span class="text-[11px] font-bold mt-0.5">Menu</span>
             </button>
@@ -1890,9 +1890,14 @@
 
                 <!-- Recorrência e Observações -->
                 <div id="detTxExtraBox" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-1.5 text-xs">
-                    <div class="flex justify-between">
+                    <div class="flex items-center justify-between gap-2">
                         <span class="text-slate-400 font-bold">Modalidade:</span>
-                        <strong id="detTxModality" class="font-extrabold">Única</strong>
+                        <div class="flex items-center gap-2">
+                            <strong id="detTxModality" class="font-extrabold">Única</strong>
+                            <button type="button" id="btnViewInstallments" onclick="openTxInstallmentsModal()" class="hidden px-2.5 py-1 rounded-lg theme-btn text-[11px] font-extrabold shadow-sm active:scale-95 transition-transform">
+                                <i class="fa-solid fa-layer-group mr-1"></i>Ver Parcelas
+                            </button>
+                        </div>
                     </div>
                     <div id="detTxNotesRow" class="hidden pt-1.5 border-t border-slate-200/70 dark:border-slate-700">
                         <span class="text-slate-400 font-bold block mb-0.5">Observações:</span>
@@ -1909,6 +1914,42 @@
                     <i class="fa-solid fa-trash-can"></i>
                 </button>
                 <button type="button" onclick="closeModal('modalTxDetails')" class="px-4 py-2.5 rounded-xl theme-btn text-xs sm:text-sm font-bold">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: PARCELAS DO LANÇAMENTO ==================== -->
+    <div id="modalTxInstallments" onclick="if(event.target===this) closeModal('modalTxInstallments')" class="modal-backdrop hidden z-[85]">
+        <div class="modal-sheet">
+            <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
+                <div class="min-w-0 pr-2">
+                    <h3 id="instModalTitle" class="text-base font-extrabold truncate">Parcelas do Lançamento</h3>
+                    <p id="instModalSubtitle" class="text-xs text-white/85 truncate">Cronograma completo</p>
+                </div>
+                <button type="button" onclick="closeModal('modalTxInstallments')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-3.5 bg-slate-50 dark:bg-slate-800/70 grid grid-cols-3 gap-2 text-center border-b border-slate-200 dark:border-slate-800 shrink-0">
+                <div>
+                    <span class="text-[11px] font-bold text-slate-400 block">Total Compra</span>
+                    <strong id="instModalTotal" class="text-xs sm:text-sm font-black">R$ 0,00</strong>
+                </div>
+                <div>
+                    <span class="text-[11px] font-bold text-emerald-600 block">Quitado</span>
+                    <strong id="instModalPaid" class="text-xs sm:text-sm font-black text-emerald-600">R$ 0,00</strong>
+                </div>
+                <div>
+                    <span class="text-[11px] font-bold text-amber-600 block">Restante</span>
+                    <strong id="instModalRemaining" class="text-xs sm:text-sm font-black text-amber-600">R$ 0,00</strong>
+                </div>
+            </div>
+
+            <div id="instModalList" class="p-4 space-y-2.5 overflow-y-auto flex-1"></div>
+
+            <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 shrink-0">
+                <button type="button" onclick="closeModal('modalTxInstallments')" class="w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs sm:text-sm font-bold">Fechar</button>
             </div>
         </div>
     </div>
@@ -2335,43 +2376,31 @@
         </div>
     </div>
 
-    <!-- ==================== MODAL: HISTÓRICO DE FATURAS DO CARTÃO ==================== -->
+    <!-- ==================== MODAL: HISTÓRICO DE FATURAS DO CARTÃO (CARROSSEL) ==================== -->
     <div id="modalCardHistory" onclick="if(event.target===this) closeModal('modalCardHistory')" class="modal-backdrop hidden">
         <div class="modal-sheet">
             <div class="theme-gradient p-4 text-white flex items-center justify-between shrink-0">
                 <div>
                     <h3 id="histCardTitle" class="text-base font-extrabold">Histórico de Faturas</h3>
-                    <p id="histCardSub" class="text-xs text-white/80">Consolidado mensal por ano</p>
+                    <p id="histCardSub" class="text-xs text-white/80">Deslize para o lado para ver meses e anos futuros</p>
                 </div>
                 <button type="button" onclick="closeModal('modalCardHistory')" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
-            <div class="p-3.5 bg-slate-50 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 shrink-0">
-                <span class="text-xs font-extrabold text-slate-600 dark:text-slate-300">Ano de Referência:</span>
-                <select id="histCardYearSelect" onchange="renderCardHistoryBody()" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-extrabold">
-                    <option value="2024">2024</option>
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
-                    <option value="2027">2027</option>
-                    <option value="2028">2028</option>
-                    <option value="2029">2029</option>
-                    <option value="2030">2030</option>
-                    <option value="2031">2031</option>
-                    <option value="2032">2032</option>
-                    <option value="2033">2033</option>
-                    <option value="2034">2034</option>
-                    <option value="2035">2035</option>
-                </select>
-            </div>
-
             <div class="px-4 py-2.5 bg-purple-50 dark:bg-purple-950/30 flex items-center justify-between text-xs border-b border-purple-100 dark:border-purple-900/50 shrink-0">
-                <span class="font-bold text-purple-800 dark:text-purple-300">Total no Ano:</span>
+                <span class="font-bold text-purple-800 dark:text-purple-300">Consolidado (Atual + Futuro):</span>
                 <strong id="histCardYearTotal" class="text-sm font-black text-purple-700 dark:text-purple-300">R$ 0,00</strong>
             </div>
 
-            <div id="histCardMonthsList" class="p-4 space-y-2 overflow-y-auto flex-1"></div>
+            <div class="p-4 space-y-3 shrink-0">
+                <div class="flex items-center justify-between text-[11px] font-bold text-slate-400">
+                    <span><i class="fa-solid fa-arrows-left-right mr-1 theme-text"></i>Arraste os cards horizontalmente</span>
+                    <span id="histCardCarouselRange">--</span>
+                </div>
+                <div id="histCardMonthsList" class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 no-scrollbar"></div>
+            </div>
 
             <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 shrink-0">
                 <button type="button" onclick="closeModal('modalCardHistory')" class="w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-sm font-bold">Fechar</button>
@@ -4180,6 +4209,84 @@ function doGet(e) {
             }
         }
 
+        // Garante que toda série fixa (conta, carteira ou cartão) se estenda continuamente através dos anos futuros
+        function ensureFixedSeriesProjection(horizonYears = 5) {
+            if (!Array.isArray(appState.transactions) || appState.transactions.length === 0) return false;
+            const currentYear = new Date().getFullYear();
+            const selectedY = Number(appState.selectedYear) || currentYear;
+            const targetMaxYear = Math.max(currentYear, selectedY) + horizonYears;
+
+            // Agrupa transações fixas por fixedSeriesId (ou cria chave para fixas antigas sem fixedSeriesId)
+            const seriesMap = new Map();
+            let mutated = false;
+
+            appState.transactions.forEach(t => {
+                if (!t.isFixed) return;
+                if (!t.fixedSeriesId) {
+                    const baseDesc = String(t.description || '').trim().toLowerCase();
+                    t.fixedSeriesId = `auto_series_${t.type}_${t.paymentMethod || 'bank'}_${t.cardId || 'none'}_${baseDesc}`;
+                    mutated = true;
+                }
+                if (!seriesMap.has(t.fixedSeriesId)) {
+                    seriesMap.set(t.fixedSeriesId, []);
+                }
+                seriesMap.get(t.fixedSeriesId).push(t);
+            });
+
+            if (seriesMap.size === 0) return mutated;
+
+            const newItems = [];
+            seriesMap.forEach((items, sid) => {
+                // Ordena cronologicamente para pegar o registro mais recente da série como modelo
+                items.sort((a, b) => {
+                    const ya = Number(a.year) || 0, yb = Number(b.year) || 0;
+                    if (ya !== yb) return ya - yb;
+                    return (Number(a.month) || 0) - (Number(b.month) || 0);
+                });
+
+                const existingYM = new Set(items.map(it => `${Number(it.year)}-${Number(it.month)}`));
+                const template = items[items.length - 1];
+                const startY = Number(template.year) || currentYear;
+                const startM = Number(template.month) || 0;
+                const templateDay = template.dueDate && template.dueDate.includes('-')
+                    ? (Number(template.dueDate.split('-')[2]) || 10)
+                    : 10;
+
+                let cy = startY;
+                let cm = startM + 1;
+                if (cm > 11) { cm = 0; cy++; }
+
+                while (cy <= targetMaxYear) {
+                    const key = `${cy}-${cm}`;
+                    if (!existingYM.has(key)) {
+                        const maxD = new Date(cy, cm + 1, 0).getDate();
+                        const safeD = Math.min(templateDay, maxD);
+                        const dIso = `${cy}-${String(cm + 1).padStart(2, '0')}-${String(safeD).padStart(2, '0')}`;
+                        newItems.push({
+                            ...template,
+                            id: `tx_fix_${sid}_${cy}_${cm}_${Math.random().toString(36).slice(2, 6)}`,
+                            year: cy,
+                            month: cm,
+                            operationDate: dIso,
+                            dueDate: dIso,
+                            paid: false,
+                            isFixed: true,
+                            fixedSeriesId: sid
+                        });
+                        existingYM.add(key);
+                        mutated = true;
+                    }
+                    cm++;
+                    if (cm > 11) { cm = 0; cy++; }
+                }
+            });
+
+            if (newItems.length > 0) {
+                appState.transactions.push(...newItems);
+            }
+            return mutated;
+        }
+
         function loadProfileData(pid) {
             appState.activeProfileId = pid || 'default';
             localStorage.setItem('orcamento_active_profile_id_v1', appState.activeProfileId);
@@ -4216,6 +4323,9 @@ function doGet(e) {
                 appState.transactions = [];
             }
 
+            if (ensureFixedSeriesProjection()) {
+                saveState();
+            }
             updateSyncLabel();
             refreshAll();
         }
@@ -4313,8 +4423,8 @@ function doGet(e) {
                 if (!btn) return;
                 const isActive = (b === tab) || (b === 'more' && !['dashboard', 'transactions', 'cards'].includes(tab));
                 btn.className = isActive
-                    ? 'relative z-10 flex flex-col items-center py-1 theme-text transition-colors duration-200'
-                    : 'relative z-10 flex flex-col items-center py-1 text-slate-400 transition-colors duration-200';
+                    ? 'relative z-10 flex flex-col items-center py-1 theme-text dark:text-white transition-colors duration-200'
+                    : 'relative z-10 flex flex-col items-center py-1 text-slate-500 dark:text-slate-200 transition-colors duration-200';
             });
 
             updateNavSmokePosition(tab);
@@ -4359,6 +4469,9 @@ function doGet(e) {
             if (appState.selectedMonth !== 'ALL') {
                 appState.calMonth = Number(appState.selectedMonth);
                 appState.monthlyChartMonth = Number(appState.selectedMonth);
+            }
+            if (ensureFixedSeriesProjection()) {
+                saveState();
             }
             syncPeriodLabels();
             refreshAll();
@@ -5119,7 +5232,7 @@ function doGet(e) {
         const TX_METHOD_LABELS = { ALL: 'Todas Formas', bank: 'Conta Corrente', card: 'Cartão de Crédito', wallet: 'Carteira' };
         const TX_RECURRENCE_LABELS = { ALL: 'Todas Recorrências', fixed: 'Fixas', installment: 'Parceladas', variable: 'Variáveis' };
         const FORM_TRANSFER_LABELS = { bank_to_invest: 'Conta Corrente → Investimentos (Aporte)', invest_to_bank: 'Investimentos → Conta Corrente (Resgate)' };
-        const FORM_RECURRENCE_LABELS = { none: 'Repetição: Única', fixed: 'Repetição: Fixa Mensal (até Dez)', installment: 'Repetição: Parcelada' };
+        const FORM_RECURRENCE_LABELS = { none: 'Repetição: Única', fixed: 'Repetição: Fixa Mensal (Contínua)', installment: 'Repetição: Parcelada' };
 
         function syncTransactionFilterUI() {
             const fType = document.getElementById('txFilterType')?.value || 'ALL';
@@ -5279,7 +5392,9 @@ function doGet(e) {
             if (cInvEl) cInvEl.textContent = `${cntInvCard} ${cntInvCard === 1 ? 'item' : 'itens'}`;
             if (cTrfEl) cTrfEl.textContent = `${cntTrfCard} ${cntTrfCard === 1 ? 'item' : 'itens'}`;
 
+            // Lançamentos diretos (Conta e Carteira) - exclui transações individuais de cartão
             const list = periodTxs.filter(t => {
+                if ((t.paymentMethod || 'bank') === 'card') return false;
                 if (search && !(t.description || '').toLowerCase().includes(search) && !(t.notes || '').toLowerCase().includes(search)) return false;
                 if (fType !== 'ALL') {
                     if (fType === 'income' && !(t.type === 'income' || isWithdrawal(t) || t.isRefund)) return false;
@@ -5305,12 +5420,68 @@ function doGet(e) {
 
                 return true;
             }).sort((a, b) => {
-                // Em aberto primeiro (ordenados por vencimento), depois quitados no final (também em ordem de vencimento)
                 if (!!a.paid !== !!b.paid) return a.paid ? 1 : -1;
                 return (a.dueDate || '').localeCompare(b.dueDate || '');
             });
 
-            document.getElementById('txCountLabel').textContent = `${list.length} lançamento(s)`;
+            // Faturas consolidadas de cada Cartão de Crédito no período
+            const cardInvoiceCards = [];
+            const canShowCardInvoices = (fMethod === 'ALL' || fMethod === 'card')
+                && (fType === 'ALL' || fType === 'expense')
+                && fCat === 'ALL' && fSub === 'ALL' && fRec === 'ALL';
+
+            if (canShowCardInvoices) {
+                appState.creditCards.forEach(c => {
+                    const cTxs = periodTxs.filter(t => t.paymentMethod === 'card' && (t.cardId || appState.creditCards[0]?.id) === c.id);
+                    if (cTxs.length === 0) return;
+
+                    let exp = 0, ref = 0, paidAmt = 0, pendAmt = 0;
+                    cTxs.forEach(t => {
+                        const amt = Number(t.amount) || 0;
+                        if (t.type === 'expense') {
+                            exp += amt;
+                            if (t.paid) paidAmt += amt;
+                            else pendAmt += amt;
+                        } else if (t.isRefund) {
+                            ref += amt;
+                        }
+                    });
+                    const totalInvoice = Math.max(0, exp - ref);
+                    if (totalInvoice <= 0) return;
+
+                    const isPaidInvoice = pendAmt <= 0;
+                    const yRef = Number(appState.selectedYear);
+                    const mRef = appState.selectedMonth !== 'ALL' ? Number(appState.selectedMonth) : new Date().getMonth();
+                    const maxDay = new Date(yRef, mRef + 1, 0).getDate();
+                    const dueDaySafe = Math.min(Number(c.dueDay) || 10, maxDay);
+                    const dueIso = `${yRef}-${String(mRef + 1).padStart(2, '0')}-${String(dueDaySafe).padStart(2, '0')}`;
+
+                    if (search && !(`fatura ${c.name}`).toLowerCase().includes(search) && !c.name.toLowerCase().includes(search)) return;
+                    if (fStatus === 'paid' && !isPaidInvoice) return;
+                    if (fStatus === 'pending' && isPaidInvoice) return;
+                    if (fStatus === 'due_soon' || fStatus === 'overdue') {
+                        if (isPaidInvoice) return;
+                        const [y, m, d] = dueIso.split('-').map(Number);
+                        const diff = Math.ceil((new Date(y, m - 1, d) - today) / 86400000);
+                        if (fStatus === 'due_soon' && (diff < 0 || diff > 3)) return;
+                        if (fStatus === 'overdue' && diff >= 0) return;
+                    }
+
+                    cardInvoiceCards.push({
+                        card: c,
+                        totalInvoice,
+                        paidAmt,
+                        pendAmt,
+                        isPaidInvoice,
+                        count: cTxs.length,
+                        dueIso,
+                        dueFmt: dueIso.split('-').reverse().join('/')
+                    });
+                });
+            }
+
+            const totalItemsCount = list.length + cardInvoiceCards.length;
+            document.getElementById('txCountLabel').textContent = `${list.length} lançamento(s)${cardInvoiceCards.length > 0 ? ` + ${cardInvoiceCards.length} fatura(s)` : ''}`;
 
             let sumFiltered = 0;
             list.forEach(t => {
@@ -5322,6 +5493,11 @@ function doGet(e) {
                     else if (t.type === 'expense') sumFiltered -= amt;
                 }
             });
+            cardInvoiceCards.forEach(inv => {
+                if (fType === 'expense') sumFiltered += inv.totalInvoice;
+                else if (fType === 'ALL') sumFiltered -= inv.totalInvoice;
+            });
+
             const totEl = document.getElementById('txFilteredTotal');
             totEl.textContent = fmtBRL(sumFiltered);
             const totColorCls = fType === 'expense' ? 'text-rose-600'
@@ -5338,18 +5514,54 @@ function doGet(e) {
                 container.classList.add('tx-list-fade');
             }
 
-            if (list.length === 0) {
+            if (totalItemsCount === 0) {
                 container.innerHTML = '<div class="app-card p-8 text-center text-sm text-slate-400">Nenhum lançamento encontrado.</div>';
                 return;
             }
 
-            container.innerHTML = list.map(t => {
+            const renderCardInvoiceHtml = inv => {
+                const c = inv.card;
+                return `
+                    <div onclick="openCardInvoiceModal('${c.id}')" class="app-card p-4 space-y-2.5 cursor-pointer active:scale-[0.99] border-l-4 ${inv.isPaidInvoice ? 'opacity-55' : ''}" style="border-left-color:${c.color || '#8b5cf6'}">
+                        <div class="flex items-start justify-between gap-2.5">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <span class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm shrink-0 shadow-sm" style="background:${c.color || '#8b5cf6'}">
+                                    <i class="fa-solid fa-credit-card"></i>
+                                </span>
+                                <div class="min-w-0">
+                                    <h4 class="text-sm sm:text-base font-extrabold truncate">Fatura • ${c.name}</h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 truncate">${inv.count} lançamento(s) no cartão • Toque para abrir</p>
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <strong class="block text-base sm:text-lg font-black text-purple-600 dark:text-purple-400">
+                                    ${fmtBRL(inv.totalInvoice)}
+                                </strong>
+                                <span class="text-xs text-slate-400 font-medium">Venc. ${inv.dueFmt}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2.5 border-t border-slate-100 dark:border-slate-800 text-xs">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="px-2.5 py-1 rounded-lg bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold">Fatura Cartão</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 rounded-lg font-bold ${inv.isPaidInvoice ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300' : 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300'}">
+                                    ${inv.isPaidInvoice ? 'Quitada' : 'Aberta'}
+                                </span>
+                                <span class="text-xs font-extrabold theme-text">Ver fatura ›</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            };
+
+            const renderSingleTxHtml = t => {
                 const cat = appState.categories.find(c => c.id === t.categoryId);
                 const sub = cat && cat.subcategories ? cat.subcategories.find(s => s.id === t.subcategoryId) : null;
                 const isPos = t.type === 'income' || isWithdrawal(t) || t.isRefund;
                 const dueFmt = t.dueDate ? t.dueDate.split('-').reverse().join('/') : '-';
-                const cardObj = t.paymentMethod === 'card' ? appState.creditCards.find(c => c.id === t.cardId) : null;
-                const methodTxt = t.paymentMethod === 'card' ? (cardObj ? cardObj.name : 'Cartão') : (t.paymentMethod === 'wallet' ? 'Carteira' : 'Conta');
+                const methodTxt = t.paymentMethod === 'wallet' ? 'Carteira' : 'Conta';
                 const valColorCls = t.type === 'investment' ? 'text-indigo-600' : (t.type === 'transfer' ? 'text-sky-600' : (isPos ? 'text-emerald-600' : 'text-rose-600'));
 
                 return `
@@ -5393,7 +5605,26 @@ function doGet(e) {
                         </div>
                     </div>
                 `;
-            }).join('');
+            };
+
+            // Unifica lançamentos e faturas dos cartões em ordem única de vencimento (Em aberto primeiro, quitados ao final)
+            const unifiedEntries = [
+                ...cardInvoiceCards.map(inv => ({
+                    isPaid: !!inv.isPaidInvoice,
+                    dueDate: inv.dueIso || '',
+                    html: renderCardInvoiceHtml(inv)
+                })),
+                ...list.map(t => ({
+                    isPaid: !!t.paid,
+                    dueDate: t.dueDate || '',
+                    html: renderSingleTxHtml(t)
+                }))
+            ].sort((a, b) => {
+                if (a.isPaid !== b.isPaid) return a.isPaid ? 1 : -1;
+                return a.dueDate.localeCompare(b.dueDate);
+            });
+
+            container.innerHTML = unifiedEntries.map(entry => entry.html).join('');
         }
 
         let activeDetailTxId = null;
@@ -5481,9 +5712,16 @@ function doGet(e) {
             document.getElementById('detTxCategory').textContent = `${cat ? cat.name : 'Geral'}${sub ? '  ›  ' + sub.name : ''}`;
 
             let modTxt = 'Única';
+            const totInst = Number(tx.totalInstallments) || 1;
+            const isInstallmentExpOrInc = !tx.isFixed && totInst > 1 && (tx.type === 'expense' || tx.type === 'income');
             if (tx.isFixed) modTxt = 'Fixa Mensal';
-            else if ((Number(tx.totalInstallments) || 1) > 1) modTxt = `Parcelada (${tx.currentInstallment}/${tx.totalInstallments})`;
+            else if (totInst > 1) modTxt = `Parcelada (${tx.currentInstallment}/${totInst})`;
             document.getElementById('detTxModality').textContent = modTxt;
+
+            const btnViewInst = document.getElementById('btnViewInstallments');
+            if (btnViewInst) {
+                btnViewInst.classList.toggle('hidden', !isInstallmentExpOrInc);
+            }
 
             const notesRow = document.getElementById('detTxNotesRow');
             if (tx.notes && tx.notes.trim()) {
@@ -5503,6 +5741,97 @@ function doGet(e) {
             };
 
             openModal('modalTxDetails');
+        }
+
+        function getRelatedInstallmentTxs(tx) {
+            const totInst = Number(tx.totalInstallments) || 1;
+            if (totInst <= 1) return [tx];
+            const cleanBaseDesc = String(tx.description || '').replace(/\s*\(\d+\/\d+\)\s*$/, '').trim().toLowerCase();
+            const txDueTs = tx.dueDate ? new Date(tx.dueDate + 'T00:00:00').getTime() : 0;
+            const curInst = Number(tx.currentInstallment) || 1;
+
+            const candidates = appState.transactions.filter(item => {
+                if (item.type !== tx.type) return false;
+                if ((Number(item.totalInstallments) || 1) !== totInst) return false;
+                if ((item.paymentMethod || 'bank') !== (tx.paymentMethod || 'bank')) return false;
+                if ((item.cardId || null) !== (tx.cardId || null)) return false;
+                const itemBaseDesc = String(item.description || '').replace(/\s*\(\d+\/\d+\)\s*$/, '').trim().toLowerCase();
+                if (itemBaseDesc !== cleanBaseDesc) return false;
+                if (Math.abs((Number(item.amount) || 0) - (Number(tx.amount) || 0)) > 0.05) return false;
+
+                if (txDueTs && item.dueDate) {
+                    const itemDueTs = new Date(item.dueDate + 'T00:00:00').getTime();
+                    const expectedMonthsDiff = (Number(item.currentInstallment) || 1) - curInst;
+                    const actualMonthsDiff = Math.round((itemDueTs - txDueTs) / (30.4375 * 86400000));
+                    if (Math.abs(actualMonthsDiff - expectedMonthsDiff) > 1) return false;
+                }
+                return true;
+            });
+
+            if (candidates.length === 0) return [tx];
+            return candidates.sort((a, b) => (Number(a.currentInstallment) || 1) - (Number(b.currentInstallment) || 1));
+        }
+
+        function openTxInstallmentsModal() {
+            if (!activeDetailTxId) return;
+            const tx = appState.transactions.find(t => t.id === activeDetailTxId);
+            if (!tx) return;
+
+            const series = getRelatedInstallmentTxs(tx);
+            const totInst = Number(tx.totalInstallments) || series.length;
+            const cleanTitle = String(tx.description || 'Parcelamento').replace(/\s*\(\d+\/\d+\)\s*$/, '').trim();
+
+            document.getElementById('instModalTitle').textContent = cleanTitle;
+            document.getElementById('instModalSubtitle').textContent = `${series.length} de ${totInst} parcela(s) registrada(s)`;
+
+            let sumAll = 0, sumPaid = 0, sumRem = 0;
+            series.forEach(item => {
+                const amt = Number(item.amount) || 0;
+                sumAll += amt;
+                if (item.paid) sumPaid += amt;
+                else sumRem += amt;
+            });
+
+            document.getElementById('instModalTotal').textContent = fmtBRL(sumAll);
+            document.getElementById('instModalPaid').textContent = fmtBRL(sumPaid);
+            document.getElementById('instModalRemaining').textContent = fmtBRL(sumRem);
+
+            const listEl = document.getElementById('instModalList');
+            listEl.innerHTML = series.map(item => {
+                const isCurrent = item.id === tx.id;
+                const dueFmt = item.dueDate ? item.dueDate.split('-').reverse().join('/') : '-';
+                const instNum = Number(item.currentInstallment) || 1;
+                const isPos = item.type === 'income';
+                return `
+                    <div onclick="closeModal('modalTxInstallments'); setTimeout(() => openTxDetailsModal('${item.id}'), 200);"
+                        class="p-3 rounded-2xl border flex items-center justify-between gap-2.5 cursor-pointer active:scale-[0.99] transition-all ${isCurrent
+                            ? 'border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/35 ring-1 ring-emerald-500/40'
+                            : 'border-slate-200/80 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/75'} ${item.paid ? 'opacity-65' : ''}">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-9 h-9 rounded-xl ${item.paid ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-purple-500/15 text-purple-600 dark:text-purple-400'} flex items-center justify-center text-xs font-extrabold shrink-0">
+                                ${instNum}/${totInst}
+                            </span>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5">
+                                    <strong class="text-xs sm:text-sm font-extrabold truncate ${item.paid ? 'line-through text-slate-400' : ''}">Parcela ${instNum} de ${totInst}</strong>
+                                    ${isCurrent ? '<span class="px-1.5 py-0.5 rounded-md bg-emerald-600 text-white text-[9px] font-extrabold shrink-0">Atual</span>' : ''}
+                                </div>
+                                <span class="block text-[11px] text-slate-500 dark:text-slate-400">Vencimento: ${dueFmt}</span>
+                            </div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <strong class="block text-xs sm:text-sm font-black ${isPos ? 'text-emerald-600' : 'text-rose-600'}">${fmtBRL(item.amount)}</strong>
+                            <span class="inline-block mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold ${item.paid
+                                ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
+                                : 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300'}">
+                                ${item.paid ? 'Quitada' : 'Em aberto'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            openModal('modalTxInstallments');
         }
 
         function syncOpenStackedModals() {
@@ -5712,7 +6041,7 @@ function doGet(e) {
             const maxDay = new Date(y, m + 1, 0).getDate();
             const defaultPeriodIso = `${y}-${String(m + 1).padStart(2, '0')}-${String(Math.min(now.getDate(), maxDay)).padStart(2, '0')}`;
 
-            setTxDateFieldValue('txOpDateInput', customDate ? todayIso : defaultPeriodIso);
+            setTxDateFieldValue('txOpDateInput', todayIso);
             setTxDateFieldValue('txDueDateInput', customDate || defaultPeriodIso);
 
             populateCardSelect();
@@ -5793,7 +6122,9 @@ function doGet(e) {
                 const btns = { expense: 'btnTxExp', income: 'btnTxInc', investment: 'btnTxInv', transfer: 'btnTxTrf' };
                 Object.entries(btns).forEach(([k, id]) => {
                     const el = document.getElementById(id);
-                    el.className = k === type ? 'py-1.5 rounded-lg bg-white dark:bg-slate-700 theme-text shadow-sm transition-all' : 'py-1.5 rounded-lg text-slate-500 transition-all';
+                    el.className = k === type
+                        ? 'py-1.5 rounded-lg bg-white dark:bg-emerald-600 theme-text dark:text-white font-extrabold shadow-sm transition-all'
+                        : 'py-1.5 rounded-lg text-slate-600 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-slate-700/70 transition-all';
                 });
 
                 const isTrf = type === 'transfer';
@@ -5965,8 +6296,8 @@ function doGet(e) {
                 const map = { bank: 'btnPayBank', card: 'btnPayCard', wallet: 'btnPayWallet' };
                 Object.entries(map).forEach(([k, id]) => {
                     document.getElementById(id).className = k === method
-                        ? 'py-1.5 rounded-lg bg-white dark:bg-slate-700 theme-text shadow-sm transition-all'
-                        : 'py-1.5 rounded-lg text-slate-500 transition-all';
+                        ? 'py-1.5 rounded-lg bg-white dark:bg-emerald-600 theme-text dark:text-white font-extrabold shadow-sm transition-all'
+                        : 'py-1.5 rounded-lg text-slate-600 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-slate-700/70 transition-all';
                 });
                 const cardBox = document.getElementById('txCardBox');
                 cardBox.classList.toggle('hidden', method !== 'card');
@@ -6421,10 +6752,23 @@ function doGet(e) {
             } else {
                 if (payload.isFixed) {
                     const sid = 'series_' + Date.now();
-                    for (let m = payload.month; m < 12; m++) {
-                        const maxD = new Date(dy, m + 1, 0).getDate();
-                        const dIso = `${dy}-${String(m + 1).padStart(2, '0')}-${String(Math.min(dd, maxD)).padStart(2, '0')}`;
-                        appState.transactions.push({ ...payload, id: 'tx_' + Date.now() + '_' + m, month: m, dueDate: dIso, operationDate: dIso, fixedSeriesId: sid });
+                    const endYear = Math.max(dy, new Date().getFullYear()) + 5;
+                    let cy = dy, cm = payload.month;
+                    while (cy <= endYear) {
+                        const maxD = new Date(cy, cm + 1, 0).getDate();
+                        const dIso = `${cy}-${String(cm + 1).padStart(2, '0')}-${String(Math.min(dd, maxD)).padStart(2, '0')}`;
+                        appState.transactions.push({
+                            ...payload,
+                            id: 'tx_' + Date.now() + '_' + cy + '_' + cm,
+                            year: cy,
+                            month: cm,
+                            dueDate: dIso,
+                            operationDate: dIso,
+                            paid: (cy === dy && cm === payload.month) ? payload.paid : false,
+                            fixedSeriesId: sid
+                        });
+                        cm++;
+                        if (cm > 11) { cm = 0; cy++; }
                     }
                 } else if (payload.totalInstallments > 1) {
                     let cy = dy, cm = payload.month;
@@ -6707,63 +7051,121 @@ function doGet(e) {
             activeHistoryCardId = cardId;
             document.getElementById('histCardTitle').textContent = `Histórico • ${card.name}`;
             document.getElementById('histCardSub').textContent = `Fecha dia ${card.closingDay} • Vence dia ${card.dueDay}`;
-            document.getElementById('histCardYearSelect').value = String(appState.selectedYear);
             renderCardHistoryBody();
             openModal('modalCardHistory');
         }
 
         function renderCardHistoryBody() {
             if (!activeHistoryCardId) return;
-            const year = Number(document.getElementById('histCardYearSelect').value);
+            const baseYear = Number(appState.selectedYear);
             const cardTxs = appState.transactions.filter(t =>
                 t.paymentMethod === 'card' &&
-                (t.cardId || appState.creditCards[0]?.id) === activeHistoryCardId &&
-                Number(t.year) === year
+                (t.cardId || appState.creditCards[0]?.id) === activeHistoryCardId
             );
 
-            let yearTotal = 0;
-            const listHtml = MONTHS.map((mName, mIdx) => {
-                const mTxs = cardTxs.filter(t => Number(t.month) === mIdx);
-                let exp = 0, ref = 0, pend = 0;
+            // Descobre o maior ano futuro com lançamentos (parcelados ou fixos)
+            let maxInstallmentYear = baseYear;
+            let hasAnyFutureYearTx = false;
+            cardTxs.forEach(t => {
+                const ty = Number(t.year);
+                if (ty > baseYear) {
+                    hasAnyFutureYearTx = true;
+                    if (!t.isFixed && ty > maxInstallmentYear) {
+                        maxInstallmentYear = ty;
+                    }
+                }
+            });
+            const maxFutureYear = hasAnyFutureYearTx ? Math.max(baseYear + 1, maxInstallmentYear) : baseYear;
+
+            // Monta os 12 meses do ano selecionado + os meses dos próximos anos com lançamentos
+            const periods = [];
+            for (let m = 0; m < 12; m++) {
+                periods.push({ year: baseYear, month: m });
+            }
+            for (let y = baseYear + 1; y <= maxFutureYear; y++) {
+                const yTxs = cardTxs.filter(t => Number(t.year) === y);
+                if (yTxs.length === 0) continue;
+                const lastMonthInYear = y === maxFutureYear
+                    ? Math.max(...yTxs.map(t => Number(t.month) || 0))
+                    : 11;
+                for (let m = 0; m <= lastMonthInYear; m++) {
+                    periods.push({ year: y, month: m });
+                }
+            }
+
+            let grandTotal = 0;
+            const now = new Date();
+            const curY = now.getFullYear();
+            const curM = now.getMonth();
+
+            const cardsHtml = periods.map(({ year, month }) => {
+                const mName = MONTHS[month];
+                const mTxs = cardTxs.filter(t => Number(t.year) === year && Number(t.month) === month);
+                let exp = 0, ref = 0, pend = 0, paid = 0;
                 mTxs.forEach(t => {
                     const amt = Number(t.amount) || 0;
                     if (t.type === 'expense') {
                         exp += amt;
-                        if (!t.paid) pend += amt;
+                        if (t.paid) paid += amt;
+                        else pend += amt;
                     } else if (t.isRefund) {
                         ref += amt;
                     }
                 });
                 const net = Math.max(0, exp - ref);
-                yearTotal += net;
+                grandTotal += net;
+
+                const isCurrentPeriod = year === curY && month === curM;
+                const isFutureYear = year > baseYear;
 
                 const statusBadge = net === 0
-                    ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/70 dark:bg-slate-700 text-slate-500">Sem fatura</span>'
+                    ? '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 dark:bg-slate-700 text-slate-500 dark:text-slate-300">Sem fatura</span>'
                     : (pend > 0
-                        ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">Aberta</span>'
-                        : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Quitada</span>');
+                        ? '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">Aberta</span>'
+                        : '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Quitada</span>');
 
                 return `
-                    <button type="button" onclick="jumpToCardMonthInvoice('${activeHistoryCardId}', ${year}, ${mIdx})" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between text-left transition-colors">
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xs font-extrabold">
-                                ${mName.slice(0, 3)}
-                            </span>
+                    <button type="button" onclick="jumpToCardMonthInvoice('${activeHistoryCardId}', ${year}, ${month})"
+                        class="snap-start shrink-0 w-[178px] p-3.5 rounded-2xl border text-left flex flex-col justify-between gap-3 transition-transform active:scale-95 ${isCurrentPeriod
+                            ? 'border-purple-500 bg-purple-50/70 dark:bg-purple-950/35 ring-1 ring-purple-500/40'
+                            : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between gap-1.5">
+                                <span class="px-2 py-0.5 rounded-lg text-[10px] font-extrabold ${isFutureYear
+                                    ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300'
+                                    : 'bg-purple-500/15 text-purple-700 dark:text-purple-300'}">
+                                    ${year}
+                                </span>
+                                ${statusBadge}
+                            </div>
                             <div>
-                                <strong class="block text-xs sm:text-sm font-extrabold">${mName}</strong>
-                                <span class="text-[11px] text-slate-400">${mTxs.length} lançamento(s)</span>
+                                <strong class="block text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight">${mName} / ${year}</strong>
+                                <span class="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${mTxs.length} lançamento(s)</span>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2.5">
-                            ${statusBadge}
-                            <strong class="text-xs sm:text-sm font-black ${net > 0 ? 'text-purple-700 dark:text-purple-300' : 'text-slate-400'}">${fmtBRL(net)}</strong>
+
+                        <div class="pt-2.5 border-t border-slate-200/80 dark:border-slate-700/80">
+                            <span class="block text-[10px] font-bold text-slate-400">Valor da Fatura</span>
+                            <strong class="block text-base font-black mt-0.5 ${net > 0 ? 'text-purple-700 dark:text-purple-300' : 'text-slate-400'}">${fmtBRL(net)}</strong>
+                            <span class="block text-[11px] font-bold theme-text mt-1">Ver fatura ›</span>
                         </div>
                     </button>
                 `;
             }).join('');
 
-            document.getElementById('histCardYearTotal').textContent = fmtBRL(yearTotal);
-            document.getElementById('histCardMonthsList').innerHTML = listHtml;
+            const rangeLbl = document.getElementById('histCardCarouselRange');
+            if (rangeLbl) {
+                rangeLbl.textContent = maxFutureYear > baseYear ? `${baseYear} – ${maxFutureYear}` : `${baseYear}`;
+            }
+            document.getElementById('histCardYearTotal').textContent = fmtBRL(grandTotal);
+            const container = document.getElementById('histCardMonthsList');
+            container.innerHTML = cardsHtml;
+
+            // Centraliza automaticamente no mês selecionado ou atual
+            const focusMonth = appState.selectedMonth !== 'ALL' ? Number(appState.selectedMonth) : curM;
+            requestAnimationFrame(() => {
+                container.scrollLeft = Math.max(0, focusMonth * 190 - 20);
+            });
         }
 
         function jumpToCardMonthInvoice(cardId, year, month) {
@@ -7032,7 +7434,11 @@ function doGet(e) {
                     <div onclick="openTxDetailsModal('${t.id}')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 flex items-center justify-between gap-2 text-xs sm:text-sm cursor-pointer active:scale-[0.99] ${t.paid ? 'opacity-65' : ''}">
                         <div class="min-w-0">
                             <strong class="block font-bold truncate">${t.description}</strong>
-                            <span class="text-xs text-slate-400">${t.dueDate ? t.dueDate.split('-').reverse().join('/') : ''}</span>
+                            <div class="flex items-center gap-1.5 flex-wrap mt-0.5">
+                                <span class="text-xs text-slate-400">${(t.operationDate || t.dueDate) ? (t.operationDate || t.dueDate).split('-').reverse().join('/') : ''}</span>
+                                ${t.isFixed ? '<span class="px-2 py-0.5 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-[11px] font-bold">Fixa</span>' : ''}
+                                ${(Number(t.totalInstallments) || 1) > 1 ? `<span class="px-2 py-0.5 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 text-[11px] font-bold">${t.currentInstallment}/${t.totalInstallments}</span>` : ''}
+                            </div>
                         </div>
                         <div class="flex items-center gap-2 shrink-0" onclick="event.stopPropagation()">
                             <strong onclick="openTxDetailsModal('${t.id}')" class="${t.isRefund ? 'text-emerald-600' : ''}">${t.isRefund ? '+ ' : ''}${fmtBRL(t.amount)}</strong>
@@ -8267,6 +8673,7 @@ function doGet(e) {
                         localStorage.setItem(getStorageKey('orcamento_last_sync_time'), appState.lastSyncTime);
                         updateSyncLabel();
                     }
+                    ensureFixedSeriesProjection();
                     saveState();
                     refreshAll();
                     if (!silent) toast('Dados restaurados com sucesso!');
@@ -8315,6 +8722,7 @@ function doGet(e) {
                     if (Array.isArray(st.transactions)) appState.transactions = st.transactions;
                     if (st.walletBalance !== undefined) appState.walletBalance = Number(st.walletBalance) || 0;
                     if (st.bankAccountConfig) appState.bankAccountConfig = st.bankAccountConfig;
+                    ensureFixedSeriesProjection();
                     saveState();
                     refreshAll();
                     toast('Backup JSON importado com sucesso!');
