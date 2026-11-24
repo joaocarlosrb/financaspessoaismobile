@@ -159,6 +159,11 @@
             user-select: none;
             scroll-snap-type: none !important;
         }
+        .hist-carousel-card {
+            flex: 0 0 calc(50% - 5px);
+            width: calc(50% - 5px);
+            min-width: 0;
+        }
 
         /* Leque / Lista flutuante de opções acima do botão "+" */
         #quickAddFanBackdrop {
@@ -2417,7 +2422,7 @@
                         </button>
                     </div>
                 </div>
-                <div id="histCardMonthsList" class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 no-scrollbar"></div>
+                <div id="histCardMonthsList" class="flex gap-2.5 overflow-x-auto snap-x snap-mandatory py-1 px-0.5 no-scrollbar"></div>
             </div>
 
             <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 shrink-0">
@@ -7145,27 +7150,27 @@ function doGet(e) {
 
                 return `
                     <button type="button" onclick="jumpToCardMonthInvoice('${activeHistoryCardId}', ${year}, ${month})"
-                        class="snap-start shrink-0 w-[178px] p-3.5 rounded-2xl border text-left flex flex-col justify-between gap-3 transition-transform active:scale-95 ${isCurrentPeriod
-                            ? 'border-purple-500 bg-purple-50/70 dark:bg-purple-950/35 ring-1 ring-purple-500/40'
+                        class="hist-carousel-card snap-start p-3 rounded-2xl border text-left flex flex-col justify-between gap-2.5 transition-transform active:scale-95 ${isCurrentPeriod
+                            ? 'border-purple-500 bg-purple-50/70 dark:bg-purple-950/35 ring-1 ring-inset ring-purple-500/40'
                             : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800'}">
-                        <div class="space-y-1.5">
-                            <div class="flex items-center justify-between gap-1.5">
-                                <span class="px-2 py-0.5 rounded-lg text-[10px] font-extrabold ${isFutureYear
+                        <div class="space-y-1.5 min-w-0">
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="px-1.5 py-0.5 rounded-md text-[10px] font-extrabold shrink-0 ${isFutureYear
                                     ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300'
                                     : 'bg-purple-500/15 text-purple-700 dark:text-purple-300'}">
                                     ${year}
                                 </span>
                                 ${statusBadge}
                             </div>
-                            <div>
-                                <strong class="block text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight">${mName} / ${year}</strong>
-                                <span class="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${mTxs.length} lançamento(s)</span>
+                            <div class="min-w-0">
+                                <strong class="block text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white leading-tight truncate">${mName} / ${year}</strong>
+                                <span class="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">${mTxs.length} lançamento(s)</span>
                             </div>
                         </div>
 
-                        <div class="pt-2.5 border-t border-slate-200/80 dark:border-slate-700/80">
+                        <div class="pt-2 border-t border-slate-200/80 dark:border-slate-700/80 min-w-0">
                             <span class="block text-[10px] font-bold text-slate-400">Valor da Fatura</span>
-                            <strong class="block text-base font-black mt-0.5 ${net > 0 ? 'text-purple-700 dark:text-purple-300' : 'text-slate-400'}">${fmtBRL(net)}</strong>
+                            <strong class="block text-sm sm:text-base font-black mt-0.5 truncate ${net > 0 ? 'text-purple-700 dark:text-purple-300' : 'text-slate-400'}">${fmtBRL(net)}</strong>
                             <span class="block text-[11px] font-bold theme-text mt-1">Ver fatura ›</span>
                         </div>
                     </button>
@@ -7180,10 +7185,13 @@ function doGet(e) {
             const container = document.getElementById('histCardMonthsList');
             container.innerHTML = cardsHtml;
 
-            // Centraliza automaticamente no mês selecionado ou atual
+            // Posiciona exatamente no mês selecionado ou atual para exibir 2 cards inteiros sem cortes
             const focusMonth = appState.selectedMonth !== 'ALL' ? Number(appState.selectedMonth) : curM;
             requestAnimationFrame(() => {
-                container.scrollLeft = Math.max(0, focusMonth * 190 - 20);
+                const firstCard = container.querySelector('.hist-carousel-card');
+                const step = firstCard ? (firstCard.offsetWidth + 10) : 165;
+                const alignedIdx = Math.min(Math.max(0, focusMonth), Math.max(0, periods.length - 2));
+                container.scrollLeft = alignedIdx * step;
             });
         }
 
@@ -7192,7 +7200,9 @@ function doGet(e) {
         function scrollCardHistoryCarousel(dir) {
             const container = document.getElementById('histCardMonthsList');
             if (!container) return;
-            container.scrollBy({ left: dir * 190, behavior: 'smooth' });
+            const firstCard = container.querySelector('.hist-carousel-card');
+            const step = firstCard ? (firstCard.offsetWidth + 10) : (container.clientWidth / 2);
+            container.scrollBy({ left: dir * step, behavior: 'smooth' });
         }
 
         function initCardHistoryDragScroll() {
