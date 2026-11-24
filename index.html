@@ -147,7 +147,17 @@
             animation: fadeInBackdrop 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
         .modal-backdrop .modal-sheet {
-            touch-action: pan-y;
+            touch-action: pan-x pan-y;
+        }
+        #histCardMonthsList {
+            touch-action: pan-x !important;
+            -webkit-overflow-scrolling: touch;
+            cursor: grab;
+        }
+        #histCardMonthsList.is-dragging {
+            cursor: grabbing;
+            user-select: none;
+            scroll-snap-type: none !important;
         }
 
         /* Leque / Lista flutuante de opções acima do botão "+" */
@@ -2395,9 +2405,17 @@
             </div>
 
             <div class="p-4 space-y-3 shrink-0">
-                <div class="flex items-center justify-between text-[11px] font-bold text-slate-400">
+                <div class="flex items-center justify-between gap-2 text-[11px] font-bold text-slate-400">
                     <span><i class="fa-solid fa-arrows-left-right mr-1 theme-text"></i>Arraste os cards horizontalmente</span>
-                    <span id="histCardCarouselRange">--</span>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <span id="histCardCarouselRange" class="mr-1">--</span>
+                        <button type="button" onclick="scrollCardHistoryCarousel(-1)" aria-label="Anterior" class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center active:scale-90 transition-transform">
+                            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                        </button>
+                        <button type="button" onclick="scrollCardHistoryCarousel(1)" aria-label="Próximo" class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center active:scale-90 transition-transform">
+                            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
                 <div id="histCardMonthsList" class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 no-scrollbar"></div>
             </div>
@@ -3374,7 +3392,7 @@ function doGet(e) {
 
         document.addEventListener('touchmove', function(e) {
             if (!document.body.classList.contains('modal-open')) return;
-            const scrollableInsideModal = e.target.closest('.modal-sheet .overflow-y-auto, .modal-sheet textarea');
+            const scrollableInsideModal = e.target.closest('.modal-sheet .overflow-y-auto, .modal-sheet .overflow-x-auto, .modal-sheet textarea');
             if (!scrollableInsideModal) {
                 e.preventDefault();
             }
@@ -7051,6 +7069,7 @@ function doGet(e) {
             activeHistoryCardId = cardId;
             document.getElementById('histCardTitle').textContent = `Histórico • ${card.name}`;
             document.getElementById('histCardSub').textContent = `Fecha dia ${card.closingDay} • Vence dia ${card.dueDay}`;
+            initCardHistoryDragScroll();
             renderCardHistoryBody();
             openModal('modalCardHistory');
         }
@@ -7168,7 +7187,57 @@ function doGet(e) {
             });
         }
 
+        let histCarouselDragMoved = false;
+
+        function scrollCardHistoryCarousel(dir) {
+            const container = document.getElementById('histCardMonthsList');
+            if (!container) return;
+            container.scrollBy({ left: dir * 190, behavior: 'smooth' });
+        }
+
+        function initCardHistoryDragScroll() {
+            const container = document.getElementById('histCardMonthsList');
+            if (!container || container._dragBound) return;
+            container._dragBound = true;
+
+            let isDown = false;
+            let startX = 0;
+            let scrollLeftStart = 0;
+
+            container.addEventListener('mousedown', (e) => {
+                isDown = true;
+                histCarouselDragMoved = false;
+                startX = e.pageX - container.offsetLeft;
+                scrollLeftStart = container.scrollLeft;
+                container.classList.add('is-dragging');
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (!isDown) return;
+                isDown = false;
+                container.classList.remove('is-dragging');
+                setTimeout(() => { histCarouselDragMoved = false; }, 60);
+            });
+
+            container.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - container.offsetLeft;
+                const walk = x - startX;
+                if (Math.abs(walk) > 6) histCarouselDragMoved = true;
+                container.scrollLeft = scrollLeftStart - walk;
+            });
+
+            container.addEventListener('wheel', (e) => {
+                if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                    e.preventDefault();
+                    container.scrollLeft += e.deltaY;
+                }
+            }, { passive: false });
+        }
+
         function jumpToCardMonthInvoice(cardId, year, month) {
+            if (histCarouselDragMoved) return;
             openCardInvoiceModal(cardId, year, month);
         }
 
